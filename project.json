@@ -1,0 +1,37 @@
+{
+    "project_type": "javascript",
+
+    "debugMode" : 1,
+    "showFPS" : false,
+    "frameRate" : 60,
+    "id" : "gameCanvas",
+    "renderMode" : 0,
+    "engineDir":"frameworks/cocos2d-html5",
+
+    "modules" : ["cocos2d", "extensions"],
+
+    "jsList" : [
+        "src/libs/underscore-min.js",
+        "src/libs/backbone-min.js",
+        "src/libs/firebase.js",
+        "src/libs/moment-with-locales.min.js",
+        "src/libs/utils.js",
+        "src/resource.js",
+        "src/basic.js",
+        "src/game-model.js",
+        "src/game-sprite.js",
+        "src/hero-card-model.js",
+        "src/hero-card-sprite.js",
+        "src/monster-card-model.js",
+        "src/monster-card-sprite.js",
+        "src/spell-card-model.js",
+        "src/spell-card-sprite.js",
+        "src/item-card-model.js",
+        "src/item-card-sprite.js",
+        "src/class-map.js",
+        "src/buy-card.js",
+        "src/spell-book.js",
+        "src/app.js",
+        "src/card-detail.js"
+    ]
+}
