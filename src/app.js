@@ -133,8 +133,17 @@ var MainGameLayer = cc.Layer.extend({
             y: dimens.throne_position.y,
             anchorY:0
         });
-        this.addChild(this.throne,20)
-        this.__renderDungeonHeart();
+        this.addChild(this.throne,20);
+
+        this.expLabel = new cc.LabelTTF("", "Arial", dimens.throne_font_size);
+        this.expLabel.attr({
+            color: cc.color(255,0,0,255),
+            x: dimens.throne_position.x,
+            y: dimens.throne_position.y + 16
+        })
+        this.addChild(this.expLabel,21);
+
+        this.__renderDungeonHP();
 
         var bookMenuItem = new cc.MenuItemImage(
             cc.spriteFrameCache.getSpriteFrame("book-menu.png"),
@@ -152,22 +161,27 @@ var MainGameLayer = cc.Layer.extend({
             x: dimens.book_menu_position.x,
             y: dimens.book_menu_position.y+dimens.book_label_offset.y
         });
-        this.addChild(this.bookText,40);
-        this.__renderBook();
+        this.addChild(this.bookText,21);
 
-        this.pot = new IconSprite({
-            image: cc.spriteFrameCache.getSpriteFrame("pot0.png"),
-            offset:dimens.pot_label_offset,
-            fontSize: dimens.pot_font_size,
-            fontColor: cc.color(255,0,0,255)
+        var vaultMenuItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("vault-menu.png"),
+            cc.spriteFrameCache.getSpriteFrame("vault-menu.png"),
+            function(){
+
+            }, this);
+        vaultMenuItem.attr({
+            x: dimens.vault_menu_position.x,
+            y: dimens.vault_menu_position.y,
+            anchorX: 0.5,
+            anchorY: 0
         });
-        this.pot.attr({
-            x: dimens.pot_position.x,
-            y: dimens.pot_position.y,
-            anchorY:0
+        this.moneyLabel = new cc.LabelTTF("", "Arial", dimens.vault_font_size);
+        this.moneyLabel.attr({
+            color: colors.book,
+            x: dimens.vault_menu_position.x,
+            y: dimens.vault_menu_position.y+dimens.vault_label_offset.y
         });
-        this.addChild(this.pot,20);
-        this.__renderPot();
+        this.addChild(this.moneyLabel,21);
 
         this.dungeonList = new SortableSpriteList({
             margin:dimens.dungeon_card_margin
@@ -222,7 +236,7 @@ var MainGameLayer = cc.Layer.extend({
         this.hintLable.setVisible(false);
 
         this.conflictIcon = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("cross-sword.png"));
-        this.addChild(this.conflictIcon,3);
+        this.addChild(this.conflictIcon,21);
         this.conflictIcon.setVisible(false);
 
         var buildItem = new cc.MenuItemImage(
@@ -250,34 +264,46 @@ var MainGameLayer = cc.Layer.extend({
             anchorY: 0
         });
 
-        var menu = new cc.Menu(buildItem,upgradeItem, bookMenuItem);
+        var menu = new cc.Menu(buildItem,upgradeItem, bookMenuItem, vaultMenuItem);
         menu.x = 0;
         menu.y = 0;
         this.addChild(menu);
 
         window.iconSource = {
-            money : this.throne,
+            money : this.moneyLabel,
             hp : this.throne
         }
         return true;
     },
+    newCardToDiscard:function(){
+        if ( window.newDiscardCardModel ) {
+            var boughtCardSprite = new DUNGEON_SPRITE_CLASS_MAP[ window.newDiscardCardModel.get("name") ]({
+                model: window.newDiscardCardModel
+            });
+            boughtCardSprite.attr({
+                x: window.newDiscardCardPosition.x,
+                y: window.newDiscardCardPosition.y
+            });
+            this.addChild(boughtCardSprite,60);
+            this.discardCard( boughtCardSprite );
+            window.newDiscardCardModel = null;
+            window.newDiscardCardPosition = null;
+        }
+    },
     onEnter:function(){
         this._super();
         if ( this.firstHero ) {
-            this.generateHero();
             this.firstHero = false;
+            this.generateHero();
         }
-        if ( window.boughtCardModel ) {
-            var boughtCardSprite = new DUNGEON_SPRITE_CLASS_MAP[ window.boughtCardModel.get("name") ]({
-                model: window.boughtCardModel
-            });
-            boughtCardSprite.attr({
-                x: window.boughtCardPosition.x,
-                y: window.boughtCardPosition.y
-            });
-            this.addChild(boughtCardSprite);
-            this.discardCard( boughtCardSprite );
-        }
+        this.newCardToDiscard();
+        this.__refresh();
+    },
+    __refresh:function(){
+        this.__renderExp();
+        this.__renderBook();
+        this.__renderDungeonHP();
+        this.__renderMoney();
     },
     cleanUp:function(){
         this.model.off(null,null,this);
@@ -285,8 +311,10 @@ var MainGameLayer = cc.Layer.extend({
     },
     __initEvent:function(){
         this.model.on("change:hp change:maxHp",this.__onDungeonHPChanged,this);
-        this.model.on("change:hand",this.__renderBook,this);
-        this.model.on("change:exp",this.__renderPot,this);
+        this.model.on("change:hp",this.__checkGameOver,this);
+        this.model.on("change:hand change:maxHand",this.__renderBook,this);
+        this.model.on("change:exp change:maxExp",this.__renderExp,this);
+        this.model.on("change:money change:maxMoney",this.__renderMoney,this);
         var self = this;
         cc.eventManager.addListener(cc.EventListener.create({
             event: cc.EventListener.CUSTOM,
@@ -311,6 +339,13 @@ var MainGameLayer = cc.Layer.extend({
             eventName: "team-leave-stage",
             callback: function (event) {
                 self.onTeamLeaveStage();
+            }
+        }), 1);
+        cc.eventManager.addListener(cc.EventListener.create({
+            event: cc.EventListener.CUSTOM,
+            eventName: "cast-spell",
+            callback: function (event) {
+                self.onCastSpell.call(self, event.getUserData());
             }
         }), 1);
     },
@@ -341,6 +376,7 @@ var MainGameLayer = cc.Layer.extend({
                 switch ( phase ) {
                     case "generate-dungeon":
                         this.continueMenu.setVisible(false);
+
                         if ( this.model.get("stageNumber") === 0 ) {
                             cc.log("teamEnterDungeon")
                             this.teamEnterDungeon();
@@ -431,17 +467,65 @@ var MainGameLayer = cc.Layer.extend({
         this.addChild(layer, 50);*/
     },
     openUpgradeMenu:function(){
+        cc.director.pushScene(new UpgradeScene({
+            model:this.model
+        }));
+    },
+    onCastSpell:function(options){
+        var cardModel = options.model;
+        var castingCard = new DUNGEON_SPRITE_CLASS_MAP[cardModel.get("name")]({
+            model: cardModel
+        });
+        castingCard.attr({
+            x: options.x,
+            y: options.y
+        });
+        this.addChild(castingCard,80);
+        cardModel.on("please-choose-hero", function(options){
+            options = options || {};
+            mainGame.showChooseHero(_.extend(options,{
+                sourceCardSprite: castingCard,
+                onSelectCallback:castingCard.onSelectTarget,
+                onSelectContext: castingCard
+            }));
+        }, this);
+        cardModel.on("please-choose-dungeon", function(options){
+            options = options || {};
+            mainGame.showChooseDungeon(_.extend(options,{
+                sourceCardSprite: castingCard,
+                onSelectCallback:castingCard.onSelectTarget,
+                onSelectContext: castingCard
+            }));
+        }, this);
+        cardModel.on("cast-spell-finish", function(){
+            cardModel.off(null,null,this);
+            this.model.useSpellCard(cardModel);
+            this.discardCard( castingCard );
+            mainGame.resumeAction();
+        }, this);
 
+        cardModel.onCast({
+            onCancelCallback:function(){
+                cardModel.off(null,null,this);
+                castingCard.removeFromParent(true);
+                mainGame.resumeAction();
+            },
+            onCancelContext:this
+        });
     },
     openBookMenu:function(){
         mainGame.pauseAction();
         var spellBookLayer = new SpellBookLayer({
             model: this.model
         });
-        this.addChild(spellBookLayer,50);
+        spellBookLayer.attr({
+            y: -300
+        });
+        this.addChild(spellBookLayer,150);
+        spellBookLayer.runAction(cc.moveTo(times.book_appear,0,0));
     },
-    __renderDungeonHeart:function(){
-        this.throne.setString( "hp"+this.model.get("hp") + "/" + this.model.get("maxHp") );
+    __renderDungeonHP:function(){
+        this.throne.setString( "hp "+this.model.get("hp") + "/" + this.model.get("maxHp") );
     },
     __onDungeonHPChanged:function(){
         var hp = this.model.get("hp");
@@ -455,14 +539,22 @@ var MainGameLayer = cc.Layer.extend({
                 offset: {x:0, y:80}
             });
         }
-        this.__renderDungeonHeart();
+        this.__renderDungeonHP();
+    },
+    __checkGameOver:function(){
+        if ( this.model.get("hp") <= 0 ) {
+            cc.director.runScene( new GameOverScene() );
+        }
     },
     __renderBook:function(){
         var l = this.model.get("hand").length;
         this.bookText.setString( l + "/" + this.model.get("maxHand") );
     },
-    __renderPot:function(){
-        this.pot.setString( this.model.get("exp") + "/" + this.model.get("maxExp") )
+    __renderExp:function(){
+        this.expLabel.setString( "exp "+this.model.get("exp") + "/" + this.model.get("maxExp") )
+    },
+    __renderMoney:function(){
+        this.moneyLabel.setString( this.model.get("money") + "/" + this.model.get("maxMoney") )
     },
     __resetMeeple:function(){
         this.meeple.attr({
@@ -479,8 +571,7 @@ var MainGameLayer = cc.Layer.extend({
     generateHero:function(){
         var team = this.model.get("team");
         if ( team.length >= MAX_HERO_COUNT ) {
-            var e = new cc.EventCustom("generate-hero-end");
-            cc.eventManager.dispatchEvent(e);
+            cc.eventManager.dispatchCustomEvent("generate-hero-end");
             return;
         }
         this.model.set("phase","generate-hero");
@@ -492,24 +583,27 @@ var MainGameLayer = cc.Layer.extend({
 
         card.attr({
             x: cc.winSize.width + dimens.card_width,
-            y: dimens.team_position.y
+            y: dimens.team_position.y,
+            name: heroModel.cid
         })
-
-        this.addChild(card, 1);
-        card.setName(card.model.cid);
+        this.addChild(card, 1, heroModel.cid);
 
         team.push( heroModel );
         heroModel.on("joinTeamEnd", function(){
             if (_.all( team , function(model){
                 return model.isJoinTeamEnd();
             }, this) ) {
-                var e = new cc.EventCustom("generate-hero-end");
-                cc.eventManager.dispatchEvent(e);
+                cc.eventManager.dispatchCustomEvent("generate-hero-end");
             }
         },this);
+        heroModel.on("die",function(){
+            if ( !this.model.isTeamAlive()) {
+                this.teamDie();
+            }
+        },this)
         _.each(team,function(model){
             model.startJoinTeam();
-        },this)
+        },this);
         this.model.sortTeam();
 
     },
@@ -539,7 +633,7 @@ var MainGameLayer = cc.Layer.extend({
         this.dungeonList.setEnabled(false);
 
         var moveWidth = this.meeple.x - this.dungeonList.x - dimens.card_width/2;
-        var moveDeep = 255;
+        var moveDeep = dimens.dungeon_depth;
         var stepCount = 8;
         var stepWidth = moveWidth / stepCount;
         var stepDeep = moveDeep / stepCount;
@@ -576,8 +670,7 @@ var MainGameLayer = cc.Layer.extend({
         }
         meepleArray.push( cc.scaleTo(times.one_step/2, 1, 1 ) );
         meepleArray.push( cc.callFunc(function(){
-            var e = new cc.EventCustom("team-enter-stage-end");
-            cc.eventManager.dispatchEvent(e);
+            cc.eventManager.dispatchCustomEvent("team-enter-stage-end");
 
             this.model.set("currentRoomNumber", 0);
             this.teamEnterStage();
@@ -588,6 +681,8 @@ var MainGameLayer = cc.Layer.extend({
         this.dungeonList.runAction(cc.sequence(dungeonArray));
     },
     teamLeaveDungeon:function(){
+        this.model.set("stage", [] );
+
         var sequence = cc.sequence( cc.scaleTo(times.team_teleport_leave, 0.1, 4 ),
             cc.callFunc(function(){
                 this.__resetBackground();
@@ -613,6 +708,7 @@ var MainGameLayer = cc.Layer.extend({
         },this),
         cc.delayTime(1),
         cc.callFunc(this.removeDeadHero,this),
+        cc.callFunc(this.overMaxLevelHeroLeave,this),
         cc.callFunc(function(){
             this.generateHero();
             this.__resetMeeple();
@@ -625,6 +721,9 @@ var MainGameLayer = cc.Layer.extend({
     removeDeadHero:function(){
         this.model.removeDeadHeroFromTeam();
     },
+    overMaxLevelHeroLeave:function(){
+        this.model.overMaxLevelHeroLeave();
+    },
     moveTeamToEntry:function(){
         this.meeple.runAction(
             cc.sequence(
@@ -634,10 +733,15 @@ var MainGameLayer = cc.Layer.extend({
                 }, this)
             ) );
     },
-    teamEnterStage:function(){
-        var dungeonCards = _.map( this.dungeonList.sprites, function(sprite){
+    getCurrentDungeonModels:function(){
+        return _.map( this.dungeonList.sprites, function(sprite){
             return sprite.model;
         },this);
+    },
+    teamEnterStage:function(){
+        var dungeonCards = this.getCurrentDungeonModels();
+        this.model.set("stage", dungeonCards );
+
         _.each( this.model.get("team"), function( heroModel){
             if ( heroModel.isAlive() )
                 heroModel.onEnterStage(dungeonCards);
@@ -659,16 +763,13 @@ var MainGameLayer = cc.Layer.extend({
             //team leave stage
             var sequence = cc.sequence(cc.moveBy( times.team_move_to_next_room, dimens.card_width/2, 0),
                 cc.callFunc(function(){
-                    var dungeonCards = _.map( this.dungeonList.sprites, function(sprite){
-                        return sprite.model;
-                    },this);
+                    var dungeonCards = this.getCurrentDungeonModels();
                     _.each( this.model.get("team"), function( heroModel){
                         if ( heroModel.isAlive() )
                             heroModel.onPassStage(dungeonCards);
                     },this);
 
-                    var e = new cc.EventCustom("team-leave-stage");
-                    cc.eventManager.dispatchEvent(e);
+                    cc.eventManager.dispatchCustomEvent("team-leave-stage");
                 },this));
             this.meeple.runAction(sequence);
         }
@@ -683,6 +784,7 @@ var MainGameLayer = cc.Layer.extend({
         var cardLeft = this.model.get("deck").length + this.model.get("discardDeck").length;
         var buildNewText;
         if ( cardLeft == 0 ) {
+            this.buildStageText = null;
             this.giveUpText = buildRichText({
                 str : texts.not_enough_card,
                 fontSize : dimens.build_new_stage_font_size,
@@ -734,6 +836,7 @@ var MainGameLayer = cc.Layer.extend({
                 this.giveUpMenu.setVisible(true);
                 this.giveUpItem.addChild( this.giveUpText );
             } else {
+                this.buildStageText = null;
                 this.giveUpText = buildRichText({
                     str : texts.not_enough_money_1 + cost + texts.not_enough_money,
                     fontSize : dimens.build_new_stage_font_size,
@@ -755,6 +858,7 @@ var MainGameLayer = cc.Layer.extend({
 
     },
     discardCard:function(cardSprite, callback, context){
+        cardSprite.model.onDiscard();
         var sequence = cc.sequence( cc.moveTo( times.discard_card, this.discardDeckSprite.x, this.discardDeckSprite.y ),
             cc.callFunc(function(){
                 this.discardDeckSprite.putCard(cardSprite);
@@ -782,7 +886,8 @@ var MainGameLayer = cc.Layer.extend({
         this.hintLable.setVisible(false);
         this.buildStageMenu.setVisible(false);
         this.giveUpMenu.setVisible(false);
-        this.buildStageText.removeFromParent(true);
+        if ( this.buildStageText )
+            this.buildStageText.removeFromParent(true);
         this.giveUpText.removeFromParent(true);
         this.discardAllDungeonCards();
 
@@ -792,7 +897,8 @@ var MainGameLayer = cc.Layer.extend({
         this.hintLable.setVisible(false);
         this.buildStageMenu.setVisible(false);
         this.giveUpMenu.setVisible(false);
-        this.buildStageText.removeFromParent(true);
+        if ( this.buildStageText )
+            this.buildStageText.removeFromParent(true);
         this.giveUpText.removeFromParent(true);
         this.model.useMoney(this.model.getBuildCost());
         this.discardAllDungeonCards();
@@ -801,7 +907,7 @@ var MainGameLayer = cc.Layer.extend({
     teamAttackDungeonHeart:function(){
         this.conflictIcon.attr({
             x: dimens.throne_position.x,
-            y: dimens.throne_position.y + dimens.attack_dungeon_heart_offset - 45,
+            y: dimens.throne_position.y + dimens.attack_dungeon_heart_offset - 40,
             scaleX : 0.5,
             scaleY : 0.5
         });
@@ -867,7 +973,7 @@ var MainGameLayer = cc.Layer.extend({
             x: dimens.new_item_card_position.x,
             y: dimens.new_item_card_position.y
         })
-        this.addChild(this.newItemCardSprite);
+        this.addChild(this.newItemCardSprite,60);
 
         this.removeDeadHero();
 
@@ -893,6 +999,11 @@ var MainGameLayer = cc.Layer.extend({
 
         var roomSprite = this.dungeonList.sprites[currentNumber];
         var dungeonModel = roomSprite.model;
+        if ( dungeonModel.get("side") === "back" || dungeonModel.get("exiled") ) {
+            this.afterTeamEnterRoom()
+
+            return;
+        }
         var team = this.model.get("team");
         _.each( team, function( heroModel){
             if ( heroModel.isAlive() )
@@ -954,8 +1065,6 @@ var MainGameLayer = cc.Layer.extend({
                     heroModel.onPassRoom(dungeonModel);
             },this);
             this.teamMoveToNextRoom();
-        } else {
-            this.teamDie();
         }
     },
     generateDungeonStageUntilFull:function(){
@@ -967,8 +1076,12 @@ var MainGameLayer = cc.Layer.extend({
     },
     generateDungeonStage:function(){
         if ( this.dungeonList.sprites.length >= DUNGEON_CARD_PER_STAGE ) {
-            var e = new cc.EventCustom("generate-dungeon-end");
-            cc.eventManager.dispatchEvent(e);
+            var dungeonCards = this.getCurrentDungeonModels();
+            _.each(dungeonCards,function(card){
+                card.onStageReveal(dungeonCards);
+            },this);
+
+            cc.eventManager.dispatchCustomEvent("generate-dungeon-end");
             //show hint
             this.hintLable.setVisible(true);
             this.hintLable.setString(texts.you_can_arrange_dungeon_card);
@@ -988,19 +1101,36 @@ var MainGameLayer = cc.Layer.extend({
                 scaleX: dimens.deck_scale_rate,
                 scaleY: dimens.deck_scale_rate
             })
-            this.addChild(cardSprite);
+            this.addChild(cardSprite,60);
             var sequence;
             if ( cardSprite.model.get("type") == "spell" ) {
-                sequence = cc.sequence(
-                    cc.moveTo(times.draw_card, dimens.draw_card_position),
-                    cardSprite.getFlipSequence(),
-                    cc.moveTo(times.draw_card, dimens.book_position),
-                    cc.callFunc(function(){
-                        this.model.getSpellCard( cardSprite );
-                    },this),
-                    cc.callFunc(function(){
-                        this.generateDungeonStage();
-                    },this));
+                if ( this.model.isFullHand() ) {
+                    sequence = cc.sequence(
+                        cc.moveTo(times.draw_card, dimens.draw_card_position),
+                        cardSprite.getFlipSequence(),
+                        cc.moveTo(times.draw_card, dimens.book_menu_position),
+                        cardSprite.getFlipToBackSequence(),
+                        cc.callFunc(function () {
+                            this.dungeonList.addSprite( cardSprite, -1);
+                        }, this),
+                        cc.callFunc(function () {
+                            this.generateDungeonStage();
+                        }, this));
+                } else {
+                    sequence = cc.sequence(
+                        cc.moveTo(times.draw_card, dimens.draw_card_position),
+                        cardSprite.getFlipSequence(),
+                        cc.callFunc(function () {
+                            this.runAction(cc.scaleTo(times.draw_card, 0.5, 0.5));
+                        }, cardSprite),
+                        cc.moveTo(times.draw_card, dimens.book_menu_position),
+                        cc.callFunc(function () {
+                            this.model.getSpellCard(cardSprite);
+                        }, this),
+                        cc.callFunc(function () {
+                            this.generateDungeonStage();
+                        }, this));
+                }
             } else {
                 sequence = cc.sequence(
                     cc.moveTo(times.draw_card, dimens.draw_card_position),
@@ -1015,6 +1145,12 @@ var MainGameLayer = cc.Layer.extend({
             cardSprite.runAction(cc.scaleTo(times.draw_card,1,1));
             cardSprite.runAction(sequence);
         }, this);
+    },
+    getHeroSpriteByModel:function(heroModel){
+        return this.getChildByName(heroModel.cid);
+    },
+    getDungeonSpriteByModel:function(dungeonModel){
+        return this.getChildByName(dungeonModel.cid);
     }
 });
 
@@ -1025,8 +1161,8 @@ var MainGameScene = cc.Scene.extend({
             return false;
 
         window.gameModel = new GameModel();
-        window.gameModel.initDeck();
-        window.gameModel.initRegularBuyableCards();
+        window.gameModel.initAll();
+
         var layer = new MainGameLayer({model:window.gameModel});
         window.mainLayer = layer;
         this.addChild(layer);
@@ -1036,17 +1172,40 @@ var MainGameScene = cc.Scene.extend({
         return true;
     },
     showCardDetailLayer:function(cardModel){
-        this.onPauseAction();
+        this.pauseAction();
         var layer = new CardDetailLayer({model:cardModel});
         cc.director.getRunningScene().addChild(layer, 300);
     },
     pauseAction:function(){
-        if ( !this.runningTargets )
-            this.runningTargets = this.actionManager.pauseAllRunningActions();
+        var targets = this.actionManager.pauseAllRunningActions();
+        if ( this.runningTargetStack == null )
+            this.runningTargetStack = [];
+        this.runningTargetStack.push(targets);
     },
-    onResumeAction:function(){
-        this.actionManager.resumeTargets(this.runningTargets);
-        this.runningTargets = null;
+    resumeAction:function(){
+        var targets = this.runningTargetStack.pop();
+        this.actionManager.resumeTargets(targets);
+    },
+    showChooseHero:function(options){
+        this.pauseAction();
+        var layer = new ChooseHeroLayer(_.extend(options,{
+            gameModel: window.gameModel
+        }));
+        cc.director.getRunningScene().addChild(layer, 300);
+    },
+    showChooseDungeon:function(options){
+        this.pauseAction();
+        var layer = new ChooseDungeonLayer(_.extend(options,{
+            gameModel: window.gameModel
+        }));
+        cc.director.getRunningScene().addChild(layer, 300);
+    },
+    showLevelUp:function(callback,context){
+        cc.director.pushScene(new LevelUpScene({
+            model:this.model,
+            callback:callback,
+            context:context
+        }));
     }
 });
 

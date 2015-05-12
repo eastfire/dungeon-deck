@@ -33,7 +33,7 @@ var MonsterCardSprite = BaseCardSprite.extend({
         this.renderAttack();
     },
     __initEvent:function(){
-        BaseCardSprite.prototype.__initEvent.call(this);
+        this._super();
         this.model.on("change:attack",this.renderAttack, this);
     },
     renderAttack:function(){

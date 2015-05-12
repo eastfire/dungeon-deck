@@ -72,6 +72,7 @@ var BaseCardSprite = CardSprite.extend({
     ctor: function (options) {
         options = options || {};
         this.model = options.model;
+        this.setName(this.model.cid);
 
         var opt = {
             side : this.model.get("side"),
@@ -91,6 +92,7 @@ var BaseCardSprite = CardSprite.extend({
         this.addChild(this.levelIcon,1)
         this.addFrontSprite( this.levelIcon )
 
+        var self = this;
         this.touchListener = cc.EventListener.create({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: false,
@@ -115,10 +117,21 @@ var BaseCardSprite = CardSprite.extend({
                     var e = new cc.EventCustom("double-tap");
                     e.setUserData(target);
                     cc.eventManager.dispatchEvent(e);
+                } else {
+                    if ( self.onClickListener ) {
+                        self.onClickListener.call(self.onClickListenerContext);
+                    }
                 }
                 target.lastTouchTime = now;
             }
         });
+    },
+    setOnClickListener:function(listener,listenerContext){
+        this.onClickListener = listener;
+        this.onClickListenerContext = listenerContext;
+    },
+    setSwallowEvent:function(swallow){
+        this.touchListener.swallowTouches = swallow;
     },
     __canShowDetail:function(){
         return true
@@ -143,9 +156,9 @@ var BaseCardSprite = CardSprite.extend({
         this.__refresh();
     },
     onExit:function(){
-        this._super();
         this.model.off(null,null,this);
         cc.eventManager.removeListener(this.touchListener);
+        this._super();
     },
     __refresh:function(){
         this.renderLevel();
@@ -154,6 +167,7 @@ var BaseCardSprite = CardSprite.extend({
         this.model.on("change:level",this.renderLevel, this);
         this.model.on("give",this.onGiveIcon,this);
         this.model.on("take",this.onTakeIcon,this);
+
         this.lastTouchTime = 0;
         cc.eventManager.addListener(this.touchListener,this);
     },
@@ -171,6 +185,9 @@ var BaseCardSprite = CardSprite.extend({
     },
     renderLevel:function(){
         this.levelIcon.setString(this.model.get("level"))
+    },
+    onSelectTarget:function(heroModel){
+        this.model.onSelectTarget(heroModel);
     }
 })
 
@@ -204,7 +221,7 @@ var IconSprite = cc.Sprite.extend({
 var DeckSprite = cc.Sprite.extend({
     ctor: function (options) {
         options = options || {};
-        this.cards = options.array || [];
+        this.__cards = options.array || [];
         this.countLabelFontSize = options.fontSize || 25;
         this.countLabelFontColor = options.fontColor || cc.color(255,255,255,255);
         this.countLabelOffset = options.countLabelOffset || { x: 0, y: 0 };
@@ -233,8 +250,8 @@ var DeckSprite = cc.Sprite.extend({
             this.removeChild(this.topCardSprite, true);
             this.topCardSprite = null;
         }
-        if ( this.cards.length ) {
-            var lastCard = _.last(this.cards);
+        if ( this.__cards.length ) {
+            var lastCard = _.last(this.__cards);
             this.topCardSprite = new this.cardClass({ model: lastCard })
             this.topCardSprite.attr({
                 x: 0,
@@ -242,32 +259,31 @@ var DeckSprite = cc.Sprite.extend({
             })
             this.addChild(this.topCardSprite);
         }
-        if ( ( this.cards.length === 0 && this.isShowZero ) || this.cards.length ) {
-            this.countLabel.setString( this.numberFormat.replace("%d", this.cards.length ));
+        if ( ( this.__cards.length === 0 && this.isShowZero ) || this.__cards.length ) {
+            this.countLabel.setString( this.numberFormat.replace("%d", this.__cards.length ));
         } else {
             this.countLabel.setString("");
         }
     },
     drawCard:function(callback, context){
-        if ( this.cards.length ) {
-            var card = this.cards.pop();
+        if ( this.__cards.length ) {
+            var card = this.__cards.pop();
             callback.call(context, this.modelToSprite(card) );
             this.__render();
-        } else if ( this.discardDeck && this.autoRefill && this.discardDeck.cards.length ) {
+        } else if ( this.discardDeck && this.autoRefill && this.discardDeck.__cards.length ) {
+            var tempCards = this.discardDeck.getCards();
             if ( this.refillType === "shuffle" ) {
-                this.discardDeck.cards = _.shuffle( this.discardDeck.cards );
+                tempCards = _.shuffle( tempCards );
             }
-            _.each(this.discardDeck.cards,function(model){
-                this.cards.push( model );
+            _.each(tempCards,function(model){
+                this.__cards.push( model );
             },this);
-            _.each(this.cards,function(cardModel){
+            _.each(this.__cards,function(cardModel){
                 cardModel.set("side","back");
             },this);
-            this.discardDeck.cards.splice( 0 , this.discardDeck.cards.length );
+            this.discardDeck.empty();
 
-            this.discardDeck.__render();
-
-            var card = this.cards.pop();
+            var card = this.__cards.pop();
             callback.call(context, this.modelToSprite(card) );
             this.__render();
         } else {
@@ -282,17 +298,29 @@ var DeckSprite = cc.Sprite.extend({
     },
     putCard:function(cardSpriteOrModel){
         if ( cardSpriteOrModel instanceof cc.Sprite ) {
-            this.cards.push(cardSpriteOrModel.model);
+            this.__cards.push(cardSpriteOrModel.model);
             cardSpriteOrModel.removeFromParent(true);
         } else if ( cardSpriteOrModel instanceof Backbone.Model ) {
-            this.cards.push(cardSpriteOrModel);
+            this.__cards.push(cardSpriteOrModel);
         }
         this.__render();
     },
     shuffle:function( callback, context ){
-        _.shuffle(this.cards);
-        callback.call(context);
+        var temp = _.shuffle(this.__cards);
+        this.__cards.splice(0, temp.length);
+        _.each( temp, function(model){
+            this.__cards.push(model);
+        },this);
+        if ( callback )
+            callback.call(context);
         this.__render();
+    },
+    empty:function( ) {
+        this.__cards.splice(0, this.__cards.length);
+        this.__render();
+    },
+    getCards:function(){
+        return this.__cards;
     }
 })
 
@@ -307,15 +335,15 @@ var DungeonDeckSprite = DeckSprite.extend({
 var EffectIconManager = Backbone.Model.extend({
     initialize:function(options){
         this.layer = options.layer;
-        this.iconZindex = options.zindex || 200;
+        this.iconZindex = options.zindex || 100;
         this.iconMap = {};
         this.queueMap = {};
     },
     enqueue:function(sprite, options){
         options = options || {};
-        if ( !this.queueMap[ sprite ] )
-            this.queueMap[sprite] = [];
-        this.queueMap[sprite].push( {
+        if ( !this.queueMap[ sprite.__instanceId ] )
+            this.queueMap[sprite.__instanceId] = [];
+        this.queueMap[sprite.__instanceId].push( {
             icon: options.icon,
             text: options.text || "",
             offset: options.offset || {x:0, y:0}
@@ -346,32 +374,32 @@ var EffectIconManager = Backbone.Model.extend({
         icon.runAction(sequence);
     },
     _isIconRunning:function(sprite){
-        if ( this.iconMap[sprite] ) {
+        if ( this.iconMap[sprite.__instanceId] ) {
             return true;
         }
         return false;
     },
     _popEffect:function(sprite){
         if ( !this._isIconRunning(sprite) ) {
-            var entry = this.queueMap[sprite].shift();
+            var entry = this.queueMap[sprite.__instanceId].shift();
             if ( entry === undefined )
                 return;
-            this.iconMap[sprite] = new IconSprite({
+            this.iconMap[sprite.__instanceId] = new IconSprite({
                 text: entry.text,
                 image: cc.spriteFrameCache.getSpriteFrame(entry.icon+".png")
             });
-            this.layer.addChild( this.iconMap[sprite], this.iconZindex );
-            this.iconMap[sprite].attr({
+            this.layer.addChild( this.iconMap[sprite.__instanceId], this.iconZindex );
+            this.iconMap[sprite.__instanceId].attr({
                 x: sprite.x + entry.offset.x,
                 y: sprite.y + entry.offset.y
             })
             var sequence = cc.sequence( cc.moveBy( times.effect_icon_move, 0, dimens.effect_icon_move_y),
             cc.callFunc(function(){
-                this.iconMap[sprite].removeFromParent(true);
-                this.iconMap[sprite] = null;
+                this.iconMap[sprite.__instanceId].removeFromParent(true);
+                this.iconMap[sprite.__instanceId] = null;
                 this._popEffect(sprite);
             },this));
-            this.iconMap[sprite].runAction(sequence);
+            this.iconMap[sprite.__instanceId].runAction(sequence);
         }
     }
 })

@@ -28,10 +28,17 @@
         "src/spell-card-sprite.js",
         "src/item-card-model.js",
         "src/item-card-sprite.js",
+        "src/room-card-model.js",
+        "src/room-card-sprite.js",
         "src/class-map.js",
         "src/buy-card.js",
         "src/spell-book.js",
-        "src/app.js",
-        "src/card-detail.js"
+        "src/card-detail.js",
+        "src/choose-hero.js",
+        "src/choose-dungeon.js",
+        "src/level-up.js",
+        "src/upgrade.js",
+        "src/game-over.js",
+        "src/app.js"
     ]
 }

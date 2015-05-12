@@ -18,6 +18,10 @@ for (var i in res) {
 var dimens = {
     card_width: 120,
     card_height: 168,
+    short_button_size: {
+        width: 180,
+        height: 60
+    },
     hero_level_font_size: 30,
     hero_hp_font_size: 30,
     hero_icon_size: { width: 48, height: 48 },
@@ -31,10 +35,14 @@ var dimens = {
     card_detail_name_font_size: 65,
     card_detail_description_font_size: 30,
     card_detail_icon_offset: { x: 13, y: 13},
-    card_detail_desc_font_size: 30,
-    card_detail_desc_size: { width: 500, height: 400},
+    card_detail_desc_font_size: 35,
+    card_detail_desc_size: { width: 500, height: 60},
     card_detail_desc_position: { x: 320, y: 280},
     card_detail_desc_mask_position: { x: 320, y: 340},
+    card_detail_desc_line_space : 60,
+    card_detail_desc_text_start_y: 480,
+    card_detail_hint_position: { x:320, y: 1050},
+    card_detail_hint_size: { width: 500, height: 80},
 
     deck_count_font_size: 50,
     deck_position: { x: 60, y: 250},
@@ -47,19 +55,24 @@ var dimens = {
     team_position: { x: 320, y: 1000 },
     meeple_position: { x: 120, y: 846},
     dungeon_entry_position: { x: 500, y: 846},
+    dungeon_depth: 255,
+
     throne_position: {x:320,y:0},
     throne_label_offset: { x: 80, y: 50},
     throne_font_size: 30,
 
-
-    pot_position: { x: 580, y :0},
-    pot_label_offset: { x: 60, y: 60},
-    pot_font_size: 40,
     book_menu_position: { x: 460, y :0},
     book_label_offset: { x: 0, y: 65},
-    book_font_size: 40,
+    book_font_size: 35,
+
+    vault_font_size: 35,
+    vault_menu_position: { x: 180, y :0},
+    vault_label_offset: { x: 0, y: 65},
+
     build_menu_position: { x: 60, y :0},
-    upgrade_menu_position: { x:180, y:0},
+
+    upgrade_menu_position: { x:580, y:0},
+
     hero_margin:10,
 
     dungeon_card_margin: 30,
@@ -82,7 +95,7 @@ var dimens = {
     give_up_position: { x: 320, y : 400},
 
     effect_icon_move_y: 35,
-    attack_dungeon_heart_offset: 190,
+    attack_dungeon_heart_offset: 215,
 
     teleport_effect_offset: 100,
 
@@ -92,7 +105,15 @@ var dimens = {
     cancel_buy_position: {x:320,y:30},
     cancel_buy_font_size: 40,
     cancel_buy_height: 60,
-    buy_font_size: 35
+    buy_font_size: 35,
+
+    select_spell_offset: 25,
+
+    choose_hero_hint_position: {x:320, y : 500},
+
+    cant_choose_opacity: 111,
+
+    upgrade_type_label_height: 40
 }
 
 var colors = {
@@ -102,11 +123,16 @@ var colors = {
     card_detail_mask: cc.color(0,0,0,218),
     card_detail_name: cc.color(0,0,0,192),
     card_detail_desc: cc.color(0,0,0,255),
+    card_detail_hint: cc.color.WHITE,
+
     hint: cc.color(255,255,255,255),
     build_new_stage: cc.color.WHITE,
     cancel_buy: cc.color.BLACK,
     buy: cc.color.BLACK,
-    book: cc.color.BLACK
+    book: cc.color.BLACK,
+    spell_book_mask: cc.color(0,0,0,128),
+
+    upgrade_type_label : cc.color.WHITE
 }
 
 var times = {
@@ -125,19 +151,36 @@ var times = {
     effect_icon_move: 0.35,
     move_to_dungeon_heart: 0.5,
     team_teleport_leave: 0.4,
-    default_icon_fly: 0.3
+    default_icon_fly: 0.3,
+    book_appear: 0.4,
+    select_spell: 0.1
 }
 
 var texts = {
     cancel: "取消",
     buy: "购买",
+    select: "选择",
     continue: "{[play]}继续",
     you_can_arrange_dungeon_card : "你可以拖拽地城牌排列顺序",
     please_choose: "请选择",
     pay: "支付",
+    cast_spell: "施放",
     build_new_stage: "建造下1层地城",
     not_enough_money_1: "需要",
     not_enough_money: "{[money]}才能建造下1层地城",
     not_enough_card: "没有足够{[card]}建造下1层地城",
-    give_up: "{[give-up]}放弃抵抗"
+    give_up: "{[give-up]}放弃抵抗",
+
+    please_choose_target_hero_for_spell: "请为你的法术选择1个目标\n点击空白处取消施放法术",
+    please_choose_target_dungeon_for_spell: "请为你的法术选择1个目标\n点击空白处取消施放法术",
+    no_valid_target: "你的法术没有合法的目标",
+
+    upgrade_from: {
+        discard: "升级弃牌堆中的牌",
+        deck: "升级牌堆中的牌",
+        hand: "升级手牌中的牌",
+        dungeon: "升级当前地城中的牌"
+    },
+    level_up: "升级",
+    max_level: "满级"
 }

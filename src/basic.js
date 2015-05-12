@@ -7,7 +7,7 @@ var buildRichText = function( options ) {
     richText.ignoreContentAdaptWithSize(false);
     richText.width = options.width || 200;
     richText.height = options.height || 30;
-    var str = options.str || "";
+    var str = options.str || options.text || "";
     var fontSize = options.fontSize || 16;
     var fontColor = options.fontColor || cc.color.WHITE;
     var fontFamily = options.fontFamily || "Arial";
@@ -52,6 +52,8 @@ var CardSprite = cc.Sprite.extend({
 
         this.__frontSprites = [];
         this.__backSprites = [];
+        this.__invisibleBackSpirte = [];
+        this.__invisibleFrontSprite = [];
 
         this.flipToFrontSequence = cc.sequence(this.flipActionFirstHalf, cc.callFunc(function( ) {
             this.side = "front";
@@ -83,6 +85,14 @@ var CardSprite = cc.Sprite.extend({
         this.__backSprites.push( sprite );
         sprite.setVisible(this.side === "back")
     },
+    setSpriteVisible:function(sprite, visible){
+        if ( this.__frontSprites.indexOf(sprite) !== -1 ) {
+            sprite.__frontVisible = visible;
+        } else if ( this.__backSprites.indexOf(sprite) !== -1 ) {
+            sprite.__backVisible = visible;
+        }
+        sprite.setVisible(visible);
+    },
     removeFrontSprite:function(sprite){
         var index = this.__frontSprites.indexOf(sprite);
         if ( index != -1 )
@@ -97,17 +107,17 @@ var CardSprite = cc.Sprite.extend({
         if ( this.side === "front" ) {
             _.each(this.__backSprites, function(sprite){
                 sprite.setVisible(false)
-            },this)
+            },this);
             _.each(this.__frontSprites, function(sprite){
-                sprite.setVisible(true)
-            },this)
+                sprite.setVisible(sprite.__frontVisible !== undefined? sprite.__frontVisible : true );
+            },this);
         } else {
             _.each(this.__backSprites, function(sprite){
-                sprite.setVisible(true)
+                sprite.setVisible(sprite.__backVisible !== undefined? sprite.__backVisible : true );
             },this)
             _.each(this.__frontSprites, function(sprite){
-                sprite.setVisible(false)
-            },this)
+                sprite.setVisible(false);
+             },this)
         }
     },
     onChangeSide:function(){
@@ -117,6 +127,12 @@ var CardSprite = cc.Sprite.extend({
             return this.flipToFrontSequence;
         else
             return this.flipToBackSequence;
+    },
+    getFlipToBackSequence:function(){
+        return this.flipToBackSequence;
+    },
+    getFlipToFrontSequence:function(){
+        return this.flipToFrontSequence;
     }
 })
 

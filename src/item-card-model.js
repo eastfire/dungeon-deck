@@ -4,7 +4,9 @@
 var ItemModel = DungeonCardModel.extend({ //物品
     defaults:function(){
         return _.extend( DungeonCardModel.prototype.defaults.call(this),{
-            type: "item"
+            type: "item",
+
+            upgradeable: false
         })
     },
     onTeamEnter:function(team){
@@ -16,6 +18,7 @@ var ItemModel = DungeonCardModel.extend({ //物品
         var hero = _.first( allAlive );
         this.onHeroGet(hero);
         this.set("exiled",true);
+        this.onExile();
     },
     onHeroGet:function(hero){
 

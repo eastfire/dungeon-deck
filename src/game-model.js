@@ -1,6 +1,12 @@
 /**
  * Created by 赢潮 on 2015/3/1.
  */
+var UPGRADE_RANGE_LEVEL = {
+    FROM_DISCARD : 1,
+    FROM_DECK : 2,
+    FROM_HAND : 3,
+    FROM_DUNGEON : 4
+    };
 
 var GameModel = Backbone.Model.extend({
     defaults:function(){
@@ -12,48 +18,67 @@ var GameModel = Backbone.Model.extend({
             maxMoney: 10,
 
             levelUpHpEffect: 5,
-            baseHp: 15,
+            baseHp: 0,
             hp : 20,
             maxHp : 20,
 
+            defense: 0,
+
             level: 1,
+            maxLevel: 1,
+
             exp: 0,
             maxExp: 10,
             status: null,
             phase: "hero-generate", //hero-generate , team-enter-dungeon, team-enter-level, team-enter-room, team-leave-room, team-leave-level, team
             heroList: [ "warrior" ],
             //initDeck: [ "skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
-            initDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
+            //initDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
+            initDeck: [ "ooze","orc","vault","minotaur","ratman","skeleton" ],
+            deck: [],
             isInitDeckShuffle: true,
 
-            deck: [],
+            //initDiscardDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman","magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
+            initDiscardDeck: [ "orc" ],
             discardDeck: [],
 
+            initHand: ["war-drum","magic-missile","magic-missile"],
             hand: [], //魔法
-            maxHand: 3,
+            maxHand: 4,
+
             team: [],
 
             costPerStage: 5,
             stage: [],
             stageNumber: 0,
 
+            upgradeRangeLevel: UPGRADE_RANGE_LEVEL.FROM_DISCARD,
+
+            levelUpChoiceCount : 3,
+
+            unlockedBuyableCards:[],
             regularBuyableCards: [],
-            initRegularBuyableCards : [ {
-                type:"ratman",
-                count: 8
-            }, {
-                type:"skeleton",
-                count: 8
-            }, {
-                type:"magic-missile",
-                count: 8
-            },{
-                type:"lightening",
-                count: 8
-            },{
-                type:"fireball",
-                count: 8
-            }]
+            initRegularBuyableCards : [
+                {
+                    type:"vault",
+                    count: 8
+                },
+                {
+                    type:"ratman",
+                    count: 8
+                }, {
+                    type:"skeleton",
+                    count: 8
+                }, {
+                    type:"magic-missile",
+                    count: 8
+                },{
+                    type:"lightening",
+                    count: 8
+                },{
+                    type:"fireball",
+                    count: 8
+                }]
         }
     },
     initialize:function(){
@@ -86,6 +111,12 @@ var GameModel = Backbone.Model.extend({
     getScore:function(score){
         this.set("score",this.get("score")+score);
     },
+    getTavernRecoveryEffect:function(diff){
+        return diff;
+    },
+    getPayFromTavern:function(money){
+        this.getMoney(money);
+    },
     getMoney:function(money){
         this.set("money",Math.min( this.get("maxMoney") , this.get("money")+money ) );
     },
@@ -104,10 +135,9 @@ var GameModel = Backbone.Model.extend({
         if (currentExp + this.expUnused >= expRequire) {
             this.levelUp();
             this.expUnused -= ( expRequire - currentExp );
-            var self = this;
-            window.showLevelUpDialog(function(){
-                self.checkLevelUp();
-            })
+            mainGame.showLevelUp(function(){
+                this.checkLevelUp();
+            },this)
         } else {
             this.set("exp", currentExp + this.expUnused);
             this.expUnused = 0;
@@ -126,18 +156,39 @@ var GameModel = Backbone.Model.extend({
         var team = this.get("team");
         for ( var i = 0;i < team.length; ) {
             var model = team[i];
+
             if ( model.isAlive() ) {
                 i++;
             } else {
                 team.splice(i,1);
                 model.destroy();
+                model.off();
                 model = null;
+            }
+        }
+        this.sortTeam();
+    },
+    overMaxLevelHeroLeave:function(){
+        var team = this.get("team");
+        for ( var i = 0;i < team.length; ) {
+            var model = team[i];
+
+            if ( model.get("leaving") ) {
+                team.splice(i,1);
+                model.trigger("leaveTeam");
+                model.off();
+                model = null;
+            } else {
+                i++;
             }
         }
         this.sortTeam();
     },
     getBuildCost:function(){
         return this.get("stageNumber")* this.get("costPerStage");
+    },
+    isFullHand:function(){
+        return this.get("hand").length >= this.get("maxHand");
     },
     getSpellCard:function(cardSprite){
         this.get("hand").push(cardSprite.model);
@@ -148,7 +199,7 @@ var GameModel = Backbone.Model.extend({
         var hand = this.get("hand");
         var index = hand.indexOf(cardModel);
         if ( index != -1 )
-            _.splice( this.get("hand"), index, 1)
+            this.get("hand").splice(index,1);
         this.trigger("change:hand");
     },
     initDeck:function(){
@@ -156,6 +207,18 @@ var GameModel = Backbone.Model.extend({
             var Model = DUNGEON_CLASS_MAP[cardName];
             var model = new Model();
             this.get("deck").push( model );
+        },this);
+
+        if ( this.get("isInitDeckShuffle") )
+            this.set("deck",_.shuffle(this.get("deck")));
+    },
+    initDiscardDeck:function(){
+        _.each( this.get("initDiscardDeck"), function(cardName){
+            var Model = DUNGEON_CLASS_MAP[cardName];
+            var model = new Model({
+                side: "front"
+            });
+            this.get("discardDeck").push( model );
         },this);
 
         if ( this.get("isInitDeckShuffle") )
@@ -174,9 +237,28 @@ var GameModel = Backbone.Model.extend({
             this.get("regularBuyableCards").push(deck);
         },this);
     },
+    initSpellBook:function(){
+        _.each( this.get("initHand"), function(cardName){
+            var Model = DUNGEON_CLASS_MAP[cardName];
+            var model = new Model({
+                side: "front"
+            });
+            this.get("hand").push( model );
+        },this);
+        this.trigger("change:hand");
+    },
     beAttacked:function(damage){
         var hp = this.get("hp");
-        this.set("hp", Math.max(0, hp - damage) );
+        var realDamage = damage - this.get("defense");
+        var hpLose = Math.min(hp, realDamage);
+        this.set("hp", hp - hpLose );
+        return hpLose;
+    },
+    initAll:function(){
+        this.initDeck();
+        this.initDiscardDeck();
+        this.initRegularBuyableCards();
+        this.initSpellBook();
     }
 })
 
@@ -185,72 +267,83 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
         return {
             name: "",
             backType:"dungeon",
-            description: "",
-            baseCost: 1,
-            cost: 1,
+
+            baseCost: 0,
+            cost: 0,
+
             baseScore: 0,
             score: 0,
+
+            baseUpgradeCost: 0,
+            upgradeCost: 0,
+
             side: "back",
+
             level: 1,
-            status: ""
+            maxLevel: 1,
+
+            status: "",
+
+            upgradeable: true
         }
     },
     initialize:function(){
+        this.initEvent();
+        this.initByLevel();
+        this.reEvaluate();
+    },
+    initEvent:function(){
         this.on("change:baseScore", this.evaluateScore, this);
         this.on("change:baseCost", this.evaluateCost, this);
+        this.on("change:baseUpgradeCost", this.evaluateUpgradeCost, this);
+        this.on("change:level", this.initByLevel, this);
+    },
+    reEvaluate:function(){
+        this.evaluateScore();
+        this.evaluateCost();
+        this.evaluateUpgradeCost();
+    },
+    initByLevel:function(){
+
     },
     evaluateScore:function(){
-        this.set("score", this.get("baseScore"))
+        this.set("score", this.get("baseScore"));
     },
     evaluateCost:function(){
-        this.set("cost", this.get("baseCost"))
+        this.set("cost", this.get("baseCost"));
+    },
+    evaluateUpgradeCost:function(){
+        this.set("upgradeCost", this.get("baseUpgradeCost"));
     },
     getDescription:function(){
+        return "";
     },
     onDiscard : function(){
+        this.resetToOrigin();
     },
     onReveal : function(){
+        this.saveOrigin = this.toJSON();
     },
-    onLevelReveal: function(){
+    onStageReveal: function(dungeonCards){
+    },
+    onGain:function(){
+    },
+    onExile:function(){
+    },
+    levelUp:function(){
+        var newLevel = this.get("level") + 1;
+        this.set("level", newLevel);
     },
     resetToOrigin:function(){
-        this.set("status","");
+        if ( this.saveOrigin ) {
+            this.saveOrigin.side = this.get("side");
+            this.set(this.saveOrigin);
+        }
     }
 })
 
 
 
-var RoomModel = DungeonCardModel.extend({ //房间
-    defaults:function(){
-        return _.extend( DungeonCardModel.prototype.defaults.call(this),{
-            type: "room",
-            baseAttack: 1,
-            attack: 1,
-            status: null
-        })
-    },
-    onTeamEnter:function(team){
-    },
-    onAttackHero:function(heroModel){
-    },
-    onDamageHero:function(heroModel, damage, type){
-    },
-    onTeamPass:function(team){
-    },
-    onPay:function(cost){
-    },
-    onCantPay:function(cost){
-    }
-})
 
-var SpellModel = DungeonCardModel.extend({ //法术
-    defaults:function(){
-        return _.extend( DungeonCardModel.prototype.defaults.call(this),{
-            type: "spell",
-            target: "none" // none, hero, dungeonCard, monster, room, , item, cardInDiscard, cardInDeck
-        })
-    },
-    onCast:function(){
-    }
-})
+
 

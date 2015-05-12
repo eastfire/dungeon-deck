@@ -26,6 +26,45 @@ var SpellCardSprite = BaseCardSprite.extend({
         this.model.on("change:attack",this.renderAttack, this);
     },
     renderAttack:function(){
-        this.attackIcon.setString(this.model.get("attack"))
+        if ( this.model.get("attack") === 0 ) {
+            this.attackIcon.opacity = 0;
+        } else {
+            this.attackIcon.opacity = 255;
+            this.attackIcon.setString(this.model.get("attack"))
+        }
     }
-})
+});
+
+var MagicMissileCardSprite = SpellCardSprite.extend({
+    onSelectTarget:function(heroModel){
+        var heroSprite = mainLayer.getHeroSpriteByModel( heroModel );
+        if ( heroSprite ) {
+            effectIconMananger.fly(this, heroSprite, {
+                icon: "attack",
+                callback: function(){
+                    this.model.onSelectTarget(heroModel)
+                },
+                context: this
+            });
+        } else {
+            this.model.onSelectTarget(heroModel);
+        }
+    }
+});
+
+var WarDrumCardSprite = SpellCardSprite.extend({
+    onSelectTarget:function(dungeonModel){
+        var dungeonSprite = mainLayer.getDungeonSpriteByModel( dungeonModel );
+        if ( dungeonSprite ) {
+            effectIconMananger.fly(this, dungeonSprite, {
+                icon: "attack",
+                callback: function(){
+                    this.model.onSelectTarget(dungeonModel)
+                },
+                context: this
+            });
+        } else {
+            this.model.onSelectTarget(dungeonModel);
+        }
+    }
+});

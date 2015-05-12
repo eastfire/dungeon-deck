@@ -29,18 +29,28 @@ var HeroCardSprite = BaseCardSprite.extend({
         this.addChild(this.scoreIcon,1)
         this.addFrontSprite( this.scoreIcon )
 
-        this.hpIcon.setString(this.model.get("hp"));
+        this.defenseIcon = new IconSprite({
+            image: cc.spriteFrameCache.getSpriteFrame("defense-icon.png")
+        });
+        this.defenseIcon.attr({
+            x: dimens.card_width - dimens.hero_icon_offset.x,
+            y: dimens.card_height - dimens.hero_icon_offset.y - dimens.hero_icon_size.height
+        })
+        this.addChild(this.defenseIcon,1);
+        this.addFrontSprite( this.defenseIcon )
+
+        this.renderHp();
+        this.renderDefense();
     },
     __initEvent:function(){
         this._super();
         this.model.on("destroy",this.remove,this);
-        this.model.on("change:hp",this.renderHp, this);
-        this.model.on("change:score",this.renderScore, this);
+        this.model.on("change:hp",this.onHpChanged, this);
+        this.model.on("change:score",this.onScoreChanged, this);
+        this.model.on("change:defense",this.onDefenseChanged, this);
         this.model.on("change:positionInTeam", this.renderPositionInTeam,this);
-    },
-    onEnter:function(){
-        this._super();
-        this.__refresh();
+        this.model.on("change:level",this.onLevelChanged,this)
+        this.model.on("leaveTeam",this.leaveTeam,this);
     },
     __refresh:function(){
         this._super();
@@ -63,9 +73,13 @@ var HeroCardSprite = BaseCardSprite.extend({
             this.runAction(cc.fadeOut(0.4));
         }
     },
-    renderHp:function(){
+    renderHp:function() {
         var hp = this.model.get("hp");
         this.hpIcon.setString(hp);
+    },
+    onHpChanged:function(){
+        this.renderHp();
+        var hp = this.model.get("hp");
         if ( this.model.previous("hp") != hp ) {
             var diff = hp - this.model.previous("hp");
             if ( diff > 0 )
@@ -80,8 +94,35 @@ var HeroCardSprite = BaseCardSprite.extend({
             this.runAction(dieSequence);
         }
     },
+    onLevelChanged:function(){
+        var level = this.model.get("level");
+        if ( this.model.previous("level") != level ) {
+            var diff = level - this.model.previous("level");
+            if (diff > 0)
+                diff = "+" + diff;
+            effectIconMananger.enqueue(this, {
+                icon: "level-icon",
+                text: diff
+            });
+        }
+    },
     renderScore:function(){
         this.scoreIcon.setString(this.model.get("score"))
+    },
+    onScoreChanged:function(){
+        this.renderScore();
+    },
+    renderDefense:function(){
+        var def = this.model.get("defense");
+        if ( def > 0 ) {
+            this.defenseIcon.setVisible(true);
+            this.defenseIcon.setString(def);
+        } else {
+            this.defenseIcon.setVisible(false);
+        }
+    },
+    onDefenseChanged:function(){
+        this.renderDefense();
     },
     renderPositionInTeam:function(){
         var team = window.gameModel.get("team");
@@ -102,5 +143,13 @@ var HeroCardSprite = BaseCardSprite.extend({
             if ( prevPosition !== null && prevPosition != position )
                 this.model.onPositionInTeamChange();
         }, this) ));
+    },
+    leaveTeam:function(){
+        this.runAction(cc.sequence(
+            cc.moveTo( times.hero_join_team, -100, dimens.team_position.y ),
+            cc.callFunc(function(){
+                this.model.destroy();
+            }, this)
+        ));
     }
 })

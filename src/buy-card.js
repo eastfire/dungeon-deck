@@ -10,14 +10,14 @@ var BuyCardLayer = cc.LayerColor.extend({
         this.model = options.model;
 
         this.initRegular();
-        this.initUI();
+        this.__initUI();
     },
-    initUI:function(){
+    __initUI:function(){
         var cancelItem = new cc.MenuItemImage(
             cc.spriteFrameCache.getSpriteFrame("short-normal.png"),
             cc.spriteFrameCache.getSpriteFrame("short-selected.png"),
             function () {
-                this.finishBuy();
+                this.close();
             }, this );
         cancelItem.attr({
             x: dimens.cancel_buy_position.x,
@@ -37,15 +37,12 @@ var BuyCardLayer = cc.LayerColor.extend({
         cancelMenu.y = 0;
         this.addChild(cancelMenu, 5);
     },
-    finishBuy:function(){
+    close:function(){
         /*mainGame.resumeAction();
         this.removeFromParent(true);*/
         cc.director.popScene();
     },
     initRegular:function(){
-
-        var i = 0;
-
         var buyItems = [];
         var layerHeight = cc.winSize.height - dimens.top_bar_height - dimens.cancel_buy_height;
         var row = Math.ceil( this.model.get("regularBuyableCards").length  / BUYABLE_CARD_PER_ROW );
@@ -53,6 +50,7 @@ var BuyCardLayer = cc.LayerColor.extend({
         var marginX = Math.floor( cc.winSize.width / BUYABLE_CARD_PER_ROW );
         var y = layerHeight - marginY/2 + dimens.cancel_buy_height + 25;
         var x = marginX/2;
+        var i = 0;
         _.each( this.model.get("regularBuyableCards"), function(deck){
             if ( !deck.length )
                 return;
@@ -98,12 +96,13 @@ var BuyCardLayer = cc.LayerColor.extend({
                             if (cost <= window.gameModel.get("money")) {
                                 window.gameModel.useMoney(cost);
                                 deck.splice(0,1);
-                                window.boughtCardModel = cardModel;
-                                window.boughtCardPosition = {
+                                window.newDiscardCardModel = cardModel;
+                                window.newDiscardCardPosition = {
                                     x: x,
                                     y: y
                                 }
-                                cc.director.popScene();
+                                window.newDiscardCardModel.onGain();
+                                this.close();
                             }
                         }, this);
                     buyItem.attr({
@@ -131,6 +130,7 @@ var BuyCardLayer = cc.LayerColor.extend({
             if ( i >= BUYABLE_CARD_PER_ROW ) {
                 x = marginX/2;
                 y -= marginY;
+                i = 0;
             }
         },this);
 
