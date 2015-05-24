@@ -263,6 +263,13 @@ var MainGameLayer = cc.Layer.extend({
             anchorX: 0.5,
             anchorY: 0
         });
+        this.upgradeLabel = new cc.LabelTTF("", "Arial", dimens.vault_font_size);
+        this.upgradeLabel.attr({
+            color: colors.upgrade_chance_label,
+            x: dimens.upgrade_menu_position.x,
+            y: dimens.upgrade_menu_position.y+dimens.upgrade_label_offset.y
+        });
+        this.addChild(this.upgradeLabel,21);
 
         var menu = new cc.Menu(buildItem,upgradeItem, bookMenuItem, vaultMenuItem);
         menu.x = 0;
@@ -304,6 +311,7 @@ var MainGameLayer = cc.Layer.extend({
         this.__renderBook();
         this.__renderDungeonHP();
         this.__renderMoney();
+        this.__renderUpgrade();
     },
     cleanUp:function(){
         this.model.off(null,null,this);
@@ -315,6 +323,8 @@ var MainGameLayer = cc.Layer.extend({
         this.model.on("change:hand change:maxHand",this.__renderBook,this);
         this.model.on("change:exp change:maxExp",this.__renderExp,this);
         this.model.on("change:money change:maxMoney",this.__renderMoney,this);
+        this.model.on("change:upgradeChance",this.__renderUpgrade, this);
+
         var self = this;
         cc.eventManager.addListener(cc.EventListener.create({
             event: cc.EventListener.CUSTOM,
@@ -421,6 +431,14 @@ var MainGameLayer = cc.Layer.extend({
         this.addChild(this.continueMenu, 20);
         this.continueMenu.setVisible(false);
 
+        this.stageNumberLabel = new cc.LabelTTF("", "Arial", dimens.hint_font_size);
+        this.stageNumberLabel.attr({
+            x: dimens.stage_number_position.x,
+            y: dimens.stage_number_position.y
+        });
+        this.addChild(this.stageNumberLabel);
+        this.stageNumberLabel.setVisible(false);
+
         this.giveUpItem = new cc.MenuItemImage(
             cc.spriteFrameCache.getSpriteFrame("long-normal.png"),
             cc.spriteFrameCache.getSpriteFrame("long-selected.png"),
@@ -444,7 +462,11 @@ var MainGameLayer = cc.Layer.extend({
             cc.spriteFrameCache.getSpriteFrame("long-normal.png"),
             cc.spriteFrameCache.getSpriteFrame("long-selected.png"),
             function () {
-                this.onBuildNewStage();
+                if ( this.model.get("money") >= this.model.getBuildCost() ) {
+                    this.onBuildNewStage();
+                } else {
+
+                }
             }, this );
         this.buildStageItem.attr({
             x: dimens.build_new_stage_position.x,
@@ -556,6 +578,9 @@ var MainGameLayer = cc.Layer.extend({
     __renderMoney:function(){
         this.moneyLabel.setString( this.model.get("money") + "/" + this.model.get("maxMoney") )
     },
+    __renderUpgrade:function(){
+        this.upgradeLabel.setString( this.model.get("upgradeChance") )
+    },
     __resetMeeple:function(){
         this.meeple.attr({
             x: dimens.meeple_position.x,
@@ -644,8 +669,7 @@ var MainGameLayer = cc.Layer.extend({
         var meepleX = this.meeple.x;
         var meepleY = this.meeple.y;
         var bgY = this.background[0].y;
-        var dungeonY = this.dungeonList.y;
-        var dungeonX = this.dungeonList.x;
+
         meepleArray.push( cc.scaleTo(times.one_step/2, -1, 1 ) );
 
         bgArray.push( cc.delayTime(times.one_step/2) );
@@ -653,8 +677,7 @@ var MainGameLayer = cc.Layer.extend({
         bgArray.push( cc.moveTo( times.one_step/2, 0, bgY) );
 
         dungeonArray.push( cc.delayTime(times.one_step/2) );
-        dungeonY += stepDeep;
-        dungeonArray.push( cc.moveTo(times.one_step/2,dungeonX, dungeonY) );
+        dungeonArray.push( cc.moveBy(times.one_step/2,0, stepDeep) );
         for ( var i = 0 ; i < stepCount ; i++ ){
             meepleArray.push( cc.moveTo( times.one_step/2, meepleX - stepWidth, meepleY ) );
             meepleArray.push( cc.delayTime( times.one_step/2 ) );
@@ -665,8 +688,7 @@ var MainGameLayer = cc.Layer.extend({
             bgArray.push( cc.moveTo( times.one_step/2, 0, bgY ) );
 
             dungeonArray.push( cc.delayTime(times.one_step/2) );
-            dungeonY += stepDeep;
-            dungeonArray.push( cc.moveTo( times.one_step/2, dungeonX, dungeonY ) );
+            dungeonArray.push( cc.moveBy( times.one_step/2, 0, stepDeep ) );
         }
         meepleArray.push( cc.scaleTo(times.one_step/2, 1, 1 ) );
         meepleArray.push( cc.callFunc(function(){
@@ -678,7 +700,9 @@ var MainGameLayer = cc.Layer.extend({
 
         this.meeple.runAction(cc.sequence(meepleArray));
         this.background[0].runAction(cc.sequence(bgArray));
-        this.dungeonList.runAction(cc.sequence(dungeonArray));
+        var seq = cc.sequence(dungeonArray);
+        this.dungeonList.runAction(seq);
+        this.stageNumberLabel.runAction(seq.clone());
     },
     teamLeaveDungeon:function(){
         this.model.set("stage", [] );
@@ -774,6 +798,42 @@ var MainGameLayer = cc.Layer.extend({
             this.meeple.runAction(sequence);
         }
     },
+    renderBuildStageMenu:function(){
+        var cost = this.model.getBuildCost();
+
+        this.buildStageText = buildRichText({
+            str : texts.pay + cost + "{[money]}" + texts.build_new_stage,
+            fontSize : dimens.build_new_stage_font_size,
+            fontColor: cc.color.BLACK,
+            width: 390,
+            height: 60
+        });
+        this.buildStageText.attr({
+            x: 240,
+            y: 25,
+            anchorX : 0.5,
+            anchorY : 0.5
+        });
+        this.buildStageMenu.setVisible(true);
+        this.buildStageItem.addChild(this.buildStageText);
+
+        this.giveUpText = buildRichText({
+            str : texts.give_up,
+            fontSize : dimens.build_new_stage_font_size,
+            fontColor: cc.color.BLACK,
+            width: 390,
+            height: 60
+        });
+        this.giveUpText.attr({
+            x: 330,
+            y: 25,
+            anchorX : 0.5,
+            anchorY : 0.5
+        });
+        this.giveUpMenu.setVisible(true);
+        this.giveUpItem.addChild( this.giveUpText );
+
+    },
     onTeamLeaveStage:function(){
         //user choose build new stage or pass
         this.hintLable.setVisible(true);
@@ -802,57 +862,58 @@ var MainGameLayer = cc.Layer.extend({
             this.giveUpMenu.setVisible(true);
             this.giveUpItem.addChild( this.giveUpText );
         } else {
-            var cost = this.model.getBuildCost();
-            if ( cost <= this.model.get("money") ) {
-                this.buildStageText = buildRichText({
-                    str : texts.pay + cost + "{[money]}" + texts.build_new_stage,
-                    fontSize : dimens.build_new_stage_font_size,
-                    fontColor: cc.color.BLACK,
-                    width: 390,
-                    height: 60
-                });
-                this.buildStageText.attr({
-                    x: 240,
-                    y: 25,
-                    anchorX : 0.5,
-                    anchorY : 0.5
-                });
-                this.buildStageMenu.setVisible(true);
-                this.buildStageItem.addChild(this.buildStageText);
-
-                this.giveUpText = buildRichText({
-                    str : texts.give_up,
-                    fontSize : dimens.build_new_stage_font_size,
-                    fontColor: cc.color.BLACK,
-                    width: 390,
-                    height: 60
-                });
-                this.giveUpText.attr({
-                    x: 330,
-                    y: 25,
-                    anchorX : 0.5,
-                    anchorY : 0.5
-                });
-                this.giveUpMenu.setVisible(true);
-                this.giveUpItem.addChild( this.giveUpText );
-            } else {
-                this.buildStageText = null;
-                this.giveUpText = buildRichText({
-                    str : texts.not_enough_money_1 + cost + texts.not_enough_money,
-                    fontSize : dimens.build_new_stage_font_size,
-                    fontColor: cc.color.BLACK,
-                    width: 390,
-                    height: 60
-                });
-                this.giveUpText.attr({
-                    x: 240,
-                    y: 25,
-                    anchorX : 0.5,
-                    anchorY : 0.5
-                });
-                this.giveUpMenu.setVisible(true);
-                this.giveUpItem.addChild( this.giveUpText );
-            }
+//            var cost = this.model.getBuildCost();
+//            if ( cost <= this.model.get("money") ) {
+//                this.buildStageText = buildRichText({
+//                    str : texts.pay + cost + "{[money]}" + texts.build_new_stage,
+//                    fontSize : dimens.build_new_stage_font_size,
+//                    fontColor: cc.color.BLACK,
+//                    width: 390,
+//                    height: 60
+//                });
+//                this.buildStageText.attr({
+//                    x: 240,
+//                    y: 25,
+//                    anchorX : 0.5,
+//                    anchorY : 0.5
+//                });
+//                this.buildStageMenu.setVisible(true);
+//                this.buildStageItem.addChild(this.buildStageText);
+//
+//                this.giveUpText = buildRichText({
+//                    str : texts.give_up,
+//                    fontSize : dimens.build_new_stage_font_size,
+//                    fontColor: cc.color.BLACK,
+//                    width: 390,
+//                    height: 60
+//                });
+//                this.giveUpText.attr({
+//                    x: 330,
+//                    y: 25,
+//                    anchorX : 0.5,
+//                    anchorY : 0.5
+//                });
+//                this.giveUpMenu.setVisible(true);
+//                this.giveUpItem.addChild( this.giveUpText );
+//            } else {
+//                this.buildStageText = null;
+//                this.giveUpText = buildRichText({
+//                    str : texts.not_enough_money_1 + cost + texts.not_enough_money,
+//                    fontSize : dimens.build_new_stage_font_size,
+//                    fontColor: cc.color.BLACK,
+//                    width: 390,
+//                    height: 60
+//                });
+//                this.giveUpText.attr({
+//                    x: 240,
+//                    y: 25,
+//                    anchorX : 0.5,
+//                    anchorY : 0.5
+//                });
+//                this.giveUpMenu.setVisible(true);
+//                this.giveUpItem.addChild( this.giveUpText );
+//            }
+            this.renderBuildStageMenu();
         }
 
 
@@ -869,6 +930,7 @@ var MainGameLayer = cc.Layer.extend({
         cardSprite.runAction(cc.scaleTo(times.draw_card,dimens.deck_scale_rate,dimens.deck_scale_rate));
     },
     discardAllDungeonCards:function(){
+        this.stageNumberLabel.setVisible(false);
         var len = this.dungeonList.sprites.length;
         for ( var i = len - 1; i >= 0; i --){
             var sprite = this.dungeonList.removeSpriteByIndex(i);
@@ -1073,6 +1135,11 @@ var MainGameLayer = cc.Layer.extend({
             y: dimens.dungeon_list_position.y
         })
         this.generateDungeonStage();
+        this.stageNumberLabel.setVisible(true);
+        this.stageNumberLabel.attr({
+            y: dimens.stage_number_position.y
+        })
+        this.stageNumberLabel.setString("第"+(1+this.model.get("stageNumber"))+"层地城");
     },
     generateDungeonStage:function(){
         if ( this.dungeonList.sprites.length >= DUNGEON_CARD_PER_STAGE ) {
@@ -1202,7 +1269,7 @@ var MainGameScene = cc.Scene.extend({
     },
     showLevelUp:function(callback,context){
         cc.director.pushScene(new LevelUpScene({
-            model:this.model,
+            model:window.gameModel,
             callback:callback,
             context:context
         }));

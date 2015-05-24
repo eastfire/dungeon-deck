@@ -24,7 +24,14 @@ var buildRichText = function( options ) {
             var reimg = new ccui.RichElementImage(tag, cc.color.WHITE, 255, frame );
             richText.pushBackElement(reimg);
         } else {
-            var re = new ccui.RichElementText(tag, fontColor, opacity, segment, fontFamily , fontSize);
+            var re = new ccui.RichElementText(tag, new cc.FontDefinition({
+                fillStyle: fontColor,
+                fontName: fontFamily,
+                fontSize: fontSize,
+                fontWeight: "normal",
+                fontStyle: "normal",
+                lineHeight: fontSize+10
+            }), opacity, segment);
             richText.pushBackElement(re);
         }
         tag++;

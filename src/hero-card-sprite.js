@@ -123,6 +123,16 @@ var HeroCardSprite = BaseCardSprite.extend({
     },
     onDefenseChanged:function(){
         this.renderDefense();
+        var defense = this.model.get("defense");
+        if ( this.model.previous("defense") != defense ) {
+            var diff = defense - this.model.previous("defense");
+            if ( diff > 0 )
+                diff = "+"+diff;
+            effectIconMananger.enqueue(this, {
+                icon: "defense-icon",
+                text: diff
+            });
+        }
     },
     renderPositionInTeam:function(){
         var team = window.gameModel.get("team");

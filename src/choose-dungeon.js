@@ -144,7 +144,6 @@ var ChooseDungeonLayer = cc.LayerColor.extend({
         selectMenu.y = 0;
         this.addChild(selectMenu);
 
-        cc.log(validCount)
         if ( !validCount ) {
             this.hint = texts.no_valid_target;
         }

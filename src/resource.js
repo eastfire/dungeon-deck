@@ -1,5 +1,5 @@
 var res = {
-    intro_jpg : "res/intro.jpg",
+    //intro_jpg : "res/intro.jpg",
     title_bar_jpg: "res/title_bar.jpg",
     bg0_jpg : "res/bg0.jpg",
     book_bg_png : "res/book-bg.png",
@@ -72,6 +72,7 @@ var dimens = {
     build_menu_position: { x: 60, y :0},
 
     upgrade_menu_position: { x:580, y:0},
+    upgrade_label_offset: { x: 0, y: 15},
 
     hero_margin:10,
 
@@ -81,7 +82,8 @@ var dimens = {
     hint_font_size: 30,
     hint_position : { x :320, y: 550 },
 
-    continue_position: { x : 320, y: 300 },
+    continue_position: { x : 320, y: 280 },
+    stage_number_position: { x : 320, y: 325 },
     build_new_stage_font_size: 28,
 
     enter_door_width: 40,
@@ -130,6 +132,7 @@ var colors = {
     cancel_buy: cc.color.BLACK,
     buy: cc.color.BLACK,
     book: cc.color.BLACK,
+    upgrade_chance_label: cc.color.BLACK,
     spell_book_mask: cc.color(0,0,0,128),
 
     upgrade_type_label : cc.color.WHITE
@@ -176,10 +179,10 @@ var texts = {
     no_valid_target: "你的法术没有合法的目标",
 
     upgrade_from: {
-        discard: "升级弃牌堆中的牌",
-        deck: "升级牌堆中的牌",
-        hand: "升级手牌中的牌",
-        dungeon: "升级当前地城中的牌"
+        discard: "弃牌堆中的牌",
+        deck: "牌堆中的牌",
+        hand: "手牌中的牌",
+        dungeon: "当前地城中的牌"
     },
     level_up: "升级",
     max_level: "满级"

@@ -15,7 +15,8 @@ var DUNGEON_CLASS_MAP = {
 
     "treasure-chest" : TreasureChestModel,
 
-    vault: VaultModel
+    vault: VaultModel,
+    "hen-den": HenDenModel
 }
 
 var DUNGEON_SPRITE_CLASS_MAP = {
@@ -32,6 +33,18 @@ var DUNGEON_SPRITE_CLASS_MAP = {
 
     "treasure-chest" : ItemCardSprite,
 
-    vault: BaseCardSprite
+    vault: BaseCardSprite,
+    "hen-den": BaseCardSprite
 }
 
+var CARD_TYPE_MAP = {
+    "trap":"陷阱",
+    "monster":"怪物",
+    "spell":"法术",
+    "item":"宝物",
+    "room":"设施"
+}
+
+var CARD_SUBTYPE_MAP = {
+    "undead":"亡灵"
+}

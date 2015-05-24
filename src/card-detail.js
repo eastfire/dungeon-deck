@@ -132,7 +132,7 @@ var CardDetailLayer = cc.LayerColor.extend({
                     cc.spriteFrameCache.getSpriteFrame("short-normal.png"),
                     cc.spriteFrameCache.getSpriteFrame("short-selected.png"),
                     function () {
-                        cc.log( choice.text);
+                        //cc.log( choice.text);
                         if ( choice.callback )
                             choice.callback.call( choice.context );
                     }, this );

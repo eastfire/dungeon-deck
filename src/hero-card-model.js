@@ -116,7 +116,8 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
     },
     onBeDamaged:function(damage, cardModel){
         var currentHp = this.get("hp");
-        var damageAfterBlock = Math.max( damage - this.get("defense"), 0 );
+        var realDefense = cardModel.get("type") === "spell" ? 0:this.get("defense");
+        var damageAfterBlock = Math.max( damage - realDefense, 0 );
 
         var d = Math.min( currentHp , damageAfterBlock );
         this.set("hp", currentHp - d);
@@ -149,8 +150,8 @@ var WarriorModel = HeroModel.extend({
         return _.extend(HeroModel.prototype.defaults.call(this), {
             name:"warrior",
             displayName:"战士",
-            hp:6,
-            baseMaxHp: 6,
+            hp:10,
+            baseMaxHp: 10,
             maxLevel: 2,
             baseDefense: 0
         })

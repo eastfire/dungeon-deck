@@ -5,7 +5,7 @@ var MonsterModel = DungeonCardModel.extend({ //怪物牌
     defaults:function(){
         return _.extend( DungeonCardModel.prototype.defaults.call(this), {
             type: "monster",
-            subType: "",
+            subType: null,
             baseAttack: 1,
             attack: 1,
             attackBuff: 0,
@@ -24,10 +24,13 @@ var MonsterModel = DungeonCardModel.extend({ //怪物牌
         this.evaluateAttack();
     },
     evaluateAttack:function(){
-        if ( isValidInt( this.get("baseAttack") ) ) {
-            this.set("attack", this.get("baseAttack"));
+        var baseAttack = this.get("baseAttack");
+
+        if ( isValidInt( baseAttack ) ) {
+            this.set("attack", Math.max(0,baseAttack + this.get("attackBuff") - this.get("attackDebuff")));
         } else {
-            this.set("attack", this.get("baseAttack") + this.get("attackBuff") - this.get("attackDebuff"));
+
+            this.set("attack", baseAttack);
         }
     },
     onStageReveal:function(dungeonCards){
@@ -133,8 +136,16 @@ var RatmanModel = MonsterModel.extend({
             displayName:"鼠人",
             attack: 0,
             baseAttack: 0,
-            maxLevel: 1
+            baseCost: 1,
+            maxLevel: 5
         })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseUpgradeCost: level*level
+        } );
+        this.reEvaluate();
     },
     getDescription:function(){
         var desc = MonsterModel.prototype.getDescription.call(this);
@@ -161,9 +172,11 @@ var SkeletonModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"skeleton",
             displayName:"骷髅",
+            subtype:"undead",
             attack: 1,
             baseAttack: 1,
             maxLevel: 5,
+            baseCost: 1,
             baseUpgradeCost: 2
         })
     },
@@ -183,15 +196,13 @@ var OrcModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"orc",
             displayName:"兽人",
-            attack: "?",
-            baseAttack: "?",
             maxLevel: 5,
             baseUpgradeCost: 2
         })
     },
     getDescription:function(){
         var desc = MonsterModel.prototype.getDescription.call(this);
-        if ( desc != "" ) {
+        if ( desc !== "" ) {
             desc += "\n";
         }
         var level = this.get("level");
@@ -200,7 +211,7 @@ var OrcModel = MonsterModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            baseAttack: "?",
+            baseAttack: "＊",
             baseScore: level,
             baseUpgradeCost: level*2
         } );
@@ -225,8 +236,6 @@ var MinotaurModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"minotaur",
             displayName:"牛头人",
-            attack: "?",
-            baseAttack: "?",
             maxLevel: 4,
             baseUpgradeCost: 2
         })
@@ -251,7 +260,7 @@ var MinotaurModel = MonsterModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            baseAttack: "?",
+            baseAttack: "＊",
             baseScore: level,
             baseUpgradeCost: level*2
         } );
@@ -259,16 +268,18 @@ var MinotaurModel = MonsterModel.extend({
     },
     onStageReveal:function(dungeonCards){
         var stageNumber = window.gameModel.get("stageNumber") + 1; //翻开时英雄还未走下新的地城，所以数值要+1
+        var level = this.get("level");
         var att = stageNumber;
-        if ( stageNumber === 1 ) {
+        if ( level === 1 ) {
             att = stageNumber;
-        } else if ( stageNumber === 2 ) {
+        } else if ( level === 2 ) {
             att = stageNumber+1;
-        } else if ( stageNumber === 3 ) {
+        } else if ( level === 3 ) {
             att = stageNumber*2;
-        } else if ( stageNumber >= 4 ) {
+        } else if ( level >= 4 ) {
             att = stageNumber*3;
         }
+        cc.log("att:"+att)
         this.set({
             baseAttack: att
         })
@@ -293,9 +304,9 @@ var OozeModel = MonsterModel.extend({
         }
         var level = this.get("level");
         if ( level <= 3 )
-            return desc + "被攻击后的英雄-"+level+"{[defense]}";
+            return desc + "被攻击的英雄-"+level+"{[defense]}";
         else
-            return desc + "被攻击后所有英雄-"+(level-3)+"{[defense]}";
+            return desc + "所有英雄-"+(level-3)+"{[defense]}";
     },
     initByLevel:function(){
         var level = this.get("level");

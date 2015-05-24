@@ -71,6 +71,7 @@ var DiscardCardSprite = CardSprite.extend({
 var BaseCardSprite = CardSprite.extend({
     ctor: function (options) {
         options = options || {};
+        var swallowEvent = options.swallowEvent || false;
         this.model = options.model;
         this.setName(this.model.cid);
 
@@ -95,7 +96,7 @@ var BaseCardSprite = CardSprite.extend({
         var self = this;
         this.touchListener = cc.EventListener.create({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
-            swallowTouches: false,
+            swallowTouches: swallowEvent,
             onTouchBegan: function (touch, event) {
                 var target = event.getCurrentTarget();
 

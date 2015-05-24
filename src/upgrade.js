@@ -46,6 +46,15 @@ var UpgradeLayer = cc.Layer.extend({
         cc.director.popScene();
     },
     __initView:function(){
+        this.chanceLabel = new cc.LabelTTF("", "Arial", dimens.buy_font_size);
+        this.addChild(this.chanceLabel,2);
+        this.chanceLabel.attr({
+            color: colors.upgrade_type_label,
+            x: cc.winSize.width/2,
+            y: cc.winSize.height -  dimens.top_bar_height - 5,
+            anchorY: 1
+        })
+
         // Create the scrollview
         this.scrollView = new ccui.ScrollView();
         this.scrollView.setDirection(ccui.ScrollView.DIR_VERTICAL);
@@ -53,8 +62,15 @@ var UpgradeLayer = cc.Layer.extend({
 
         this.addChild(this.scrollView,2)
     },
+    __renderUpgradeChance:function(){
+        var chance = this.model.get("upgradeChance");
+        var chanceText = chance > 0 ? ("你可以升级"+chance+"次卡牌") : "升级地城之心以获得升级卡牌的机会";
+        this.chanceLabel.setString(chanceText);
+    },
     __renderAll:function(){
-        var topMargin = dimens.top_bar_height;
+        this.__renderUpgradeChance();
+
+        var topMargin = dimens.top_bar_height + 40;
         var bottomMargin = dimens.cancel_buy_height;
         var height = cc.winSize.height -  topMargin - bottomMargin;
 
@@ -129,62 +145,64 @@ var UpgradeLayer = cc.Layer.extend({
         });
         this.scrollView.addChild(cardSprite);
 
-        if ( cardModel.get("level") < cardModel.get("maxLevel") ) {
-            var cost = cardModel.get("upgradeCost");
-            var icon = new IconSprite({
-                image: cc.spriteFrameCache.getSpriteFrame("money-icon.png"),
-                text: cost,
-                fontSize: dimens.buyable_deck_count_font_size,
-                offset: {
-                    x: dimens.hero_icon_size.width/2-1,
-                    y: dimens.hero_icon_size.height/2-5
+        if (this.model.get("upgradeChance") > 0) {
+            if ( cardModel.get("level") < cardModel.get("maxLevel") ) {
+                var cost = cardModel.get("upgradeCost");
+                var icon = new IconSprite({
+                    image: cc.spriteFrameCache.getSpriteFrame("money-icon.png"),
+                    text: cost,
+                    fontSize: dimens.buyable_deck_count_font_size,
+                    offset: {
+                        x: dimens.hero_icon_size.width / 2 - 1,
+                        y: dimens.hero_icon_size.height / 2 - 5
+                    }
+                });
+                icon.attr({
+                    x: dimens.hero_icon_offset.x,
+                    y: dimens.hero_icon_offset.y
+                })
+                cardSprite.addChild(icon);
+
+                if (this.model.get("money") >= cardModel.get("upgradeCost")) {
+                    (function (cardModel, x, y) {
+                        var cost = cardModel.get("upgradeCost");
+                        var upgradeItem = new cc.MenuItemImage(
+                            cc.spriteFrameCache.getSpriteFrame("short-normal.png"),
+                            cc.spriteFrameCache.getSpriteFrame("short-selected.png"),
+                            function () {
+                                if (cost <= this.model.get("money")) {
+                                    this.askUpgrade(cardModel);
+                                }
+                            }, this);
+                        upgradeItem.attr({
+                            x: x - 2,
+                            y: y - dimens.card_height / 2 - 43,
+                            anchorX: 0.5,
+                            anchorY: 0.5,
+                            scaleX: 0.7,
+                            scaleY: 0.8
+                        });
+                        var upgradeText = new cc.LabelTTF(texts.level_up, "Arial", dimens.buy_font_size);
+                        upgradeText.attr({
+                            color: colors.buy,
+                            x: x,
+                            y: y - dimens.card_height / 2 - 48
+                        });
+                        this.scrollView.addChild(upgradeText, 10);
+
+                        this.upgradeItems.push(upgradeItem);
+                    }).call(this, cardModel, this.layerCardX, this.layerCardY);
                 }
-            });
-            icon.attr({
-                x: dimens.hero_icon_offset.x ,
-                y: dimens.hero_icon_offset.y
-            })
-            cardSprite.addChild(icon);
-
-            if ( this.model.get("money") >= cardModel.get("upgradeCost") ) {
-                (function (cardModel, x, y) {
-                    var cost = cardModel.get("upgradeCost");
-                    var upgradeItem = new cc.MenuItemImage(
-                        cc.spriteFrameCache.getSpriteFrame("short-normal.png"),
-                        cc.spriteFrameCache.getSpriteFrame("short-selected.png"),
-                        function () {
-                            if (cost <= this.model.get("money")) {
-                                this.askUpgrade(cardModel);
-                            }
-                        }, this);
-                    upgradeItem.attr({
-                        x: x - 2,
-                        y: y - dimens.card_height / 2 - 43,
-                        anchorX: 0.5,
-                        anchorY: 0.5,
-                        scaleX: 0.7,
-                        scaleY: 0.8
-                    });
-                    var upgradeText = new cc.LabelTTF(texts.level_up, "Arial", dimens.buy_font_size);
-                    upgradeText.attr({
-                        color: colors.buy,
-                        x: x,
-                        y: y - dimens.card_height / 2 - 48
-                    });
-                    this.scrollView.addChild(upgradeText, 10);
-
-                    this.upgradeItems.push(upgradeItem);
-                }).call(this, cardModel, this.layerCardX, this.layerCardY);
+            } else {
+                var label = new cc.LabelTTF(texts.max_level, "Arial", dimens.buy_font_size);
+                label.attr({
+                    color: colors.upgrade_type_label,
+                    x: this.layerCardX,
+                    y: this.layerCardY - dimens.card_height / 2 - 48,
+                    anchorY: 0.5
+                })
+                this.scrollView.addChild(label);
             }
-        } else {
-            var label = new cc.LabelTTF(texts.max_level, "Arial", dimens.buy_font_size);
-            label.attr({
-                color: colors.upgrade_type_label,
-                x: this.layerCardX,
-                y: this.layerCardY - dimens.card_height / 2 - 48,
-                anchorY : 0.5
-            })
-            this.scrollView.addChild(label);
         }
 
         this.layerCardX += this.marginX;
@@ -207,6 +225,7 @@ var UpgradeLayer = cc.Layer.extend({
                 callback: function(){
                     this.model.useMoney(model.get("upgradeCost"));
                     model.levelUp();
+                    this.model.set("upgradeChance", this.model.get("upgradeChance")-1);
                     this.__renderAll();
                     layer.close();
                 },

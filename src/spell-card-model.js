@@ -49,6 +49,7 @@ var MagicMissileModel = SpellModel.extend({
             name:"magic-missile",
             displayName:"魔导弹",
             target: "single-hero",
+            baseCost: 1,
             baseAttack: 1,
             attack: 1,
             maxLevel:3
@@ -74,9 +75,19 @@ var MagicMissileModel = SpellModel.extend({
     evaluateAttack:function(){
         this.set("attack", this.get("baseAttack"))
     },
+    getEffect:function(level){
+        return this.get("attack");
+    },
     onEffect:function(heroModel){
-        heroModel.onBeDamaged(this.get("attack"), this);
+        heroModel.onBeDamaged(this.getEffect(), this);
         SpellModel.prototype.onEffect.call(this);
+    },
+    getDescription:function(){
+        var desc = RoomModel.prototype.getDescription.call(this);
+        if ( desc !== "" ) {
+            desc += "\n";
+        }
+        return desc + "选择1个英雄对其造成"+this.getEffect()+"点伤害"
     }
 })
 
@@ -86,6 +97,7 @@ var LighteningModel = SpellModel.extend({
             name:"lightening",
             displayName:"闪电链",
             target: "all-hero",
+            baseCost: 1,
             baseAttack: 1,
             attack: 1
         })
@@ -97,11 +109,21 @@ var LighteningModel = SpellModel.extend({
     evaluateAttack:function(){
         this.set("attack", this.get("baseAttack"))
     },
+    getEffect:function(level){
+        return this.get("attack");
+    },
     onEffect:function(){
         _.each( gameModel.get("team"),function(heroModel){
-            heroModel.onBeDamaged(this.get("attack"), this);
+            heroModel.onBeDamaged(this.getEffect(), this);
         },this);
         SpellModel.prototype.onEffect.call(this);
+    },
+    getDescription:function(){
+        var desc = RoomModel.prototype.getDescription.call(this);
+        if ( desc !== "" ) {
+            desc += "\n";
+        }
+        return desc + "对每个英雄造成"+this.getEffect()+"点伤害"
     }
 })
 
@@ -111,6 +133,7 @@ var FireballModel = SpellModel.extend({
             name:"fireball",
             displayName:"火球术",
             target: "single-hero",
+            baseCost: 1,
             baseAttack: 1,
             attack: 1
         })
@@ -130,6 +153,7 @@ var WarDrumModel = SpellModel.extend({
             name:"war-drum",
             displayName:"战鼓",
             target: "single-dungeon-monster",
+            baseCost: 1,
             baseAttack: 0,
             attack: 0
         })
@@ -140,6 +164,13 @@ var WarDrumModel = SpellModel.extend({
     onEffect:function(dungeonModel){
         dungeonModel.set("attackBuff", dungeonModel.get("attackBuff")+this.getEffect());
         SpellModel.prototype.onEffect.call(this);
+    },
+    getDescription:function(){
+        var desc = RoomModel.prototype.getDescription.call(this);
+        if ( desc !== "" ) {
+            desc += "\n";
+        }
+        return desc + "使地城中的1个怪物攻击力+"+this.getEffect()
     }
 });
 

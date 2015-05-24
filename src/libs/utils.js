@@ -25,8 +25,8 @@ window.isValidInt = function (value) {
         return false;
     }
 
-    var intValue = parseInt(value);
-    if (intValue == Number.NaN) {
+    var intValue = parseInt(value, 10);
+    if (Number.isNaN(intValue)) {
         return false;
     }
 

@@ -22,6 +22,8 @@ var GameModel = Backbone.Model.extend({
             hp : 20,
             maxHp : 20,
 
+            upgradeChance: 2,
+
             defense: 0,
 
             level: 1,
@@ -54,13 +56,20 @@ var GameModel = Backbone.Model.extend({
 
             upgradeRangeLevel: UPGRADE_RANGE_LEVEL.FROM_DISCARD,
 
-            levelUpChoiceCount : 3,
+            initBonus: ["upgradeChance","maxHp","money","vault"],
+            bonusPool : [],
+            bonusChoiceNumber:3,
+            bonusEachLevelUp: "alwaysLevelUpBonus",
 
             unlockedBuyableCards:[],
             regularBuyableCards: [],
             initRegularBuyableCards : [
                 {
                     type:"vault",
+                    count: 8
+                },
+                {
+                    type:"hen-den",
                     count: 8
                 },
                 {
@@ -247,6 +256,19 @@ var GameModel = Backbone.Model.extend({
         },this);
         this.trigger("change:hand");
     },
+    initBonus:function(){
+        _.each( this.get("initBonus"), function(bonusName){
+            var Model = LEVEL_UP_BONUS_CLASS_MAP[bonusName];
+            var model = new Model();
+            this.get("bonusPool").push( model );
+        },this);
+
+        var eachLevelBonus = this.get("bonusEachLevelUp");
+        if ( eachLevelBonus ) {
+            var Model = LEVEL_UP_BONUS_CLASS_MAP[eachLevelBonus];
+            this.set("bonusEachLevelUp", new Model());
+        }
+    },
     beAttacked:function(damage){
         var hp = this.get("hp");
         var realDamage = damage - this.get("defense");
@@ -259,6 +281,10 @@ var GameModel = Backbone.Model.extend({
         this.initDiscardDeck();
         this.initRegularBuyableCards();
         this.initSpellBook();
+        this.initBonus();
+    },
+    gainUpgradeChance:function(count){
+        this.set("upgradeChance", this.get("upgradeChance")+count);
     }
 })
 
@@ -316,7 +342,13 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
         this.set("upgradeCost", this.get("baseUpgradeCost"));
     },
     getDescription:function(){
-        return "";
+        var desc = CARD_TYPE_MAP[this.get("type")];
+        if ( this.get("subtype") ) {
+            desc = _.reduce(this.get("subtype").split(" "), function(memo, subtype){
+                return memo + "—" + CARD_SUBTYPE_MAP[subtype];
+            },desc, this);
+        }
+        return desc;
     },
     onDiscard : function(){
         this.resetToOrigin();
