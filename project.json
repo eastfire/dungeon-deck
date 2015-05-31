@@ -30,6 +30,8 @@
         "src/item-card-sprite.js",
         "src/room-card-model.js",
         "src/room-card-sprite.js",
+        "src/trap-card-model.js",
+        "src/trap-card-sprite.js",
         "src/class-map.js",
         "src/buy-card.js",
         "src/spell-book.js",

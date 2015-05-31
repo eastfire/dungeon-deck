@@ -214,6 +214,12 @@ var IconSprite = cc.Sprite.extend({
         })
         this.addChild(this.label,1)
     },
+    setIcon:function(image){
+        if ( image instanceof cc.Texture2D )
+            this.setTexture(image);
+        else if ( image instanceof cc.SpriteFrame )
+            this.setSpriteFrame(image);
+    },
     setString:function(str){
         this.label.setString(str)
     }

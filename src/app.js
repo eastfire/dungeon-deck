@@ -126,7 +126,7 @@ var MainGameLayer = cc.Layer.extend({
             image: cc.spriteFrameCache.getSpriteFrame("throne-menu.png"),
             offset:dimens.throne_label_offset,
             fontSize: dimens.throne_font_size,
-            fontColor: cc.color(255,0,0,255)
+            fontColor: colors.dungeon_hp_normal
         });
         this.throne.attr({
             x: dimens.throne_position.x,
@@ -600,7 +600,6 @@ var MainGameLayer = cc.Layer.extend({
             return;
         }
         this.model.set("phase","generate-hero");
-        this.model.set("stageNumber",0);
 
         var heroType = _.sample( this.model.get("heroList") )
         var heroModel = new HERO_CLASS_MAP[ heroType ]()
@@ -704,9 +703,14 @@ var MainGameLayer = cc.Layer.extend({
         this.dungeonList.runAction(seq);
         this.stageNumberLabel.runAction(seq.clone());
     },
+    __resetStage:function(){
+        this.model.set({
+            stage:[],
+            stageNumber:0
+        } );
+    },
     teamLeaveDungeon:function(){
-        this.model.set("stage", [] );
-
+        this.__resetStage();
         var sequence = cc.sequence( cc.scaleTo(times.team_teleport_leave, 0.1, 4 ),
             cc.callFunc(function(){
                 this.__resetBackground();
@@ -1043,6 +1047,7 @@ var MainGameLayer = cc.Layer.extend({
     afterTeamDie:function(){
         this.meeple.setVisible(false);
         this.discardAllDungeonCards();
+        this.__resetStage();
         if ( this.newItemCardSprite ) {
             this.discardCard(this.newItemCardSprite, function(){
                 this.newItemCardSprite = null;
@@ -1099,7 +1104,7 @@ var MainGameLayer = cc.Layer.extend({
                 cc.moveBy(times.attack, 0, -dimens.monster_attack_offset ),
                 cc.callFunc(this.afterTeamEnterRoom,this));
             roomSprite.runAction(sequenceMonster);
-        } else if ( dungeonModel instanceof RoomModel ){
+        } else if ( dungeonModel instanceof RoomModel || dungeonModel instanceof TrapModel ){
             var sequenceMeeple = cc.sequence( cc.moveBy(times.attack, 0, -dimens.hero_attack_offset-dimens.monster_attack_offset ),
                 cc.moveBy(times.attack, 0, dimens.hero_attack_offset+dimens.monster_attack_offset ),
                 cc.callFunc(this.afterTeamEnterRoom,this));

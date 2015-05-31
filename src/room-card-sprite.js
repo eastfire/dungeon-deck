@@ -3,4 +3,4 @@
  */
 var RoomCardSprite = BaseCardSprite.extend({
 
-})
+});

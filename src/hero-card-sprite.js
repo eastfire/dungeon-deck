@@ -8,54 +8,99 @@ var HeroCardSprite = BaseCardSprite.extend({
         this._super( options )
 
         //add hp icon and label
-        this.hpIcon = new IconSprite({
+        var hpIcon = new IconSprite({
             image: cc.spriteFrameCache.getSpriteFrame("hp-icon.png")
         })
-        this.hpIcon.attr({
+        hpIcon.attr({
             x: dimens.card_width - dimens.hero_icon_offset.x,
             y: dimens.card_height - dimens.hero_icon_offset.y
         })
-        this.addChild(this.hpIcon,1)
-        this.addFrontSprite( this.hpIcon )
+        this.addChild(hpIcon,1)
+        this.addFrontSprite( hpIcon )
 
         //add score icon and label
-        this.scoreIcon = new IconSprite({
+        var scoreIcon = new IconSprite({
             image: cc.spriteFrameCache.getSpriteFrame("score-icon.png")
         });
-        this.scoreIcon.attr({
+        scoreIcon.attr({
             x: dimens.hero_icon_offset.x,
             y: dimens.hero_icon_offset.y
         })
-        this.addChild(this.scoreIcon,1)
-        this.addFrontSprite( this.scoreIcon )
+        this.addChild(scoreIcon,1)
+        this.addFrontSprite( scoreIcon )
 
-        this.defenseIcon = new IconSprite({
+        var defenseIcon = new IconSprite({
             image: cc.spriteFrameCache.getSpriteFrame("defense-icon.png")
         });
-        this.defenseIcon.attr({
+        defenseIcon.attr({
             x: dimens.card_width - dimens.hero_icon_offset.x,
             y: dimens.card_height - dimens.hero_icon_offset.y - dimens.hero_icon_size.height
         })
-        this.addChild(this.defenseIcon,1);
-        this.addFrontSprite( this.defenseIcon )
+        this.addChild(defenseIcon,1);
+        this.addFrontSprite( defenseIcon );
 
-        this.renderHp();
-        this.renderDefense();
+        var poisonIcon = new IconSprite({
+            image: cc.spriteFrameCache.getSpriteFrame("poison-icon.png"),
+            fontColor: cc.color.BLACK
+        });
+        poisonIcon.attr({
+            x: dimens.card_width - dimens.hero_icon_offset.x,
+            y: dimens.card_height - dimens.hero_icon_offset.y - dimens.hero_icon_size.height * 2
+        })
+        this.addChild(poisonIcon,1);
+        this.addFrontSprite( poisonIcon );
+
+        var slowIcon = new IconSprite({
+            image: cc.spriteFrameCache.getSpriteFrame("slow-icon.png"),
+            fontColor: cc.color.WHITE
+        });
+        slowIcon.attr({
+            x: dimens.card_width - dimens.hero_icon_offset.x,
+            y: dimens.card_height - dimens.hero_icon_offset.y - dimens.hero_icon_size.height * 3
+        })
+        this.addChild(slowIcon,1);
+        this.addFrontSprite( slowIcon );
+
+        this.icons = {
+            hp: hpIcon,
+            score: scoreIcon,
+            defense: defenseIcon,
+            poison: poisonIcon,
+            slow: slowIcon
+        }
+
+
     },
     __initEvent:function(){
         this._super();
         this.model.on("destroy",this.remove,this);
-        this.model.on("change:hp",this.onHpChanged, this);
-        this.model.on("change:score",this.onScoreChanged, this);
-        this.model.on("change:defense",this.onDefenseChanged, this);
+        this.model.on("change:hp",function(){
+            this.onIconChanged("hp", true, true);
+            this.checkDie();
+        },this);
+        this.model.on("change:score",function(){
+            this.onIconChanged("score", true, true);
+        },this);
+        this.model.on("change:defense",function(){
+            this.onIconChanged("defense", true, true);
+        },this);
+        this.model.on("change:poison",function(){
+            this.onIconChanged("poison", true, false);
+        },this);
+        this.model.on("change:slow",function(){
+            this.onIconChanged("slow", true, false);
+        },this);
         this.model.on("change:positionInTeam", this.renderPositionInTeam,this);
         this.model.on("change:level",this.onLevelChanged,this)
         this.model.on("leaveTeam",this.leaveTeam,this);
     },
     __refresh:function(){
         this._super();
-        this.renderHp();
-        this.renderScore();
+        this.renderIcon("hp");
+        this.renderIcon("score");
+        this.renderIcon("defense");
+        this.renderIcon("poison");
+        this.renderIcon("slow");
     },
     remove:function(){
         if ( this.model.isAlive() ) {
@@ -73,22 +118,8 @@ var HeroCardSprite = BaseCardSprite.extend({
             this.runAction(cc.fadeOut(0.4));
         }
     },
-    renderHp:function() {
+    checkDie:function(){
         var hp = this.model.get("hp");
-        this.hpIcon.setString(hp);
-    },
-    onHpChanged:function(){
-        this.renderHp();
-        var hp = this.model.get("hp");
-        if ( this.model.previous("hp") != hp ) {
-            var diff = hp - this.model.previous("hp");
-            if ( diff > 0 )
-                diff = "+"+diff;
-            effectIconMananger.enqueue(this, {
-                icon: "hp-icon",
-                text: diff
-            });
-        }
         if ( hp === 0 ) {
             var dieSequence = cc.sequence( cc.delayTime(times.before_hero_die), this.getFlipSequence() );
             this.runAction(dieSequence);
@@ -106,32 +137,32 @@ var HeroCardSprite = BaseCardSprite.extend({
             });
         }
     },
-    renderScore:function(){
-        this.scoreIcon.setString(this.model.get("score"))
-    },
-    onScoreChanged:function(){
-        this.renderScore();
-    },
-    renderDefense:function(){
-        var def = this.model.get("defense");
-        if ( def > 0 ) {
-            this.defenseIcon.setVisible(true);
-            this.defenseIcon.setString(def);
-        } else {
-            this.defenseIcon.setVisible(false);
+    renderIcon:function(attr){
+        var stat = this.model.get(attr);
+        var icon = this.icons[attr];
+        if ( icon ) {
+            if (stat !== 0) {
+                icon.setVisible(true);
+                icon.setString(stat);
+            } else {
+                icon.setVisible(false);
+            }
         }
     },
-    onDefenseChanged:function(){
-        this.renderDefense();
-        var defense = this.model.get("defense");
-        if ( this.model.previous("defense") != defense ) {
-            var diff = defense - this.model.previous("defense");
+    onIconChanged:function(attr, needAddEffect, needSubEffect){
+        this.renderIcon(attr);
+        var stat = this.model.get(attr);
+        if ( this.model.previous(attr) != stat ) {
+            var diff = stat - this.model.previous(attr);
+            var diffStr = diff;
             if ( diff > 0 )
-                diff = "+"+diff;
-            effectIconMananger.enqueue(this, {
-                icon: "defense-icon",
-                text: diff
-            });
+                diffStr = "+"+diff;
+            if ( ( diff > 0 && needAddEffect ) || ( diff < 0 && needSubEffect ) ) {
+                effectIconMananger.enqueue(this, {
+                    icon: attr + "-icon",
+                    text: diffStr
+                });
+            }
         }
     },
     renderPositionInTeam:function(){

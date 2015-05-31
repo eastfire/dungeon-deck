@@ -73,7 +73,7 @@ var CardDetailLayer = cc.LayerColor.extend({
             this.addChild(hpIcon,15);
             hpIcon.setString(this.model.get("hp"));
 
-            //add score icon and label
+          /*  //add score icon and label
             var scoreIcon = new IconSprite({
                 image: cc.spriteFrameCache.getSpriteFrame("score-icon.png")
             });
@@ -84,8 +84,8 @@ var CardDetailLayer = cc.LayerColor.extend({
                 y: cardBottom + dimens.card_detail_icon_offset.y*scaleRate
             })
             this.addChild(scoreIcon,15)
-            scoreIcon.setString(this.model.get("score"));
-        } else if ( this.model instanceof MonsterModel ){
+            scoreIcon.setString(this.model.get("score"));*/
+        } else if ( this.model instanceof MonsterModel || this.model instanceof TrapModel ){
             var attackIcon = new IconSprite({
                 image: cc.spriteFrameCache.getSpriteFrame("attack-icon.png")
             })
@@ -98,7 +98,7 @@ var CardDetailLayer = cc.LayerColor.extend({
             this.addChild(attackIcon,15);
             attackIcon.setString(this.model.get("attack"));
 
-            var attackRangeIcon = new IconSprite({
+           /* var attackRangeIcon = new IconSprite({
                 image: cc.spriteFrameCache.getSpriteFrame("attack-"+this.model.get("attackRange")+"-icon.png")
             })
             attackRangeIcon.attr({
@@ -108,6 +108,7 @@ var CardDetailLayer = cc.LayerColor.extend({
                 y: cardBottom + (dimens.card_height - dimens.card_detail_icon_offset.y)*scaleRate-dimens.hero_icon_size.height*iconScaleRate
             })
             this.addChild(attackRangeIcon,15);
+*/
         } else if ( this.model instanceof SpellModel ){
             var attackIcon = new IconSprite({
                 image: cc.spriteFrameCache.getSpriteFrame("attack-icon.png")

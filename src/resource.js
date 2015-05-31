@@ -36,7 +36,7 @@ var dimens = {
     card_detail_description_font_size: 30,
     card_detail_icon_offset: { x: 13, y: 13},
     card_detail_desc_font_size: 35,
-    card_detail_desc_size: { width: 500, height: 60},
+    card_detail_desc_size: { width: 540, height: 60},
     card_detail_desc_position: { x: 320, y: 280},
     card_detail_desc_mask_position: { x: 320, y: 340},
     card_detail_desc_line_space : 60,
@@ -119,6 +119,11 @@ var dimens = {
 }
 
 var colors = {
+    dungeon_hp_normal: cc.color.BLACK,
+    dungeon_hp_danger: cc.color.RED,
+    exp_normal: cc.color.BLACK,
+    exp_full: cc.color.GREEN,
+
     icon_label: cc.color(0,0,0,255),
     top_bar: cc.color(255,255,255,255),
     top_bar_label: cc.color(0,0,0,255),

@@ -30,7 +30,7 @@ var buildRichText = function( options ) {
                 fontSize: fontSize,
                 fontWeight: "normal",
                 fontStyle: "normal",
-                lineHeight: fontSize+10
+                lineHeight: fontSize
             }), opacity, segment);
             richText.pushBackElement(re);
         }
@@ -197,6 +197,8 @@ var SortableSpriteList = cc.Layer.extend({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
             onTouchBegan: function (touch, event) {
+                if ( !self.__enabled )
+                    return false;
                 if ( self.__holding )
                     return false;
 

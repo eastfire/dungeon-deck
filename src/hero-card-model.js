@@ -21,8 +21,15 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
 
             level: 1,
             maxLevel: 3,
-            status: "",
-            positionInTeam: null
+            positionInTeam: null,
+
+            poison: 0,
+            slow: 0,
+
+            poisonReduce: 1,
+            poisonResistance: 0,
+            slowReduce: 1,
+            slowResistance: 1
         }
     },
     initialize:function(){
@@ -57,6 +64,20 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
         this.set("defense", this.get("baseDefense"));
     },
     getDescription:function(){
+        var desc = [];
+        if ( this.get("score") ) {
+            desc.push( "{[score]}杀死该英雄将得到"+this.get("score")+"分");
+        }
+        if ( this.get("defense") ) {
+            desc.push( "{[defense]}怪物对该英雄的伤害减"+this.get("defense"));
+        }
+        if ( this.get("slow") ) {
+            desc.push( "{[slow]}迟缓("+this.get("slow")+"轮)被同一个怪物攻击2次");
+        }
+        if ( this.get("poison") ) {
+            desc.push( "{[poison]}中毒("+this.get("poison")+"轮)每经过1间房间-1{[hp]}");
+        }
+        return desc.join("\n");
     },
     startJoinTeam:function(){
         this.__joinTeamOver = false;
@@ -98,7 +119,8 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
     },
     resetToOrigin:function(){
         this.set({
-            status:"",
+            slow:0,
+            poison: 0,
             buff:0,
             debuff:0
         });
@@ -108,6 +130,22 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
     onEnterRoom:function(roomModel){
     },
     onPassRoom:function(roomModel){
+        var poison = this.get("poison");
+        if ( poison ) {
+            this.onBeDamaged(window.gameModel.get("poisonEffect"),"poison");
+            this.set("poison", poison - this.get("poisonReduce") );
+        }
+
+        var slow = this.get("slow");
+        if ( slow ) {
+            this.set("slow", slow - this.get("slowReduce") );
+        }
+    },
+    getPoison:function(amount){
+        this.set("poison",this.get("poison")+amount);
+    },
+    getSlow:function(amount){
+        this.set("slow",this.get("slow")+amount);
     },
     onPassStage:function(){
     },
@@ -116,8 +154,25 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
     },
     onBeDamaged:function(damage, cardModel){
         var currentHp = this.get("hp");
-        var realDefense = cardModel.get("type") === "spell" ? 0:this.get("defense");
-        var damageAfterBlock = Math.max( damage - realDefense, 0 );
+        var realDefense = 0;
+        var damageAfterBlock;
+        if ( cardModel instanceof Backbone.Model ) {
+            realDefense = ( cardModel.get("type") === "spell" || cardModel.get("type") === "trap" || cardModel.get("pierce") ) ? 0 : this.get("defense");
+            damageAfterBlock = Math.max(damage - realDefense, 0);
+
+            if (damageAfterBlock > currentHp) {
+                if (cardModel.onOverKillHero) {
+                    cardModel.onOverKillHero(this, damageAfterBlock - currentHp);
+                }
+            }
+        } else {
+            var type = cardModel;
+            if ( type.contains( "poison" ) ) {
+                realDefense = this.get("poisonResistance");
+            }
+
+            damageAfterBlock = Math.max(damage - realDefense, 0);
+        }
 
         var d = Math.min( currentHp , damageAfterBlock );
         this.set("hp", currentHp - d);
@@ -150,9 +205,9 @@ var WarriorModel = HeroModel.extend({
         return _.extend(HeroModel.prototype.defaults.call(this), {
             name:"warrior",
             displayName:"战士",
-            hp:10,
-            baseMaxHp: 10,
-            maxLevel: 2,
+            hp:12,
+            baseMaxHp: 12,
+            maxLevel: 4,
             baseDefense: 0
         })
     }

@@ -11,7 +11,7 @@ var RoomModel = DungeonCardModel.extend({ //房间
     },
     onTeamPass:function(team){
     }
-})
+});
 
 
 var VaultModel = RoomModel.extend({

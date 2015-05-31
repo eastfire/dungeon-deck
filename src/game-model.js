@@ -18,7 +18,7 @@ var GameModel = Backbone.Model.extend({
             maxMoney: 10,
 
             levelUpHpEffect: 5,
-            baseHp: 0,
+            baseHp: 20,
             hp : 20,
             maxHp : 20,
 
@@ -36,7 +36,7 @@ var GameModel = Backbone.Model.extend({
             heroList: [ "warrior" ],
             //initDeck: [ "skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
             //initDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
-            initDeck: [ "ooze","orc","vault","minotaur","ratman","skeleton" ],
+            initDeck: [ "spider",/*"titan",*//*"arrow-trap","ooze","orc","vault",*/"poison-gas","ratman","skeleton" ],
             deck: [],
             isInitDeckShuffle: true,
 
@@ -87,7 +87,9 @@ var GameModel = Backbone.Model.extend({
                 },{
                     type:"fireball",
                     count: 8
-                }]
+                }],
+
+            poisonEffect: 1
         }
     },
     initialize:function(){
@@ -160,6 +162,13 @@ var GameModel = Backbone.Model.extend({
         return _.any(this.get("team"),function(heroModel){
             return heroModel.get("hp") > 0;
         },this)
+    },
+    getTeamAttackDungeonHeartPower:function(){
+        return _.reduce(this.get("team"),function(memo, heroModel){
+            if ( heroModel.isAlive() ) {
+                return memo + heroModel.getAttackHeartPower()
+            } else return memo;
+        }, 0 ,this)
     },
     removeDeadHeroFromTeam:function(){
         var team = this.get("team");
@@ -354,7 +363,7 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
         this.resetToOrigin();
     },
     onReveal : function(){
-        this.saveOrigin = this.toJSON();
+
     },
     onStageReveal: function(dungeonCards){
     },
@@ -367,10 +376,10 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
         this.set("level", newLevel);
     },
     resetToOrigin:function(){
-        if ( this.saveOrigin ) {
-            this.saveOrigin.side = this.get("side");
-            this.set(this.saveOrigin);
-        }
+        this.set({
+            buff: 0,
+            debuff: 0
+        })
     }
 })
 
