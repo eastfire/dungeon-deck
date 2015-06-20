@@ -36,12 +36,12 @@ var dimens = {
     card_detail_description_font_size: 30,
     card_detail_icon_offset: { x: 13, y: 13},
     card_detail_desc_font_size: 35,
-    card_detail_desc_size: { width: 540, height: 60},
+    card_detail_desc_size: { width: 520, height: 60},
     card_detail_desc_position: { x: 320, y: 280},
     card_detail_desc_mask_position: { x: 320, y: 340},
     card_detail_desc_line_space : 60,
     card_detail_desc_text_start_y: 480,
-    card_detail_hint_position: { x:320, y: 1050},
+    card_detail_hint_position: { x:320, y: 1035},
     card_detail_hint_size: { width: 500, height: 80},
 
     deck_count_font_size: 50,
@@ -115,7 +115,18 @@ var dimens = {
 
     cant_choose_opacity: 111,
 
-    upgrade_type_label_height: 40
+    upgrade_type_label_height: 40,
+
+    game_over_font_size: 70,
+    game_over_score_font_size: 36,
+
+    score_line_height: 40,
+    score_line_font_size: 25,
+
+    score_board_width:630,
+    score_board_height: 1000,
+
+    loading_score_board_font: 50
 }
 
 var colors = {
@@ -125,6 +136,7 @@ var colors = {
     exp_full: cc.color.GREEN,
 
     icon_label: cc.color(0,0,0,255),
+    icon_debuff: cc.color.GRAY,
     top_bar: cc.color(255,255,255,255),
     top_bar_label: cc.color(0,0,0,255),
     card_detail_mask: cc.color(0,0,0,218),
@@ -140,7 +152,9 @@ var colors = {
     upgrade_chance_label: cc.color.BLACK,
     spell_book_mask: cc.color(0,0,0,128),
 
-    upgrade_type_label : cc.color.WHITE
+    upgrade_type_label : cc.color.WHITE,
+
+    game_over: cc.color.WHITE
 }
 
 var times = {
@@ -155,13 +169,14 @@ var times = {
     get_item: 0.4,
     team_move_to_next_room: 0.4,
     monster_die: 0.4,
-    before_hero_die : 0.25,
+    before_hero_die : 0.20,
     effect_icon_move: 0.35,
     move_to_dungeon_heart: 0.5,
     team_teleport_leave: 0.4,
     default_icon_fly: 0.3,
     book_appear: 0.4,
-    select_spell: 0.1
+    select_spell: 0.1,
+    pay: 0.4
 }
 
 var texts = {
@@ -172,6 +187,7 @@ var texts = {
     you_can_arrange_dungeon_card : "你可以拖拽地城牌排列顺序",
     please_choose: "请选择",
     pay: "支付",
+    cull: "精简",
     cast_spell: "施放",
     build_new_stage: "建造下1层地城",
     not_enough_money_1: "需要",
@@ -183,12 +199,16 @@ var texts = {
     please_choose_target_dungeon_for_spell: "请为你的法术选择1个目标\n点击空白处取消施放法术",
     no_valid_target: "你的法术没有合法的目标",
 
-    upgrade_from: {
+    card_from: {
         discard: "弃牌堆中的牌",
         deck: "牌堆中的牌",
         hand: "手牌中的牌",
         dungeon: "当前地城中的牌"
     },
     level_up: "升级",
-    max_level: "满级"
+    max_level: "满级",
+
+    game_over: "Game Over",
+    confirm: "确定",
+    restart: "再来一局"
 }

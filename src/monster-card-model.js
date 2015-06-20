@@ -107,7 +107,7 @@ var MonsterModel = DungeonCardModel.extend({ //怪物牌
                     }
                 } else {
                     //totally blocked
-                    this.trigger("blocked");
+                    hero.trigger("blocked");
                     this.onBeBlocked(hero);
                 }
             } else {
@@ -131,10 +131,6 @@ var MonsterModel = DungeonCardModel.extend({ //怪物牌
         }
     },
     onTeamPass:function(team){
-    },
-    onPay:function(cost){
-    },
-    onCantPay:function(cost){
     },
     getDescription:function(){
         var desc = DungeonCardModel.prototype.getDescription.call(this);
@@ -176,55 +172,66 @@ var MonsterModel = DungeonCardModel.extend({ //怪物牌
     }
 })
 
-var RatmanModel = MonsterModel.extend({
+var DarkElfModel = MonsterModel.extend({
     defaults:function(){
         return _.extend(MonsterModel.prototype.defaults.call(this), {
-            name:"ratman",
-            displayName:"鼠人",
-            attack: 0,
-            baseAttack: 0,
-            baseCost: 1,
-            maxLevel: 5
+            name:"dark-elf",
+            displayName:"暗精灵",
+            attack: 1,
+            baseAttack: 1,
+            maxLevel: 5,
+            baseCost: 2,
+            baseUpgradeCost: 2,
+            attackRange: "last"
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            baseUpgradeCost: level*level
+            baseAttack: level,
+            baseScore: level,
+            baseUpgradeCost: level
         } );
         this.reEvaluate();
-    },
-    getDescription:function(){
-        var desc = MonsterModel.prototype.getDescription.call(this);
-        if ( desc != "" ) {
-            desc += "\n";
-        }
-        return desc+"翻开时，+"+this.getEffect()+"{[money]}";
-    },
-    getEffect:function(){
-        return this.get("level");
-    },
-    onReveal:function(){
-        MonsterModel.prototype.onReveal.call(this);
-        var money = this.getEffect();
-        gameModel.getMoney(money);
-        this.trigger("give",{
-            icon: "money"
-        });
     }
 })
 
-var SkeletonModel = MonsterModel.extend({
+var DragonModel = MonsterModel.extend({
     defaults:function(){
         return _.extend(MonsterModel.prototype.defaults.call(this), {
-            name:"skeleton",
-            displayName:"骷髅",
-            subtype:"undead",
+            name:"dragon",
+            displayName:"龙",
             attack: 1,
             baseAttack: 1,
             maxLevel: 5,
             baseCost: 1,
-            baseUpgradeCost: 2
+            baseUpgradeCost: 2,
+            trample: true
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseAttack: level*2+2,
+            baseScore: level,
+            baseUpgradeCost: level*10,
+            payHp: level
+        } );
+        this.reEvaluate();
+    }
+})
+
+var GhostModel = MonsterModel.extend({
+    defaults:function(){
+        return _.extend(MonsterModel.prototype.defaults.call(this), {
+            name:"ghost",
+            displayName:"鬼魂",
+            subtype:"undead",
+            maxLevel: 5,
+            baseUpgradeCost: 2,
+            baseCost: 5,
+            attackRange: "random",
+            pierce: true
         })
     },
     initByLevel:function(){
@@ -236,13 +243,46 @@ var SkeletonModel = MonsterModel.extend({
         } );
         this.reEvaluate();
     }
-})
+});
 
-var OrcModel = MonsterModel.extend({
+var LichModel = MonsterModel.extend({
     defaults:function(){
         return _.extend(MonsterModel.prototype.defaults.call(this), {
-            name:"orc",
-            displayName:"兽人",
+            name:"lich",
+            displayName:"巫妖",
+            attack: 0,
+            baseAttack: 0,
+            maxLevel: 5,
+            baseUpgradeCost: 2
+        })
+    },
+    getDescription:function(){
+        var desc = MonsterModel.prototype.getDescription.call(this);
+        if ( desc != "" ) {
+            desc += "\n";
+        }
+        return desc + "杀死的英雄变成僵尸";
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseAttack: level,
+            baseScore: level,
+            baseUpgradeCost: level*2
+        } );
+        this.reEvaluate();
+    },
+    onAttackHero:function(hero, att){
+        hero.set("bite",true);
+        MonsterModel.prototype.onAttackHero.call(this,hero,att);
+    }
+});
+
+var LilithModel = MonsterModel.extend({
+    defaults:function(){
+        return _.extend(MonsterModel.prototype.defaults.call(this), {
+            name:"lilith",
+            displayName:"莉莉丝",
             maxLevel: 5,
             baseUpgradeCost: 2
         })
@@ -252,31 +292,26 @@ var OrcModel = MonsterModel.extend({
         if ( desc !== "" ) {
             desc += "\n";
         }
-        var level = this.get("level");
-        return desc+"兽人的攻击力等于本层地城中怪物的数量"+ (level>1?("+"+(level-1)):"");
+        return desc+"获得与英雄受到的伤害等量的{[hp]}";
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            baseAttack: "＊",
+            baseAttack: level,
             baseScore: level,
             baseUpgradeCost: level*2
         } );
         this.reEvaluate();
     },
-    onStageReveal:function(dungeonCards){
-        var att = _.reduce(dungeonCards, function(memo, cardModel){
-            var value = 0;
-            if ( cardModel.get("side") === "front" && cardModel instanceof MonsterModel ) {
-                value = 1;
-            }
-            return memo+value;
-        },0,this);
-        this.set({
-            baseAttack: att + this.get("level") - 1
-        })
+    onDamageHero:function(heroModel, damageTaken){
+        if ( damageTaken ) {
+            gameModel.getHp(damageTaken);
+            this.trigger("give", {
+                icon: "hp"
+            });
+        }
     }
-})
+});
 
 var MinotaurModel = MonsterModel.extend({
     defaults:function(){
@@ -366,12 +401,12 @@ var OozeModel = MonsterModel.extend({
     onDamageHero:function(heroModel, damageTaken ){
         var level = this.get("level");
         if ( level <= 3 )
-            heroModel.loseDefense(3);
+            heroModel.loseDefense(level);
     },
     onBeBlocked:function(heroModel){
         var level = this.get("level");
         if ( level <= 3 )
-            heroModel.loseDefense(3);
+            heroModel.loseDefense(level);
     },
     onTeamPass:function(team){
         var level = this.get("level");
@@ -385,18 +420,61 @@ var OozeModel = MonsterModel.extend({
     }
 });
 
-var GhostModel = MonsterModel.extend({
+var OrcModel = MonsterModel.extend({
     defaults:function(){
         return _.extend(MonsterModel.prototype.defaults.call(this), {
-            name:"ghost",
-            displayName:"鬼魂",
-            subtype:"undead",
+            name:"orc",
+            displayName:"兽人",
             maxLevel: 5,
-            baseUpgradeCost: 2,
-            baseCost: 5,
-            attackRange: "random",
-            pierce: true
+            baseUpgradeCost: 2
         })
+    },
+    getDescription:function(){
+        var desc = MonsterModel.prototype.getDescription.call(this);
+        if ( desc !== "" ) {
+            desc += "\n";
+        }
+        var level = this.get("level");
+        return desc+"兽人的攻击力等于本层地城中怪物的数量"+ (level>1?("+"+(level-1)):"");
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseAttack: "＊",
+            baseScore: level,
+            baseUpgradeCost: level*2
+        } );
+        this.reEvaluate();
+    },
+    onStageReveal:function(dungeonCards){
+        var att = _.reduce(dungeonCards, function(memo, cardModel){
+            if ( cardModel.isEffecting() && cardModel instanceof MonsterModel ) {
+                return memo + 1;
+            } else {
+                return memo;
+            }
+        },0,this);
+        this.set({
+            baseAttack: att + this.get("level") - 1
+        })
+    }
+});
+
+var OrcBanditModel = MonsterModel.extend({
+    defaults:function(){
+        return _.extend(MonsterModel.prototype.defaults.call(this), {
+            name:"orc-bandit",
+            displayName:"兽人强盗",
+            maxLevel: 5,
+            baseUpgradeCost: 2
+        })
+    },
+    getDescription:function(){
+        var desc = MonsterModel.prototype.getDescription.call(this);
+        if ( desc !== "" ) {
+            desc += "\n";
+        }
+        return desc+"英雄经过时，你得到与兽人强盗{[attack]}相同的{[money]}";
     },
     initByLevel:function(){
         var level = this.get("level");
@@ -406,27 +484,74 @@ var GhostModel = MonsterModel.extend({
             baseUpgradeCost: level*2
         } );
         this.reEvaluate();
+    },
+    onTeamEnter:function(team){
+        if ( this.get("attack") ) {
+            gameModel.getMoney(this.get("attack"));
+            this.trigger("give", {
+                icon: "money"
+            });
+        }
     }
 });
 
-var TitanModel = MonsterModel.extend({
+var RatmanModel = MonsterModel.extend({
     defaults:function(){
         return _.extend(MonsterModel.prototype.defaults.call(this), {
-            name:"titan",
-            displayName:"泰坦巨人",
-            maxLevel: 5,
-            baseUpgradeCost: 2,
-            baseCost: 5,
-            attackRange: "first",
-            trample: true
+            name:"ratman",
+            displayName:"鼠人",
+            attack: 0,
+            baseAttack: 0,
+            baseCost: 1,
+            maxLevel: 5
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            baseAttack: level*3,
+            baseUpgradeCost: level*level
+        } );
+        this.reEvaluate();
+    },
+    getDescription:function(){
+        var desc = MonsterModel.prototype.getDescription.call(this);
+        if ( desc != "" ) {
+            desc += "\n";
+        }
+        return desc+"翻开时，+"+this.getEffect()+"{[money]}";
+    },
+    getEffect:function(){
+        return this.get("level");
+    },
+    onReveal:function(){
+        MonsterModel.prototype.onReveal.call(this);
+        var money = this.getEffect();
+        gameModel.getMoney(money);
+        this.trigger("give",{
+            icon: "money"
+        });
+    }
+});
+
+var SkeletonModel = MonsterModel.extend({
+    defaults:function(){
+        return _.extend(MonsterModel.prototype.defaults.call(this), {
+            name:"skeleton",
+            displayName:"骷髅",
+            subtype:"undead",
+            attack: 1,
+            baseAttack: 1,
+            maxLevel: 5,
+            baseCost: 1,
+            baseUpgradeCost: 2
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseAttack: level,
             baseScore: level,
-            baseUpgradeCost: level*5
+            baseUpgradeCost: level*4
         } );
         this.reEvaluate();
     }
@@ -464,5 +589,91 @@ var SpiderModel = MonsterModel.extend({
     },
     onDamageHero:function(heroModel, damageTaken ){
         heroModel.getPoison(this.getEffect());
+    }
+});
+
+var TitanModel = MonsterModel.extend({
+    defaults:function(){
+        return _.extend(MonsterModel.prototype.defaults.call(this), {
+            name:"titan",
+            displayName:"泰坦巨人",
+            maxLevel: 5,
+            baseUpgradeCost: 2,
+            baseCost: 5,
+            attackRange: "first",
+            trample: true
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseAttack: level*3,
+            baseScore: level,
+            baseUpgradeCost: level*5
+        } );
+        this.reEvaluate();
+    }
+});
+
+var TreefolkModel = MonsterModel.extend({
+    defaults:function(){
+        return _.extend(MonsterModel.prototype.defaults.call(this), {
+            name:"treefolk",
+            displayName:"树妖",
+            attack: 0,
+            baseAttack: 0,
+            baseCost: 1,
+            maxLevel: 5
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseAttack: Math.floor(level/2)+1,
+            baseUpgradeCost: level*level
+        } );
+        this.reEvaluate();
+    },
+    getDescription:function(){
+        var desc = MonsterModel.prototype.getDescription.call(this);
+        if ( desc != "" ) {
+            desc += "\n";
+        }
+        return desc+"翻开时，+"+this.getEffect()+"{[hp]}";
+    },
+    getEffect:function(){
+        return Math.ceil(this.get("level")/2);
+    },
+    onReveal:function(){
+        MonsterModel.prototype.onReveal.call(this);
+        var hp = this.getEffect();
+        gameModel.getHp(hp);
+        this.trigger("give",{
+            icon: "hp"
+        });
+    }
+});
+
+var ZombieModel = MonsterModel.extend({
+    defaults:function(){
+        return _.extend(MonsterModel.prototype.defaults.call(this), {
+            name:"zombie",
+            displayName:"僵尸",
+            subtype:"undead",
+            attack: 1,
+            baseAttack: 1,
+            maxLevel: 5,
+            baseCost: 1,
+            baseUpgradeCost: 2
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseAttack: level,
+            baseScore: level,
+            baseUpgradeCost: level*2
+        } );
+        this.reEvaluate();
     }
 });

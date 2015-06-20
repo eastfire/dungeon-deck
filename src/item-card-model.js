@@ -6,12 +6,15 @@ var ItemModel = DungeonCardModel.extend({ //物品
         return _.extend( DungeonCardModel.prototype.defaults.call(this),{
             type: "item",
 
-            upgradeable: false
+            maxLevel: "NA",
+            upgradeable: false,
+            cullable: false
         })
     },
     onTeamEnter:function(team){
     },
     onTeamGet:function(team){
+        gameModel.getScore(this.get("score"));
         var allAlive = _.filter( team ,function(model){
             return model.isAlive();
         }, this )
@@ -22,6 +25,16 @@ var ItemModel = DungeonCardModel.extend({ //物品
     },
     onHeroGet:function(hero){
 
+    },
+
+    getDescription:function() {
+        var desc = DungeonCardModel.prototype.getDescription.call(this);
+        var descs = [desc];
+        if (this.get("score")) {
+            descs.push("{[score]}宝物被英雄得到时你得" + this.get("score") + "分");
+        }
+
+        return descs.join("\n");
     }
 });
 
@@ -31,6 +44,9 @@ var TreasureChestModel = ItemModel.extend({ //物品
             name: "treasure-chest",
             displayName: "宝箱"
         })
+    },
+    initialize:function(){
+        this.set("score",this.get("level"));
     },
     onHeroGet:function(hero){
         hero.getHeal(this.getEffect());

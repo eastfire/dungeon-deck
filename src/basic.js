@@ -162,6 +162,7 @@ var SortableSpriteList = cc.Layer.extend({
         this.orientation = opt.orientation || "horizontal"
         this.needAnimation = opt.needAnimation || true;
 
+        this.listeners = {};
         this.sprites = opt.sprites || [];
         _.each( this.sprites, function(s){
             this.addSprite(s,-1,false)
@@ -193,7 +194,7 @@ var SortableSpriteList = cc.Layer.extend({
     },
     __addListener:function(sprite){
         var self = this;
-        cc.eventManager.addListener(cc.EventListener.create({
+        cc.eventManager.addListener(this.listeners[sprite.__instanceId] = cc.EventListener.create({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
             onTouchBegan: function (touch, event) {
@@ -258,6 +259,20 @@ var SortableSpriteList = cc.Layer.extend({
                 target.lastTouchTime = now;*/
             }
         }), sprite);
+    },
+    onEnter:function(){
+        this._super();
+        _.each(this.sprites, function(s){
+            var listener = this.listeners[s.__instanceId];
+            if ( listener ) cc.eventManager.addListener(listener, s);
+        },this);
+    },
+    onExit:function(){
+        _.each(this.sprites, function(s){
+            var listener = this.listeners[s.__instanceId];
+            cc.eventManager.removeListener(listener);
+        },this);
+        this._super();
     },
     setEnabled:function(enable){
         this.__enabled = enable;
@@ -327,7 +342,10 @@ var SortableSpriteList = cc.Layer.extend({
     empty:function(){
         _.each( this.sprites, function(sprite){
             this.removeChild(sprite, true);
+            var listener = this.listeners[s.__instanceId];
+            cc.eventManager.removeListener(listener);
         },this)
+        this.listeners = [];
         this.sprites = [];
     },
     removeSpriteByIndex:function(index){
@@ -342,6 +360,8 @@ var SortableSpriteList = cc.Layer.extend({
             x: box.x + point.x*box.width,
             y: box.y + point.y*box.height
         });
+        cc.eventManager.removeListener(this.listeners[sprite.__instanceId]);
+        this.listeners[sprite.__instanceId] = null;
         this.removeChild(sprite, false);
         return sprite;
     },

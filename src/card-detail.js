@@ -34,7 +34,7 @@ var CardDetailLayer = cc.LayerColor.extend({
         this.addChild(nameLabel,15);
 
         var levelIcon = new IconSprite({
-            image: cc.spriteFrameCache.getSpriteFrame("level-icon.png")
+            image: this.model.isMaxLevel() ? cc.spriteFrameCache.getSpriteFrame("max-level-icon.png") : cc.spriteFrameCache.getSpriteFrame("level-icon.png")
         });
         levelIcon.attr({
             scaleX: iconScaleRate,
@@ -48,7 +48,11 @@ var CardDetailLayer = cc.LayerColor.extend({
         if ( this.model.get("maxLevel") !== "NA" ) {
             var maxLevelIcon = new IconSprite({
                 image: cc.spriteFrameCache.getSpriteFrame("level-icon.png"),
-                fontSize: 15
+                fontSize: 12,
+                offset: {
+                    x: dimens.hero_icon_size.width/2,
+                    y: dimens.hero_icon_size.height/2-3
+                }
             });
             maxLevelIcon.attr({
                 scaleX: iconScaleRate,
@@ -56,7 +60,7 @@ var CardDetailLayer = cc.LayerColor.extend({
                 x: cardLeft + dimens.card_detail_icon_offset.x * scaleRate,
                 y: cardBottom + (dimens.card_height - dimens.card_detail_icon_offset.y - 19) * scaleRate
             });
-            maxLevelIcon.setString("MAX" + this.model.get("maxLevel"));
+            maxLevelIcon.setString("最大" + this.model.get("maxLevel"));
             this.addChild(maxLevelIcon, 14);
         }
 
@@ -72,19 +76,18 @@ var CardDetailLayer = cc.LayerColor.extend({
             })
             this.addChild(hpIcon,15);
             hpIcon.setString(this.model.get("hp"));
-
-          /*  //add score icon and label
-            var scoreIcon = new IconSprite({
-                image: cc.spriteFrameCache.getSpriteFrame("score-icon.png")
+            var maxHpIcon = new IconSprite({
+                image: cc.spriteFrameCache.getSpriteFrame("hp-icon.png"),
+                fontSize: 12
             });
-            scoreIcon.attr({
+            maxHpIcon.attr({
                 scaleX: iconScaleRate,
                 scaleY: iconScaleRate,
-                x: cardLeft + dimens.card_detail_icon_offset.x*scaleRate,
-                y: cardBottom + dimens.card_detail_icon_offset.y*scaleRate
-            })
-            this.addChild(scoreIcon,15)
-            scoreIcon.setString(this.model.get("score"));*/
+                x: cardLeft + ( dimens.card_width - dimens.card_detail_icon_offset.x )*scaleRate,
+                y: cardBottom + (dimens.card_height - dimens.card_detail_icon_offset.y-19)*scaleRate
+            });
+            maxHpIcon.setString("最大" + this.model.get("maxHp"));
+            this.addChild(maxHpIcon, 14);
         } else if ( this.model instanceof MonsterModel || this.model instanceof TrapModel ){
             var attackIcon = new IconSprite({
                 image: cc.spriteFrameCache.getSpriteFrame("attack-icon.png")
@@ -97,18 +100,6 @@ var CardDetailLayer = cc.LayerColor.extend({
             })
             this.addChild(attackIcon,15);
             attackIcon.setString(this.model.get("attack"));
-
-           /* var attackRangeIcon = new IconSprite({
-                image: cc.spriteFrameCache.getSpriteFrame("attack-"+this.model.get("attackRange")+"-icon.png")
-            })
-            attackRangeIcon.attr({
-                scaleX: iconScaleRate,
-                scaleY: iconScaleRate,
-                x: cardLeft + ( dimens.card_width - dimens.card_detail_icon_offset.x )*scaleRate,
-                y: cardBottom + (dimens.card_height - dimens.card_detail_icon_offset.y)*scaleRate-dimens.hero_icon_size.height*iconScaleRate
-            })
-            this.addChild(attackRangeIcon,15);
-*/
         } else if ( this.model instanceof SpellModel ){
             var attackIcon = new IconSprite({
                 image: cc.spriteFrameCache.getSpriteFrame("attack-icon.png")

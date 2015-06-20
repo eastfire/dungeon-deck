@@ -104,7 +104,7 @@ var LighteningModel = SpellModel.extend({
     },
     initialize:function(){
         SpellModel.prototype.initialize.call(this);
-        this.on("change:baseAttack", this.evaluateAttack, this)
+        this.on("change:baseAttack change:attackBuff change:attackDebuff", this.evaluateAttack, this)
     },
     evaluateAttack:function(){
         this.set("attack", this.get("baseAttack"))
@@ -134,16 +134,38 @@ var FireballModel = SpellModel.extend({
             displayName:"火球术",
             target: "single-hero",
             baseCost: 1,
-            baseAttack: 1,
-            attack: 1
+            baseAttack: 2,
+            attack: 2
         })
     },
     initialize:function(){
         SpellModel.prototype.initialize.call(this);
-        this.on("change:baseAttack", this.evaluateAttack, this)
+        this.on("change:baseAttack change:attackBuff change:attackDebuff", this.evaluateAttack, this)
+    },
+    onEffect:function(heroModel){
+        heroModel.onBeDamaged(this.getEffect(), this);
+        var team = gameModel.get("team");
+        var index = _.indexOf(team, heroModel);
+        if ( index - 1 >= 0 && team[index-1].isAlive()) {
+            team[index-1].onBeDamaged(this.getEffect()-1, this);
+        }
+        if ( index + 1 < team.length && team[index+1].isAlive()) {
+            team[index+1].onBeDamaged(this.getEffect()-1, this);
+        }
+        SpellModel.prototype.onEffect.call(this);
     },
     evaluateAttack:function(){
         this.set("attack", this.get("baseAttack"))
+    },
+    getEffect:function(){
+        return this.get("attack");
+    },
+    getDescription:function(){
+        var desc = RoomModel.prototype.getDescription.call(this);
+        if ( desc !== "" ) {
+            desc += "\n";
+        }
+        return desc + "对英雄造成"+this.getEffect()+"点伤害，对其两旁的英雄造成"+(this.getEffect()-1)+"点伤害"
     }
 });
 
@@ -171,6 +193,124 @@ var WarDrumModel = SpellModel.extend({
             desc += "\n";
         }
         return desc + "使地城中的1个怪物攻击力+"+this.getEffect()
+    }
+});
+
+var TouchStoneModel = SpellModel.extend({
+    defaults:function(){
+        return _.extend(SpellModel.prototype.defaults.call(this), {
+            name:"touchstone",
+            displayName:"炼金术",
+            target: null,
+            baseCost: 6,
+            baseAttack: 0,
+            attack: 0,
+            maxLevel: 3
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseScore: level,
+            baseUpgradeCost: level*2
+        } );
+        this.reEvaluate();
+    },
+    getEffect:function(){
+        return this.get("level");
+    },
+    onEffect:function(){
+        gameModel.getMoney(this.getEffect());
+        SpellModel.prototype.onEffect.call(this);
+    },
+    getDescription:function(){
+        var desc = RoomModel.prototype.getDescription.call(this);
+        if ( desc !== "" ) {
+            desc += "\n";
+        }
+        return desc + "获得"+this.getEffect()+"{[money]}"
+    }
+});
+
+var CycloneModel = SpellModel.extend({
+    defaults:function(){
+        return _.extend(SpellModel.prototype.defaults.call(this), {
+            name:"cyclone",
+            displayName:"狂风术",
+            target: null,
+            baseCost: 6,
+            baseAttack: 0,
+            attack: 0,
+            maxLevel: 3
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseScore: level,
+            baseUpgradeCost: level*2
+        } );
+        this.reEvaluate();
+    },
+    onEffect:function(){
+        var level = this.get("level");
+        var team = gameModel.get("team");
+        if ( team.length > 1 ) {
+            if (level == 1) {
+                var i = 0;
+                var oldPosition = 0;
+                var thisHero = _.sample(team);
+                _.each(team, function (heroModel) {
+                    if ( heroModel != thisHero ) {
+                        heroModel.___temp = i;
+                        i++;
+                    } else {
+                        oldPosition = i;
+                    }
+                }, this);
+                do {
+                    thisHero.___temp = Math.random() * (team.length) - 1;
+                } while ( Math.ceil(thisHero.___temp) == oldPosition );
+
+                team = _.sortBy(team, function (heroModel) {
+                    return heroModel.___temp;
+                });
+            } else if (level == 2) {
+                var newTeam;
+                do {
+                    newTeam = _.shuffle(team, team.length);
+                } while (_.isEqual(newTeam, team) );
+                team = newTeam;
+            } else if (level >= 3) {
+                var newTeam = [];
+                _.each(team, function (heroModel) {
+                    newTeam.unshift(heroModel);
+                }, this);
+                team = newTeam;
+            }
+            gameModel.changeTeamPosition(team);
+            /*gameModel.set("team", team);
+            for (var i = 0; i < team.length; i++) {
+                var model = team[i];
+                model.set("positionInTeam", i, {silent: true});
+                model.trigger("change:positionInTeam");
+            }*/
+        }
+        SpellModel.prototype.onEffect.call(this);
+    },
+    getDescription:function(){
+        var desc = RoomModel.prototype.getDescription.call(this);
+        if ( desc !== "" ) {
+            desc += "\n";
+        }
+        var level = this.get("level");
+        if ( level == 1 ) {
+            return desc + "使1个英雄移动到队伍中某个随机位置"
+        } else if ( level == 2 ) {
+            return desc + "使英雄队伍的顺序变得随机"
+        } else if ( level >= 3 ) {
+            return desc + "使英雄队伍的顺序变得相反"
+        }
     }
 });
 

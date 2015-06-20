@@ -52,6 +52,23 @@ var MagicMissileCardSprite = SpellCardSprite.extend({
     }
 });
 
+var FireballCardSprite = SpellCardSprite.extend({
+    onSelectTarget:function(heroModel){
+        var heroSprite = mainLayer.getHeroSpriteByModel( heroModel );
+        if ( heroSprite ) {
+            effectIconMananger.fly(this, heroSprite, {
+                icon: "attack",
+                callback: function(){
+                    this.model.onSelectTarget(heroModel)
+                },
+                context: this
+            });
+        } else {
+            this.model.onSelectTarget(heroModel);
+        }
+    }
+});
+
 var WarDrumCardSprite = SpellCardSprite.extend({
     onSelectTarget:function(dungeonModel){
         var dungeonSprite = mainLayer.getDungeonSpriteByModel( dungeonModel );

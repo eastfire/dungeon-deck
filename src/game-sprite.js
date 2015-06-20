@@ -72,26 +72,16 @@ var BaseCardSprite = CardSprite.extend({
     ctor: function (options) {
         options = options || {};
         var swallowEvent = options.swallowEvent || false;
+        var forceToSide = options.forceToSide || null;
         this.model = options.model;
         this.setName(this.model.cid);
 
         var opt = {
-            side : this.model.get("side"),
+            side : forceToSide ? forceToSide : this.model.get("side"),
             frontImage: this.getFrontImage(),
             backImage: this.getBackImage()
         }
         this._super(opt);
-
-        //add level icon
-        this.levelIcon = new IconSprite({
-            image: cc.spriteFrameCache.getSpriteFrame("level-icon.png")
-        });
-        this.levelIcon.attr({
-            x: dimens.hero_icon_offset.x,
-            y: dimens.card_height - dimens.hero_icon_offset.y
-        })
-        this.addChild(this.levelIcon,1)
-        this.addFrontSprite( this.levelIcon )
 
         var self = this;
         this.touchListener = cc.EventListener.create({
@@ -126,6 +116,40 @@ var BaseCardSprite = CardSprite.extend({
                 target.lastTouchTime = now;
             }
         });
+
+        this.icons = {};
+
+        this.registerIcon( "level", cc.spriteFrameCache.getSpriteFrame("level-icon.png"), {
+            x: dimens.hero_icon_offset.x,
+            y: dimens.card_height - dimens.hero_icon_offset.y
+        } );
+
+        this.registerIcon( "payMoney", cc.spriteFrameCache.getSpriteFrame("pay-money-icon.png"), {
+            x: dimens.hero_icon_offset.x,
+            y: dimens.card_height - dimens.hero_icon_offset.y - dimens.hero_icon_size.height
+        } );
+        this.registerIcon( "payScore", cc.spriteFrameCache.getSpriteFrame("pay-score-icon.png"), {
+            x: dimens.hero_icon_offset.x,
+            y: dimens.card_height - dimens.hero_icon_offset.y - dimens.hero_icon_size.height
+        } );
+        this.registerIcon( "payHp", cc.spriteFrameCache.getSpriteFrame("pay-hp-icon.png"), {
+            x: dimens.hero_icon_offset.x,
+            y: dimens.card_height - dimens.hero_icon_offset.y - dimens.hero_icon_size.height
+        } );
+
+    },
+    registerIcon:function(iconAttribute, image, position , options) {
+        options = options || {};
+        this.icons[iconAttribute] = {
+            position:position,
+            image: image,
+            showZero: options.showZero || false,
+            buffAttribute : options.buffAttribute,
+            debuffAttribute : options.debuffAttribute,
+            normalColor: options.normalColor || colors.icon_label,
+            buffColor: options.buffColor || cc.color.GREEN,
+            debuffColor: options.debuffColor || colors.icon_debuff
+        };
     },
     setOnClickListener:function(listener,listenerContext){
         this.onClickListener = listener;
@@ -162,10 +186,29 @@ var BaseCardSprite = CardSprite.extend({
         this._super();
     },
     __refresh:function(){
-        this.renderLevel();
+        this.renderIcon("level");
+        this.renderIcon("payMoney");
+        this.renderIcon("payHp");
+        this.renderIcon("payScore");
     },
     __initEvent:function(){
-        this.model.on("change:level",this.renderLevel, this);
+        this.model.on("change:level",function(){
+            this.onIconChanged("level", this.icons.level.concernIncrease, this.icons.level.concernDecrease);
+            if ( this.model.isMaxLevel() && this.model.previous("level") < this.model.get("maxLevel") ) {
+                if ( this.icons.level.icon ) {
+                    this.icons.level.icon.setIcon(cc.spriteFrameCache.getSpriteFrame("max-level-icon.png"));
+                }
+            }
+        },this);
+        this.model.on("change:payMoney",function(){
+            this.onIconChanged("payMoney", true, true);
+        },this);
+        this.model.on("change:payHp",function(){
+            this.onIconChanged("payHp", true, true);
+        },this);
+        this.model.on("change:payScore",function(){
+            this.onIconChanged("payScore", true, true);
+        },this);
         this.model.on("give",this.onGiveIcon,this);
         this.model.on("take",this.onTakeIcon,this);
 
@@ -184,11 +227,69 @@ var BaseCardSprite = CardSprite.extend({
             text: options.text
         });
     },
-    renderLevel:function(){
-        this.levelIcon.setString(this.model.get("level"))
-    },
+//    renderLevel:function(){
+//        this.levelIcon.setString(this.model.get("level"))
+//    },
     onSelectTarget:function(heroModel){
         this.model.onSelectTarget(heroModel);
+    },
+    renderIconStringColor:function(entry){
+        if ( entry.buffAttribute && entry.debuffAttribute ) {
+            var diff = this.model.get(entry.buffAttribute) - this.model.get(entry.debuffAttribute);
+            if ( diff > 0 ) {
+                entry.icon.setFontColor(entry.buffColor);
+            } else if ( diff < 0 ) {
+                entry.icon.setFontColor(entry.debuffColor);
+            } else {
+                entry.icon.setFontColor(entry.normalColor);
+            }
+        }
+    },
+    renderIcon:function(attr){
+        var entry = this.icons[attr];
+        if ( !entry ) return;
+        var stat = this.model.get(attr);
+        if ( stat !== false && (entry.showZero || stat !== 0) && stat !== undefined ) {
+            if ( entry.icon ) {
+                if ( stat !== true ) {
+                    entry.icon.setString(stat);
+                    this.renderIconStringColor(entry);
+                }
+            } else {
+                var iconSprite = entry.icon = new IconSprite({
+                    image: this.icons[attr].image
+                });
+                iconSprite.attr ( this.icons[attr].position )
+                if ( stat !== true ) {
+                    iconSprite.setString(stat);
+                    this.renderIconStringColor(entry);
+                }
+                this.addChild(iconSprite,1)
+                this.addFrontSprite( iconSprite );
+            }
+        } else {
+            if ( entry.icon ) {
+                this.removeFrontSprite(entry.icon);
+                entry.icon.removeFromParent(true);
+                entry.icon = null;
+            }
+        }
+    },
+    onIconChanged:function(attr, needAddEffect, needSubEffect){
+        this.renderIcon(attr);
+        var stat = this.model.get(attr);
+        if ( this.model.previous(attr) != stat ) {
+            var diff = stat - this.model.previous(attr);
+            var diffStr = diff;
+            if ( diff > 0 )
+                diffStr = "+"+diff;
+            if ( ( diff > 0 && needAddEffect ) || ( diff < 0 && needSubEffect ) ) {
+                effectIconMananger.enqueue(this, {
+                    icon: attr + "-icon",
+                    text: diffStr
+                });
+            }
+        }
     }
 })
 
@@ -222,6 +323,9 @@ var IconSprite = cc.Sprite.extend({
     },
     setString:function(str){
         this.label.setString(str)
+    },
+    setFontColor:function(color){
+        this.label.setColor(color);
     }
 })
 
@@ -328,6 +432,13 @@ var DeckSprite = cc.Sprite.extend({
     },
     getCards:function(){
         return this.__cards;
+    },
+    cullCard:function(cardModel){
+        var index = _.indexOf(this.__cards, cardModel);
+        if ( index != -1 ) {
+            this.__cards.splice(index, 1);
+            this.__render();
+        }
     }
 })
 
@@ -366,13 +477,15 @@ var EffectIconManager = Backbone.Model.extend({
             text: options.text,
             image: cc.spriteFrameCache.getSpriteFrame(options.icon+"-icon.png")
         });
+        var fromBox = fromSprite.getBoundingBoxToWorld();
         icon.attr({
-            x : fromSprite.x + fromOffset.x,
-            y : fromSprite.y + fromOffset.y
+            x : fromBox.x + fromSprite.width/2 + fromOffset.x,
+            y : fromBox.y + fromSprite.height/2 + fromOffset.y
         });
         this.layer.addChild( icon, this.iconZindex );
 
-        var sequence = cc.sequence( cc.moveTo(moveTime, toSprite.x + toOffset.x, toSprite.y + toOffset.y ),
+        var toBox = toSprite.getBoundingBoxToWorld();
+        var sequence = cc.sequence( cc.moveTo(moveTime, toBox.x + toSprite.width/2 + toOffset.x, toBox.y + toSprite.height/2 + toOffset.y ),
         cc.callFunc(function(){
             icon.removeFromParent(true);
             if ( options.callback )
@@ -396,9 +509,11 @@ var EffectIconManager = Backbone.Model.extend({
                 image: cc.spriteFrameCache.getSpriteFrame(entry.icon+".png")
             });
             this.layer.addChild( this.iconMap[sprite.__instanceId], this.iconZindex );
+
+            var box = sprite.getBoundingBoxToWorld();
             this.iconMap[sprite.__instanceId].attr({
-                x: sprite.x + entry.offset.x,
-                y: sprite.y + entry.offset.y
+                x: box.x+sprite.width/2 + entry.offset.x,
+                y: box.y+sprite.height/2 + entry.offset.y
             })
             var sequence = cc.sequence( cc.moveBy( times.effect_icon_move, 0, dimens.effect_icon_move_y),
             cc.callFunc(function(){

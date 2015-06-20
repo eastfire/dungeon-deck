@@ -81,7 +81,7 @@ var ChooseDungeonLayer = cc.LayerColor.extend({
                 });
                 this.addChild(card);
 
-                if ( this.filter(dungeonModel) && dungeonModel.get("side") === "front") {
+                if ( this.filter(dungeonModel) && dungeonModel.isEffecting()) {
                     validCount++;
                     cc.eventManager.addListener(cc.EventListener.create({
                         event: cc.EventListener.TOUCH_ONE_BY_ONE,

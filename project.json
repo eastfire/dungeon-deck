@@ -38,6 +38,7 @@
         "src/card-detail.js",
         "src/choose-hero.js",
         "src/choose-dungeon.js",
+        "src/choose-card.js",
         "src/level-up.js",
         "src/upgrade.js",
         "src/game-over.js",

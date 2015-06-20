@@ -154,16 +154,83 @@ var ArrowTrapModel = TrapModel.extend({
             baseAttack: 1,
             attack: 1,
             level: 1,
-            maxLevel: 5
+            maxLevel: 5,
+            payMoney: 1
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            attack: level,
+            baseAttack: level,
             baseUpgradeCost: level
         } );
         this.reEvaluate();
+    }
+});
+
+var PitfallModel = TrapModel.extend({
+    defaults:function(){
+        return _.extend( TrapModel.prototype.defaults.call(this),{
+            name: "pitfall",
+            displayName:"陷坑",
+            attackRange:"first",
+            baseAttack: "*",
+            level: 1,
+            maxLevel: 4,
+            payMoney: 1
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseUpgradeCost: level
+        } );
+        if ( level == 1 ) {
+            this.set("attackRange","first");
+        } else if ( level == 2 ) {
+            this.set("attackRange","first2");
+        } else if ( level == 3 ) {
+            this.set("attackRange","first3");
+        } else if ( level >= 4 ) {
+            this.set("attackRange","all");
+        }
+        this.reEvaluate();
+    },
+    onAttackHero:function(hero, att){
+        att = hero.get("defense");
+        if ( att > 0 ) {
+            var hit = hero.onBeAttacked(att, this);
+            if (hit) {
+                var damageTaken = hero.onBeDamaged(att, this);
+                if (damageTaken > 0) {
+                    this.onDamageHero(hero, damageTaken);
+                    if (hero.get("hp") == 0) {
+                        this.trigger("kill-hero");
+                        this.onKillHero(hero);
+                    }
+//                var attackLeft = att - damageTaken;
+//                if ( attackLeft > 0 ) {
+//                    this.onOverKillHero( hero, attackLeft );
+//                }
+                } else {
+                    //totally blocked
+                    this.trigger("blocked");
+                    this.onBeBlocked(hero);
+                }
+            } else {
+                //miss
+                this.trigger("miss");
+                this.onMiss(hero);
+            }
+        }
+    },
+    getDescription:function(){
+        var desc = TrapModel.prototype.getDescription.call(this);
+        if ( desc != "" ) {
+            desc += "\n";
+        }
+        desc += "英雄受到等于其{[defense]}的伤害";
+        return desc;
     }
 })
 
@@ -182,8 +249,8 @@ var PoisonGasModel = TrapModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            attack: 0,
-            baseUpgradeCost: level
+            baseUpgradeCost: level,
+            payMoney: level
         } );
         if ( level == 1 ) {
             this.set("attackRange","first");
@@ -201,15 +268,53 @@ var PoisonGasModel = TrapModel.extend({
         return Math.floor((level+1)/2)+1;
     },
     onAttackHero:function(heroModel, att){
-        TrapModel.prototype.onAttackHero.call(this, heroModel, att);
-        heroModel.getPoison(this.getEffect());
+        var hit = heroModel.onBeAttacked(0, this);
+        if (hit) {
+            heroModel.getPoison(this.getEffect());
+        }
     },
     getDescription:function(){
         var desc = TrapModel.prototype.getDescription.call(this);
         if ( desc != "" ) {
             desc += "\n";
         }
-        desc += "受影响的英雄中毒"+this.getEffect()+"轮";
+        desc += "英雄中毒"+this.getEffect()+"轮";
         return desc;
     }
 })
+
+var RollingBoulderModel = TrapModel.extend({
+    defaults:function(){
+        return _.extend( TrapModel.prototype.defaults.call(this),{
+            name: "rolling-boulder",
+            displayName:"滚石陷阱",
+            attackRange:"last",
+            baseAttack: "*",
+            level: 1,
+            maxLevel: 5,
+            payMoney: 5
+        })
+    },
+    onAttackHero:function(heroModel, att){
+        var hit = heroModel.onBeAttacked(0, this);
+        if (hit) {
+            heroModel.set("hp",0);
+        }
+    },
+    getDescription:function(){
+        var desc = TrapModel.prototype.getDescription.call(this);
+        if ( desc != "" ) {
+            desc += "\n";
+        }
+        desc += "受影响的英雄立即死亡";
+        return desc;
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseUpgradeCost: level*10+10,
+            payMoney: 5-level
+        } );
+        this.reEvaluate();
+    }
+});

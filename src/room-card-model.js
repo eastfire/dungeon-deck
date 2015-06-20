@@ -22,7 +22,7 @@ var VaultModel = RoomModel.extend({
             displayName:"金库",
 
             maxLevel: 3,
-            upgradeable: false
+            upgradeable: true
         })
     },
     getDescription:function(){
@@ -30,11 +30,7 @@ var VaultModel = RoomModel.extend({
         if ( desc !== "" ) {
             desc += "\n";
         }
-//        if ( this.get("level") === 1 ) {
-            return desc + "金币上限+"+this.getEffect()
-//        } else {
-//            return desc + "金币上限+"+this.getEffect()+"\n经过本房间时英雄夺走"+this.getEffect(this.get("level")-1)+"{[money]}";
-//        }
+        return desc + "金币上限+"+this.getEffect()
     },
     getEffect:function(level){
         level = level || this.get("level");
@@ -68,7 +64,7 @@ var HenDenModel = RoomModel.extend({
             displayName:"鸡窝",
 
             maxLevel: 3,
-            upgradeable: false
+            upgradeable: true
         })
     },
     getDescription:function(){
@@ -76,11 +72,7 @@ var HenDenModel = RoomModel.extend({
         if ( desc !== "" ) {
             desc += "\n";
         }
-//        if ( this.get("level") === 1 ) {
-            return desc + "地城之心HP上限+"+this.getEffect()
-//        } else {
-//            return "地城之心HP上限+"+this.getEffect()+"\n经过本房间时所有英雄+"+this.getEffect(this.get("level")-1)+"{[hp]}";
-//        }
+        return desc + "地城之心HP上限+"+this.getEffect()
     },
     getEffect:function(level){
         level = level || this.get("level");
@@ -104,4 +96,103 @@ var HenDenModel = RoomModel.extend({
         this.reEvaluate();
     }
 
-})
+});
+
+var LibraryModel = RoomModel.extend({
+    defaults:function(){
+        return _.extend(RoomModel.prototype.defaults.call(this), {
+            baseCost: 10,
+            name:"library",
+            displayName:"图书馆",
+
+            maxLevel: "NA",
+            upgradeable: false
+        })
+    },
+    getDescription:function(){
+        var desc = RoomModel.prototype.getDescription.call(this);
+        if ( desc !== "" ) {
+            desc += "\n";
+        }
+        return desc + "魔法手牌上限+"+this.getEffect()
+    },
+    getEffect:function(level){
+        level = level || this.get("level");
+        return level;
+    },
+    onGain:function(){
+        window.gameModel.set("maxHand", window.gameModel.get("maxHand") + this.getEffect());
+    },
+    onExile:function(){
+        window.gameModel.set("maxHand", window.gameModel.get("maxHand") - this.getEffect());
+    },
+    onLevelUp:function(){
+        window.gameModel.set("maxHand", window.gameModel.get("maxHand") + this.getEffect() - this.getEffect(this.get("level")-1) );
+    }
+});
+
+var PrisonModel = RoomModel.extend({
+    defaults:function(){
+        return _.extend(RoomModel.prototype.defaults.call(this), {
+            baseCost: 10,
+            name:"prison",
+            displayName:"监狱",
+
+            maxLevel: "NA",
+            upgradeable: false
+        })
+    },
+    getDescription:function(){
+        var desc = RoomModel.prototype.getDescription.call(this);
+        if ( desc !== "" ) {
+            desc += "\n";
+        }
+        return desc + "地城之心升级所需经验减"+(this.getEffect()*window.gameModel.get("cunningEffect"))+"%";
+    },
+    getEffect:function(level){
+        level = level || this.get("level");
+        return level;
+    },
+    onGain:function(){
+        window.gameModel.set("cunning", window.gameModel.get("cunning") + this.getEffect());
+    },
+    onExile:function(){
+        window.gameModel.set("cunning", window.gameModel.get("cunning") - this.getEffect());
+    },
+    onLevelUp:function(){
+        window.gameModel.set("cunning", window.gameModel.get("cunning") + this.getEffect() - this.getEffect(this.get("level")-1) );
+    }
+});
+
+var SpoiledFoodModel = RoomModel.extend({
+    defaults:function(){
+        return _.extend(RoomModel.prototype.defaults.call(this), {
+            baseCost: 10,
+            name:"spoiled-food",
+            displayName:"腐烂食物",
+
+            maxLevel: "NA",
+            upgradeable: false
+        })
+    },
+    getDescription:function(){
+        var desc = RoomModel.prototype.getDescription.call(this);
+        if ( desc !== "" ) {
+            desc += "\n";
+        }
+        return desc + "英雄在酒店少恢复"+this.getEffect()+"{[hp]}";
+    },
+    getEffect:function(level){
+        level = level || this.get("level");
+        return level;
+    },
+    onGain:function(){
+        window.gameModel.set("spoiled", window.gameModel.get("spoiled") + this.getEffect());
+    },
+    onExile:function(){
+        window.gameModel.set("spoiled", window.gameModel.get("spoiled") - this.getEffect());
+    },
+    onLevelUp:function(){
+        window.gameModel.set("spoiled", window.gameModel.get("spoiled") + this.getEffect() - this.getEffect(this.get("level")-1) );
+    }
+});

@@ -5,7 +5,8 @@ var LevelUpBonus = Backbone.Model.extend({
     defaults:function(){
         return {
             level: 1,
-            maxLevel: 1
+            maxLevel: 1,
+            cancelable: false
         }
     },
     getDescription:function(){
@@ -55,7 +56,7 @@ var CardBonus = LevelUpBonus.extend({
     getDescription:function(){
         return "获得"+this.get("cardNumber")+"张LV"+this.get("cardLevel") + this.cardName;
     },
-    onGain:function(x,y){
+    onGain:function(options){
         var name = this.get("cardName");
         var model = new DUNGEON_CLASS_MAP[name]({
             level: this.get("cardLevel"),
@@ -63,8 +64,8 @@ var CardBonus = LevelUpBonus.extend({
         });
         window.newDiscardCardModel = model;
         window.newDiscardCardPosition = {
-            x: x,
-            y: y
+            x: options.cardX,
+            y: options.cardY
         }
         window.newDiscardCardModel.onGain();
     }
@@ -83,9 +84,60 @@ var MoneyBonus = LevelUpBonus.extend({
     }
 });
 
+var UpgradeFromDeckBonus = LevelUpBonus.extend({
+    defaults:function(){
+        return {
+            description:"可以升级牌堆中的牌",
+            maxLevel: 1,
+            level: 1
+        }
+    },
+    onGain:function(options){
+        window.gameModel.set("upgradeRangeLevel", UPGRADE_RANGE_LEVEL.FROM_DECK );
+    }
+});
+
+var CullBonus = LevelUpBonus.extend({
+    defaults:function(){
+        return {
+            description:"将弃牌堆中1张牌移出游戏",
+            maxLevel: 10000,
+            level: 1,
+            cancelable: true,
+            range: "discard"
+        }
+    },
+    onGain:function(options){
+        var layer = new ChooseCardLayer({
+            model: gameModel,
+            range: [this.get("range")],
+            validText: texts.cull,
+            hint: "请选择1张牌移出游戏",
+            visibleFilter:function(cardModel){
+                return cardModel.get("cullable");
+            },
+            onSelectCallback:function(cardModel, chooseCardLayer){
+                gameModel.cullCard(cardModel);
+                if ( options.onConfirmCallback ) {
+                    options.onConfirmCallback.call(options.context);
+                }
+            },
+            onSelectContext:this,
+            onCancelCallback:function(){
+                layer.removeFromParent(true);
+                if ( options.onCancelCallback )
+                    options.onCancelCallback.call(options.context)
+            },
+            onCancelContext:options.context
+        });
+        options.context.addChild(layer,50);
+    }
+});
+
 var AlwaysLevelUpBonus = LevelUpBonus.extend({
     defaults:function(){
         return {
+            maxLevel: 10000,
             description:"获得2次升级卡牌的机会"
         }
     },
@@ -116,7 +168,7 @@ var LevelUpLayer = cc.Layer.extend({
 
         var bonusEachLevelUp = this.model.get("bonusEachLevelUp");
         if ( bonusEachLevelUp ) {
-            bonusEachLevelUp.onGain();
+            bonusEachLevelUp.onGain(this);
             var bonusEachLevelUpLabel = buildRichText({
                 str : bonusEachLevelUp.getDescription() ,
                 fontSize : dimens.buy_font_size,
@@ -151,9 +203,26 @@ var LevelUpLayer = cc.Layer.extend({
                 cc.spriteFrameCache.getSpriteFrame("short-normal.png"),
                 cc.spriteFrameCache.getSpriteFrame("short-selected.png"),
                 function () {
-                    bonus.onGain(BonusCardX, y-50 );
-                    bonus.set("level", bonus.get("level")+1);
-                    this.close();
+                    if ( bonus.get("cancelable")) {
+                        bonus.onGain({
+                            cardX : BonusCardX,
+                            cardY : y-50,
+                            onCancelCallback:function(){
+                            },
+                            onConfirmCallback:function(){
+                                this.close();
+                                bonus.set("level", bonus.get("level")+1);
+                            },
+                            context: this
+                        } );
+                    } else {
+                        bonus.onGain({
+                            cardX : BonusCardX,
+                            cardY : y-50
+                        } );
+                        this.close();
+                        bonus.set("level", bonus.get("level")+1);
+                    }
                 }, this);
             bonusItem.attr({
                 x: cc.winSize.width/2,
@@ -194,7 +263,7 @@ var LevelUpLayer = cc.Layer.extend({
                     x: BonusCardX,
                     y: bonusY-50
                 })
-                this.addChild(cardSprite,50);
+                this.addChild(cardSprite,5);
             }
             bonusY -= bonusMarginY;
         },this);
@@ -247,10 +316,44 @@ var LEVEL_UP_BONUS_CLASS_MAP = {
     "upgradeChance": UpgradeChanceBonus,
     "maxHp": HpBonus,
     "money": MoneyBonus,
-    "vault": CardBonus.extend({
+    cullDiscard : CullBonus,
+    cullDeck : CullBonus.extend({
+        defaults: function() {
+            return _.extend(CullBonus.prototype.defaults.call(this), {
+                description:"将牌堆中1张牌移出游戏",
+                range: "deck"
+            });
+        }
+    }),
+    upgradeFromDeck : UpgradeFromDeckBonus,
+    vault: CardBonus.extend({
         defaults: {
             maxLevel: 100,
             cardName: "vault"
+        }
+    }),
+    "hen-den": CardBonus.extend({
+        defaults: {
+            maxLevel: 100,
+            cardName: "hen-den"
+        }
+    }),
+    library: CardBonus.extend({
+        defaults: {
+            maxLevel: 4,
+            cardName: "library"
+        }
+    }),
+    prison: CardBonus.extend({
+        defaults: {
+            maxLevel: 5,
+            cardName: "prison"
+        }
+    }),
+    "spoiled-food": CardBonus.extend({
+        defaults: {
+            maxLevel: 5,
+            cardName: "spoiled-food"
         }
     })
 }
