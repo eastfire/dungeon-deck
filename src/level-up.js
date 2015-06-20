@@ -19,9 +19,9 @@ var LevelUpBonus = Backbone.Model.extend({
 var UpgradeChanceBonus = LevelUpBonus.extend({
     defaults:function(){
         return {
-            description:"获得2次卡牌升级机会",
+            level: 1,
             maxLevel: 10000,
-            level: 1
+            description:"获得2次卡牌升级机会"
         }
     },
     onGain:function(){
@@ -32,9 +32,9 @@ var UpgradeChanceBonus = LevelUpBonus.extend({
 var HpBonus = LevelUpBonus.extend({
     defaults:function(){
         return {
-            description:"＋５{[hp]}上限",
+            level: 1,
             maxLevel: 10000,
-            level: 1
+            description:"＋５{[hp]}上限"
         }
     },
     onGain:function(){
@@ -74,9 +74,9 @@ var CardBonus = LevelUpBonus.extend({
 var MoneyBonus = LevelUpBonus.extend({
     defaults:function(){
         return {
-            description:"让{[money]}变为最大",
+            level: 1,
             maxLevel: 10000,
-            level: 1
+            description:"让{[money]}变为最大"
         }
     },
     onGain:function(){
@@ -87,9 +87,9 @@ var MoneyBonus = LevelUpBonus.extend({
 var UpgradeFromDeckBonus = LevelUpBonus.extend({
     defaults:function(){
         return {
-            description:"可以升级牌堆中的牌",
+            level: 1,
             maxLevel: 1,
-            level: 1
+            description:"可以升级牌堆中的牌"
         }
     },
     onGain:function(options){
@@ -100,9 +100,9 @@ var UpgradeFromDeckBonus = LevelUpBonus.extend({
 var CullBonus = LevelUpBonus.extend({
     defaults:function(){
         return {
-            description:"将弃牌堆中1张牌移出游戏",
-            maxLevel: 10000,
             level: 1,
+            maxLevel: 10000,
+            description:"将弃牌堆中1张牌移出游戏",
             cancelable: true,
             range: "discard"
         }
@@ -137,6 +137,7 @@ var CullBonus = LevelUpBonus.extend({
 var AlwaysLevelUpBonus = LevelUpBonus.extend({
     defaults:function(){
         return {
+            level: 1,
             maxLevel: 10000,
             description:"获得2次升级卡牌的机会"
         }
@@ -295,14 +296,11 @@ var LevelUpScene = cc.Scene.extend({
     }
 });
 
-//TODO hp max up
-//TODO magic max up
 //TODO card number up
 //TODO card max level up
 //TODO add choice count
 //TODO reduce exp require
 //TODO add tavern fee
-//TODO reduce recovery of hero
 //TODO reduce buy trap cost
 //TODO reduce buy monster cost
 //TODO reduce buy spell cost

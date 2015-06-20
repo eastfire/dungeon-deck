@@ -36,15 +36,15 @@ var GameModel = Backbone.Model.extend({
             maxExp: 10,
             status: null,
             phase: "hero-generate", //hero-generate , team-enter-dungeon, team-enter-level, team-enter-room, team-leave-room, team-leave-level, team
-            heroList: [ "knight","sage" ],
+            heroList: [ "dragonslayer","berserker", "soldier" ],
             //initDeck: [ "skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
             //initDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
-            initDeck: [ /*"titan","arrow-trap","ooze",*/"lich","lich","lilith","arrow-trap","arrow-trap" ],
+            initDeck: [ /*"titan","arrow-trap","ooze",*/"dragon","arrow-trap","lilith","arrow-trap" ],
             deck: [],
             isInitDeckShuffle: true,
 
             //initDiscardDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman","magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
-            initDiscardDeck: [ "orc","orc","orc","orc","orc","orc","orc","orc" ],
+            initDiscardDeck: [ "orc" ],
             discardDeck: [],
 
             initHand: ["fireball","magic-missile","fireball"],

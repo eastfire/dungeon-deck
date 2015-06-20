@@ -1033,9 +1033,11 @@ var MainGameLayer = cc.Layer.extend({
         });
     },
     teamDie:function() {
+        this.giveUpMenu.setVisible(false);
+        this.buildStageItem.setVisible(false);
         cc.log("team die");
         var totalLevel = _.reduce(this.model.get("team"), function (memo, heroModel) {
-            return memo + heroModel.get("bite") ? 0 : heroModel.get("level");
+            return memo + (heroModel.get("bite") ? 0 : heroModel.get("level"));
         }, 0, this);
         //meeple disappear
         var meepleSequence = cc.sequence(cc.scaleTo(0.2, 1, 0.1),
@@ -1049,7 +1051,7 @@ var MainGameLayer = cc.Layer.extend({
             },this));
         this.meeple.stopAllActions();
         this.meeple.runAction(meepleSequence);
-
+        cc.log("totalLevel:"+totalLevel);
         if ( totalLevel > 0 ) {
             var itemCard = this.generateItemCard(totalLevel)
             this.newItemCardSprite = new ItemCardSprite({

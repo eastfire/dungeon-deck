@@ -15,16 +15,9 @@ var ItemModel = DungeonCardModel.extend({ //物品
     },
     onTeamGet:function(team){
         gameModel.getScore(this.get("score"));
-        var allAlive = _.filter( team ,function(model){
-            return model.isAlive();
-        }, this )
-        var hero = _.first( allAlive );
-        this.onHeroGet(hero);
+        this.onHeroGet(team);
         this.set("exiled",true);
         this.onExile();
-    },
-    onHeroGet:function(hero){
-
     },
 
     getDescription:function() {
@@ -48,8 +41,13 @@ var TreasureChestModel = ItemModel.extend({ //物品
     initialize:function(){
         this.set("score",this.get("level"));
     },
-    onHeroGet:function(hero){
-        hero.getHeal(this.getEffect());
+    onHeroGet:function(team){
+        var allHurt = _.filter( team ,function(model){
+            return model.isAlive() && model.get("maxHp") > model.get("hp");
+        }, this )
+        var hero = _.first( allHurt );
+        if ( hero )
+            hero.getHeal(this.getEffect());
     },
     getEffect:function(){
         return this.get("level");

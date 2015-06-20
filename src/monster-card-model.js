@@ -212,7 +212,7 @@ var DragonModel = MonsterModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            baseAttack: level*2+2,
+            baseAttack: level*2+5,
             baseScore: level,
             baseUpgradeCost: level*10,
             payHp: level

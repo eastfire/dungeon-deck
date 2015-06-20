@@ -123,6 +123,9 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
         if ( this.get("dodge").att3 ) {
             desc.push( (this.get("dodge").att3 )+"%躲避{[attack]}3及以下的怪物攻击");
         }
+        if ( this.get("dodge").att8 ) {
+            desc.push( (this.get("dodge").att8 )+"%躲避{[attack]}8及以上的怪物攻击");
+        }
         if ( this.get("dodge").att7 ) {
             desc.push( (this.get("dodge").att7 )+"%躲避{[attack]}7及以上的怪物攻击");
         }
@@ -218,11 +221,23 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
     onPassStage:function(){
     },
     onBeAttacked:function(damage,cardModel){
+        var dodge = this.get("dodge");
+        var dodgeRate = 0;
         if ( cardModel instanceof TrapModel ) {
-            if ( this.get("dodge").trap ) return Math.random() < this.get("dodge").trap * DODGE_TRAP_RATE/100;
+            if ( dodge.trap )
+                dodgeRate += dodge.trap * DODGE_TRAP_RATE;
         } else if ( cardModel instanceof MonsterModel ) {
-
+            var att = cardModel.get("attack");
+            if ( att <= 1 && dodge.att1 ) dodgeRate += dodge.att1;
+            if ( att <= 2 && dodge.att2 ) dodgeRate += dodge.att2;
+            if ( att <= 3 && dodge.att3 ) dodgeRate += dodge.att3;
+            if ( att >= 5 && dodge.att5 ) dodgeRate += dodge.att5;
+            if ( att >= 6 && dodge.att6 ) dodgeRate += dodge.att6;
+            if ( att >= 7 && dodge.att7 ) dodgeRate += dodge.att7;
+            if ( att >= 8 && dodge.att8 ) dodgeRate += dodge.att8;
         }
+        if ( dodgeRate )
+            return Math.random() > dodgeRate/100;
         return true;
     },
     onBeDamaged:function(damage, cardModel){
@@ -273,7 +288,80 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
     }
 })
 
+var AmazonModel = HeroModel.extend({
+    defaults:function(){
+        return _.extend(HeroModel.prototype.defaults.call(this), {
+            name:"amazon",
+            displayName:"亚马逊战士",
+            maxLevel: 5,
+            baseDefense: 0
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseScore: level*(level+1)/2,
+            baseMaxHp: 3 + Math.floor(level/2),
+            dodge: {
+                att1: level <= 3 ? Math.min(100, 25*(level+1)) : 0,
+                att2: level >= 4? Math.min(100, 50*(level-3)) : 0
+            }
+        });
+    }
+});
 
+var AssassinModel = HeroModel.extend({
+    defaults:function(){
+        return _.extend(HeroModel.prototype.defaults.call(this), {
+            name:"assassin",
+            displayName:"刺客",
+            maxLevel: 5,
+            baseDefense: 0
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseScore: level*(level+1)/2,
+            baseMaxHp: 3 + Math.ceil(level/2),
+            dodge: {
+                att1: Math.min(100, 25*level)
+            }
+        });
+    },
+    getAttackHeartPower:function(){
+        return this.get("level")*2;
+    },
+    getDescription:function(){
+        var desc = HeroModel.prototype.getDescription.call(this);
+        return desc + "\n" + "对地城之心的伤害加倍";
+    }
+});
+
+var BerserkerModel = HeroModel.extend({
+    defaults:function(){
+        return _.extend(HeroModel.prototype.defaults.call(this), {
+            name:"berserker",
+            displayName:"狂战士",
+            maxLevel: 5,
+            baseDefense: 0
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseScore: level*(level+1)/2,
+            baseMaxHp: 3 + Math.ceil(level/2)
+        });
+    },
+    getAttackHeartPower:function(){
+        return this.get("level") + this.get("maxHp") - this.get("hp");
+    },
+    getDescription:function(){
+        var desc = HeroModel.prototype.getDescription.call(this);
+        return desc + "\n" + "自身受到多少伤害就额外对地城之心造成多少伤害";
+    }
+});
 
 var ClericModel = HeroModel.extend({
     defaults:function(){
@@ -319,12 +407,35 @@ var ClericModel = HeroModel.extend({
     }
 });
 
+var DragonSlayerModel = HeroModel.extend({
+    defaults:function(){
+        return _.extend(HeroModel.prototype.defaults.call(this), {
+            name:"dragonslayer",
+            displayName:"屠龙者",
+            maxLevel: 5,
+            baseDefense: 0
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseScore: level*(level+1)/2,
+            baseMaxHp: 3 + level,
+            dodge: {
+                att7: level <= 1 ? 100 : 0,
+                att6: level >= 2? 100 : 0,
+                att5: level >= 4? 100 : 0
+            }
+        });
+    }
+});
+
 var KnightModel = HeroModel.extend({
     defaults:function(){
         return _.extend(HeroModel.prototype.defaults.call(this), {
             name:"knight",
             displayName:"骑士",
-            maxLevel: 4,
+            maxLevel: 5,
             baseDefense: 0
         })
     },
@@ -437,6 +548,58 @@ var SageModel = HeroModel.extend({
     }
 });
 
+var SoldierModel = HeroModel.extend({
+    defaults:function(){
+        return _.extend(HeroModel.prototype.defaults.call(this), {
+            name:"soldier",
+            displayName:"士兵",
+            maxLevel: 5,
+            baseDefense: 0
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseScore: level*(level+1)/2,
+            baseMaxHp: 3 + level,
+            baseDefense: level - 1
+        });
+    },
+    onBeforePositionInTeamChange:function(prevPosition){
+        var team = gameModel.get("team");
+        if ( prevPosition - 1 >= 0 ) {
+            var heroModel = team[prevPosition-1];
+            var buff = heroModel.get("defenseBuff");
+            if ( buff ) {
+                heroModel.set("defenseBuff", buff - 1 );
+            }
+        }
+    },
+    onPositionInTeamChange:function(prevPosition, position){
+        var team = gameModel.get("team");
+        if ( position - 1 >= 0 ) {
+            var heroModel = team[position-1];
+            var buff = heroModel.get("defenseBuff");
+            heroModel.set("defenseBuff", buff + 1 );
+        }
+    },
+    onDie:function(){
+        this.onBeforePositionInTeamChange(this.get("positionInTeam"))
+        HeroModel.prototype.onDie.call(this);
+    },
+    onAlive:function(){
+        HeroModel.prototype.onAlive.call(this);
+        this.onPositionInTeamChange(null, this.get("positionInTeam"))
+    },
+    getDescription:function(){
+        var desc = HeroModel.prototype.getDescription.call(this);
+        return desc + "\n" + "为身前的英雄+"+this.getEffect()+"{[defense]}"
+    },
+    getEffect:function(){
+        return this.get("level")
+    }
+});
+
 var ThiefModel = HeroModel.extend({
     defaults:function(){
         return _.extend(HeroModel.prototype.defaults.call(this), {
@@ -498,10 +661,15 @@ var WarriorModel = HeroModel.extend({
 });
 
 var HERO_CLASS_MAP = {
+    amazon: AmazonModel,
+    assassin: AssassinModel,
+    berserker: BerserkerModel,
     cleric : ClericModel,
+    dragonslayer: DragonSlayerModel,
     knight: KnightModel,
     ninja: NinjaModel,
     sage: SageModel,
+    soldier: SoldierModel,
     thief: ThiefModel,
     warrior : WarriorModel
 }

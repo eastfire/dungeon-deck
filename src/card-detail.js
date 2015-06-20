@@ -25,7 +25,15 @@ var CardDetailLayer = cc.LayerColor.extend({
         var cardLeft = cc.winSize.width/2 - dimens.card_width * scaleRate/2;
         var cardBottom = cc.winSize.height/2 - dimens.card_height * scaleRate/2;
 
-        var nameLabel = new cc.LabelTTF(this.model.get("displayName"), "Arial", dimens.card_detail_name_font_size);
+        var name = this.model.get("displayName");
+        var nameLength = unicodeByteLength(name);
+        var fontSize = dimens.card_detail_name_font_size;
+        if ( nameLength >= 12 ) {
+            fontSize = dimens.card_detail_name_font_size * 4 / 6;
+        } else if ( nameLength >= 10 ) {
+            fontSize = dimens.card_detail_name_font_size * 4 / 5;
+        }
+        var nameLabel = new cc.LabelTTF(name, "Arial",fontSize );
         nameLabel.attr({
             color: colors.card_detail_name,
             x: cc.winSize.width/2,
