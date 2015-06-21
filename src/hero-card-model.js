@@ -315,8 +315,7 @@ var AssassinModel = HeroModel.extend({
         return _.extend(HeroModel.prototype.defaults.call(this), {
             name:"assassin",
             displayName:"刺客",
-            maxLevel: 5,
-            baseDefense: 0
+            maxLevel: 5
         })
     },
     initByLevel:function(){
@@ -324,8 +323,9 @@ var AssassinModel = HeroModel.extend({
         this.set({
             baseScore: level*(level+1)/2,
             baseMaxHp: 2 + Math.ceil(level/2),
+            baseDefense: 0,
             dodge: {
-                att1: Math.min(100, 25*level)
+                att1: Math.min(100, 15*level)
             }
         });
     },
@@ -343,15 +343,15 @@ var BerserkerModel = HeroModel.extend({
         return _.extend(HeroModel.prototype.defaults.call(this), {
             name:"berserker",
             displayName:"狂战士",
-            maxLevel: 5,
-            baseDefense: 0
+            maxLevel: 5
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
             baseScore: level*(level+1)/2,
-            baseMaxHp: 3 + Math.ceil(level/2)
+            baseMaxHp: 3 + Math.ceil(level/2),
+            baseDefense: 0
         });
     },
     getAttackHeartPower:function(){
@@ -444,7 +444,7 @@ var KnightModel = HeroModel.extend({
         this.set({
             baseScore: level*(level+1),
             baseMaxHp: 3 + level,
-            baseDefense: level - 1
+            baseDefense: Math.floor(level/2)
         });
     },
     onBeforePositionInTeamChange:function(prevPosition){
@@ -562,7 +562,7 @@ var SoldierModel = HeroModel.extend({
         this.set({
             baseScore: level*(level+1),
             baseMaxHp: 3 + level,
-            baseDefense: level - 1
+            baseDefense: Math.floor(level/2)
         });
     },
     onBeforePositionInTeamChange:function(prevPosition){

@@ -288,7 +288,6 @@ var MainGameLayer = cc.Layer.extend({
             var boughtCardSprite = new DUNGEON_SPRITE_CLASS_MAP[ window.newDiscardCardModel.get("name") ]({
                 model: window.newDiscardCardModel
             });
-            cc.log(boughtCardSprite);
             boughtCardSprite.attr({
                 x: window.newDiscardCardPosition.x,
                 y: window.newDiscardCardPosition.y
@@ -1052,7 +1051,6 @@ var MainGameLayer = cc.Layer.extend({
             },this));
         this.meeple.stopAllActions();
         this.meeple.runAction(meepleSequence);
-        cc.log("totalLevel:"+totalLevel);
         if ( totalLevel > 0 ) {
             var itemCard = this.generateItemCard(totalLevel)
             this.newItemCardSprite = new ItemCardSprite({

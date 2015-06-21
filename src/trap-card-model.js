@@ -182,8 +182,8 @@ var PitfallModel = TrapModel.extend({
         this.set({
             baseAttack: "*",
             baseScore: level,
-            baseUpgradeCost: level,
-            payMoney: level - 1
+            baseUpgradeCost: level+1,
+            payMoney: Math.max(0,level - 2)
         } );
         if ( level == 1 ) {
             this.set("attackRange","first");
