@@ -68,7 +68,7 @@ var GameModel = Backbone.Model.extend({
             bonusChoiceNumber:3,
             bonusEachLevelUp: "alwaysLevelUpBonus",
 
-            unlockedBuyableCards:["basilisk","dragon","ghost","lich","lilith","minotaur","ooze","orc","orc-bandit","spider","titan", "treefolk",
+            unlockedBuyableCards:["basilisk","dragon","ghost","lich","lilith","minotaur","ooze","orc","orc-bandit","orc-warlord","spider","titan", "treefolk",
                                     "cyclone","fireball","lightening","touchstone","war-drum",
                                     "arrow-trap","pitfall","poison-gas","rolling-boulder"],
             regularBuyableCards: [],

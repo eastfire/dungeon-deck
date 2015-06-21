@@ -506,6 +506,45 @@ var OrcBanditModel = MonsterModel.extend({
     }
 });
 
+var OrcWarlordModel = MonsterModel.extend({
+    defaults:function(){
+        return _.extend(MonsterModel.prototype.defaults.call(this), {
+            name:"orc-warlord",
+            displayName:"兽人酋长",
+            baseCost: 9,
+            maxLevel: 5
+        })
+    },
+    getDescription:function(){
+        var desc = MonsterModel.prototype.getDescription.call(this);
+        if ( desc !== "" ) {
+            desc += "\n";
+        }
+        return desc+"本层其他怪物+"+this.getEffect()+"{[attack]}";
+    },
+    getEffect:function(){
+        return Math.ceil(this.get("level")/2);
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseAttack: Math.floor(this.get("level")/3)+1,
+            baseScore: level,
+            baseUpgradeCost: level*5+7
+        } );
+        this.reEvaluate();
+    },
+    onStageReveal:function(dungeonCards){
+        _.each(dungeonCards, function(cardModel){
+            if ( cardModel.isEffecting() && cardModel instanceof MonsterModel ) {
+                if ( cardModel !== this ) {
+                    cardModel.set("attackBuff",cardModel.get("attackBuff")+this.getEffect());
+                }
+            }
+        },this);
+    }
+});
+
 var RatmanModel = MonsterModel.extend({
     defaults:function(){
         return _.extend(MonsterModel.prototype.defaults.call(this), {
