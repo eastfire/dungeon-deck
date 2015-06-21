@@ -3,8 +3,10 @@
  */
 var showUpgrade = function(options){
     var range = ["discard"];
+    var rangeText = "弃牌堆中"
     if ( gameModel.get("upgradeRangeLevel") === UPGRADE_RANGE_LEVEL.FROM_DECK ) {
         range.push("deck");
+        rangeText = "弃牌堆及牌堆中的"
     }
     cc.director.pushScene(new ChooseCardScene({
         model: gameModel,
@@ -12,7 +14,7 @@ var showUpgrade = function(options){
         validText: texts.level_up,
         hint: function(){
             var chance = gameModel.get("upgradeChance");
-            return chance > 0 ? ("你可以升级"+chance+"次卡牌") : "升级地城之心以获得升级卡牌的机会";
+            return chance > 0 ? ("你可以升级"+chance+"次"+rangeText+"卡牌") : "升级地城之心以获得升级卡牌的机会";
         },
         visibleFilter:function(cardModel){
             return cardModel.get("upgradeable");

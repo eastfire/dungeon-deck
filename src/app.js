@@ -847,7 +847,7 @@ var MainGameLayer = cc.Layer.extend({
         });
         this.giveUpText.attr({
             x: 330,
-            y: 25,
+            y: 20,
             anchorX : 0.5,
             anchorY : 0.5
         });

@@ -49,7 +49,7 @@ var GameModel = Backbone.Model.extend({
             discardDeck: [],
 
             //initHand: ["fireball","magic-missile","fireball"],
-            initHand: [],
+            initHand: ["magic-missile"],
             hand: [], //魔法
             maxHand: 1,
 
