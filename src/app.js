@@ -25,7 +25,7 @@ var UILayer = cc.Layer.extend({
         })
         this.addChild(this.scoreIcon,101)
 
-        this.scoreLabel = new cc.LabelTTF("", "Arial", dimens.top_bar_label_font_size);
+        this.scoreLabel = new cc.LabelTTF("", "宋体", dimens.top_bar_label_font_size);
         this.scoreLabel.attr({
             color: colors.top_bar_label,
             x: dimens.ui_score_icon_position.x + 30,
@@ -42,7 +42,7 @@ var UILayer = cc.Layer.extend({
         })
         this.addChild(this.moneyIcon,101)
 
-        this.moneyLabel = new cc.LabelTTF("", "Arial", dimens.top_bar_label_font_size);
+        this.moneyLabel = new cc.LabelTTF("", "宋体", dimens.top_bar_label_font_size);
         this.moneyLabel.attr({
             color: colors.top_bar_label,
             x: dimens.ui_money_icon_position.x + 30,
@@ -135,7 +135,7 @@ var MainGameLayer = cc.Layer.extend({
         });
         this.addChild(this.throne,20);
 
-        this.expLabel = new cc.LabelTTF("", "Arial", dimens.throne_font_size);
+        this.expLabel = new cc.LabelTTF("", "宋体", dimens.throne_font_size);
         this.expLabel.attr({
             color: cc.color(255,0,0,255),
             x: dimens.throne_position.x,
@@ -155,7 +155,7 @@ var MainGameLayer = cc.Layer.extend({
             anchorX: 0.5,
             anchorY: 0
         });
-        this.bookText = new cc.LabelTTF("", "Arial", dimens.book_font_size);
+        this.bookText = new cc.LabelTTF("", "宋体", dimens.book_font_size);
         this.bookText.attr({
             color: colors.book,
             x: dimens.book_menu_position.x,
@@ -175,7 +175,7 @@ var MainGameLayer = cc.Layer.extend({
             anchorX: 0.5,
             anchorY: 0
         });
-        this.moneyLabel = new cc.LabelTTF("", "Arial", dimens.vault_font_size);
+        this.moneyLabel = new cc.LabelTTF("", "宋体", dimens.vault_font_size);
         this.moneyLabel.attr({
             color: colors.book,
             x: dimens.vault_menu_position.x,
@@ -226,7 +226,7 @@ var MainGameLayer = cc.Layer.extend({
 
         this.deckSprite.setDiscardDeck( this.discardDeckSprite, true, "shuffle" );
 
-        this.hintLable = new cc.LabelTTF("", "Arial", dimens.hint_font_size);
+        this.hintLable = new cc.LabelTTF("", "宋体", dimens.hint_font_size);
         this.hintLable.attr({
             color: colors.hint,
             x: dimens.hint_position.x,
@@ -263,7 +263,7 @@ var MainGameLayer = cc.Layer.extend({
             anchorX: 0.5,
             anchorY: 0
         });
-        this.upgradeLabel = new cc.LabelTTF("", "Arial", dimens.vault_font_size);
+        this.upgradeLabel = new cc.LabelTTF("", "宋体", dimens.vault_font_size);
         this.upgradeLabel.attr({
             color: colors.upgrade_chance_label,
             x: dimens.upgrade_menu_position.x,
@@ -438,7 +438,7 @@ var MainGameLayer = cc.Layer.extend({
         this.addChild(this.continueMenu, 20);
         this.continueMenu.setVisible(false);
 
-        this.stageNumberLabel = new cc.LabelTTF("", "Arial", dimens.hint_font_size);
+        this.stageNumberLabel = new cc.LabelTTF("", "宋体", dimens.hint_font_size);
         this.stageNumberLabel.attr({
             x: dimens.stage_number_position.x,
             y: dimens.stage_number_position.y

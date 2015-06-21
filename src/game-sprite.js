@@ -307,7 +307,7 @@ var IconSprite = cc.Sprite.extend({
         }
         this._super(image);
 
-        this.label = new cc.LabelTTF(text, "Arial", fontSize);
+        this.label = new cc.LabelTTF(text, "宋体", fontSize);
         this.label.attr({
             color: fontColor,
             x: offset.x,
@@ -341,7 +341,7 @@ var DeckSprite = cc.Sprite.extend({
         this.cardClass = options.cardClass || BaseCardSprite;
         this._super();
 
-        this.countLabel = new cc.LabelTTF("", "Arial", this.countLabelFontSize );
+        this.countLabel = new cc.LabelTTF("", "宋体", this.countLabelFontSize );
         this.countLabel.attr({
             color: this.countLabelFontColor,
             x: this.countLabelOffset.x,

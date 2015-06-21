@@ -39,7 +39,7 @@ var ChooseCardLayer = cc.LayerColor.extend({
             anchorX: 0.5,
             anchorY: 0.5
         });
-        var cancelText = new cc.LabelTTF(this.cancelText, "Arial", dimens.cancel_buy_font_size);
+        var cancelText = new cc.LabelTTF(this.cancelText, "宋体", dimens.cancel_buy_font_size);
         cancelText.attr({
             color: colors.cancel_buy,
             x: 90,
@@ -59,7 +59,7 @@ var ChooseCardLayer = cc.LayerColor.extend({
         }
     },
     __initView:function(){
-        this.hintLabel = new cc.LabelTTF("", "Arial", dimens.buy_font_size);
+        this.hintLabel = new cc.LabelTTF("", "宋体", dimens.buy_font_size);
         this.addChild(this.hintLabel,2);
         this.hintLabel.attr({
             color: colors.upgrade_type_label,
@@ -166,7 +166,7 @@ var ChooseCardLayer = cc.LayerColor.extend({
 
     },
     renderCards:function(cards, type){
-        var label = new cc.LabelTTF(texts.card_from[type], "Arial", dimens.buy_font_size);
+        var label = new cc.LabelTTF(texts.card_from[type], "宋体", dimens.buy_font_size);
         this.layerCardY -= dimens.upgrade_type_label_height/2 + 10;
         label.attr({
             color: colors.upgrade_type_label,
@@ -233,7 +233,7 @@ var ChooseCardLayer = cc.LayerColor.extend({
                     } else if ( isFunction(this.validText) ){
                         text = this.validText.call(this, cardModel);
                     }
-                    var upgradeText = new cc.LabelTTF(text, "Arial", dimens.buy_font_size);
+                    var upgradeText = new cc.LabelTTF(text, "宋体", dimens.buy_font_size);
                     upgradeText.attr({
                         color: colors.buy,
                         x: x,
@@ -251,7 +251,7 @@ var ChooseCardLayer = cc.LayerColor.extend({
                 text = this.invalidText.call(this, cardModel);
             }
             if ( text && text !== "") {
-                var label = new cc.LabelTTF(text, "Arial", dimens.buy_font_size);
+                var label = new cc.LabelTTF(text, "宋体", dimens.buy_font_size);
                 label.attr({
                     color: colors.upgrade_type_label,
                     x: this.layerCardX,

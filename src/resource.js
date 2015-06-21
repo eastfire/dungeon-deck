@@ -3,8 +3,14 @@ var res = {
     title_bar_jpg: "res/title_bar.jpg",
     bg0_jpg : "res/bg0.jpg",
     book_bg_png : "res/book-bg.png",
-    small_plist: "res/small.plist",
-    small_png : "res/small.png"
+    card_plist: "res/card.plist",
+    card_png : "res/card.png",
+    hero_plist: "res/hero.plist",
+    hero_png : "res/hero.png",
+    icon_plist: "res/icon.plist",
+    icon_png : "res/icon.png",
+    ui_plist: "res/ui.plist",
+    ui_png : "res/ui.png"
 /*    ,
     large_plist: "res/large.plist",
     large_png : "res/large.png"*/

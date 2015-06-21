@@ -171,7 +171,7 @@ var LevelUpLayer = cc.Layer.extend({
 
         this.renderAllBonus();
 
-        var congratulationLabel = new cc.LabelTTF("恭喜！地城之心升级到LV"+this.model.get("level")+"\n\n\n请选择额外的奖励", "Arial", dimens.buy_font_size);
+        var congratulationLabel = new cc.LabelTTF("恭喜！地城之心升级到LV"+this.model.get("level")+"\n\n\n请选择额外的奖励", "宋体", dimens.buy_font_size);
         this.addChild(congratulationLabel,2);
         congratulationLabel.attr({
             color: colors.upgrade_type_label,

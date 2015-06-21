@@ -127,7 +127,7 @@ var ChooseHeroLayer = cc.LayerColor.extend({
                     scaleX: 0.7,
                     scaleY: 0.8
                 });
-                var text = new cc.LabelTTF(texts.select, "Arial", dimens.buy_font_size);
+                var text = new cc.LabelTTF(texts.select, "宋体", dimens.buy_font_size);
                 text.attr({
                     color: colors.buy,
                     x: x,

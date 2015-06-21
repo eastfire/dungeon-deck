@@ -8,7 +8,7 @@ var GameOverLayer = cc.LayerColor.extend({
 
         this._super(colors.card_detail_mask);
 
-        var gameOver = new cc.LabelTTF(texts.game_over, "Arial", dimens.game_over_font_size);
+        var gameOver = new cc.LabelTTF(texts.game_over, "宋体", dimens.game_over_font_size);
         gameOver.attr({
             color: colors.game_over,
             x: cc.winSize.width/2,
@@ -26,7 +26,7 @@ var GameOverLayer = cc.LayerColor.extend({
         })
         this.addChild(score);
 
-        var pleaseInputName = new cc.LabelTTF("伟大的城主大人，请留下大名", "Arial", dimens.game_over_score_font_size);
+        var pleaseInputName = new cc.LabelTTF("伟大的城主大人，请留下大名", "宋体", dimens.game_over_score_font_size);
         pleaseInputName.attr({
             color: colors.game_over,
             x: cc.winSize.width/2,
@@ -43,7 +43,7 @@ var GameOverLayer = cc.LayerColor.extend({
 
         var textField = new ccui.TextField();
         textField.setTouchEnabled(true);
-        textField.fontName = "Arial";
+        textField.fontName = "宋体";
         textField.fontSize = dimens.game_over_score_font_size;
         textField.placeHolder = "请输入城主大名";
         textField.setTextColor(cc.color.BLACK);
@@ -80,7 +80,7 @@ var GameOverLayer = cc.LayerColor.extend({
             anchorX: 0.5,
             anchorY: 0.5
         });
-        var continueText = new cc.LabelTTF(texts.confirm, "Arial", dimens.game_over_score_font_size);
+        var continueText = new cc.LabelTTF(texts.confirm, "宋体", dimens.game_over_score_font_size);
         continueText.attr({
             color: cc.color.BLACK,
             x: 85,
@@ -141,7 +141,7 @@ var ScoreBoardLayer = cc.LayerColor.extend({
             this.__fetchScore.call(self);
         }
 
-        var scoreBoardTitle = new cc.LabelTTF("排行榜", "Arial", dimens.game_over_score_font_size);
+        var scoreBoardTitle = new cc.LabelTTF("排行榜", "宋体", dimens.game_over_score_font_size);
         scoreBoardTitle.attr({
             color: cc.color.BLACK,
             x: cc.winSize.width/2,
@@ -149,7 +149,7 @@ var ScoreBoardLayer = cc.LayerColor.extend({
         })
         this.addChild(scoreBoardTitle);
 
-        this.loading = new cc.LabelTTF("加载中……", "Arial", dimens.loading_score_board_font);
+        this.loading = new cc.LabelTTF("加载中……", "宋体", dimens.loading_score_board_font);
         this.loading.attr({
             color: cc.color.BLACK,
             x: cc.winSize.width/2,
@@ -171,7 +171,7 @@ var ScoreBoardLayer = cc.LayerColor.extend({
             anchorX: 0.5,
             anchorY: 0.5
         });
-        var continueText = new cc.LabelTTF(texts.restart, "Arial", dimens.game_over_score_font_size);
+        var continueText = new cc.LabelTTF(texts.restart, "宋体", dimens.game_over_score_font_size);
         continueText.attr({
             color: cc.color.BLACK,
             x: 85,

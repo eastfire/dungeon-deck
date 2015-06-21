@@ -10,7 +10,7 @@ var buildRichText = function( options ) {
     var str = options.str || options.text || "";
     var fontSize = options.fontSize || 16;
     var fontColor = options.fontColor || cc.color.WHITE;
-    var fontFamily = options.fontFamily || "Arial";
+    var fontFamily = options.fontFamily || "宋体";
     var opacity = options.opacity || 255;
     var segments = str.split(/[{|}]/);
     var tag = 1;
@@ -29,8 +29,7 @@ var buildRichText = function( options ) {
                 fontName: fontFamily,
                 fontSize: fontSize,
                 fontWeight: "normal",
-                fontStyle: "normal",
-                lineHeight: fontSize
+                fontStyle: "normal"
             }), opacity, segment);
             richText.pushBackElement(re);
         }

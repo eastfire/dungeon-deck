@@ -25,7 +25,7 @@ var BuyCardLayer = cc.LayerColor.extend({
             anchorX: 0.5,
             anchorY: 0.5
         });
-        var cancelText = new cc.LabelTTF(texts.cancel, "Arial", dimens.cancel_buy_font_size);
+        var cancelText = new cc.LabelTTF(texts.cancel, "宋体", dimens.cancel_buy_font_size);
         cancelText.attr({
             color: colors.cancel_buy,
             x: 90,
@@ -113,7 +113,7 @@ var BuyCardLayer = cc.LayerColor.extend({
                         scaleX: 0.7,
                         scaleY: 0.8
                     });
-                    var buyText = new cc.LabelTTF(texts.buy, "Arial", dimens.buy_font_size);
+                    var buyText = new cc.LabelTTF(texts.buy, "宋体", dimens.buy_font_size);
                     buyText.attr({
                         color: colors.buy,
                         x: x,

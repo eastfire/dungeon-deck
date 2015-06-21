@@ -65,7 +65,7 @@ var SpellBookLayer = cc.Layer.extend({
             anchorX: 0.5,
             anchorY: 0.5
         });
-        var text = new cc.LabelTTF(texts.cast_spell, "Arial", dimens.build_new_stage_font_size);
+        var text = new cc.LabelTTF(texts.cast_spell, "宋体", dimens.build_new_stage_font_size);
         text.attr({
             color: cc.color.BLACK,
             x: 90,

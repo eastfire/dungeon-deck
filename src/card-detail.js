@@ -33,11 +33,13 @@ var CardDetailLayer = cc.LayerColor.extend({
         } else if ( nameLength >= 10 ) {
             fontSize = dimens.card_detail_name_font_size * 4 / 5;
         }
-        var nameLabel = new cc.LabelTTF(name, "Arial",fontSize );
+        var nameLabel = new cc.LabelTTF(name, "宋体",fontSize );
         nameLabel.attr({
             color: colors.card_detail_name,
             x: cc.winSize.width/2,
-            y: cc.winSize.height/2 + dimens.card_height/2*scaleRate - dimens.card_detail_name_font_size
+            y: cc.winSize.height/2 + dimens.card_height/2*scaleRate - dimens.card_detail_name_font_size,
+            anchorX: 0.5,
+            anchorY: 0.5
         })
         this.addChild(nameLabel,15);
 

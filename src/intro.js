@@ -21,7 +21,7 @@ var IntroLayer = cc.Layer.extend({
         });
         this.addChild(coverBackground, 0);
 
-        var titleLabel = new cc.LabelTTF(GAME_TITLE_TEXT, "Arial", INTRO_TITLE_FONT_SIZE);
+        var titleLabel = new cc.LabelTTF(GAME_TITLE_TEXT, "宋体", INTRO_TITLE_FONT_SIZE);
         // position the label on the center of the screen
         titleLabel.attr({
             color: cc.color(0,0,0,255),
