@@ -5,6 +5,8 @@ var res = {
     book_bg_png : "res/book-bg.png",
     card_plist: "res/card.plist",
     card_png : "res/card.png",
+    monster_plist: "res/monster.plist",
+    monster_png : "res/monster.png",
     hero_plist: "res/hero.plist",
     hero_png : "res/hero.png",
     icon_plist: "res/icon.plist",

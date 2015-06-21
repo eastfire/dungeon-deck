@@ -54,6 +54,7 @@ cc.game.onStart = function(){
     //load resources
     cc.LoaderScene.preload(g_resources, function () {
         cc.spriteFrameCache.addSpriteFrames(res.hero_plist);
+        cc.spriteFrameCache.addSpriteFrames(res.monster_plist);
         cc.spriteFrameCache.addSpriteFrames(res.card_plist);
         cc.spriteFrameCache.addSpriteFrames(res.icon_plist);
         cc.spriteFrameCache.addSpriteFrames(res.ui_plist);

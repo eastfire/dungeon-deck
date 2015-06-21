@@ -4,226 +4,200 @@
     <dict>
         <key>frames</key>
         <dict>
-            <key>dungeon-back.png</key>
+            <key>book-menu-selected.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,2},{120,168}}</string>
+                <string>{{490,2},{120,120}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
+                <string>{{0,0},{120,120}}</string>
                 <key>sourceSize</key>
-                <string>{120,168}</string>
+                <string>{120,120}</string>
             </dict>
-            <key>room-blacksmith-small.png</key>
+            <key>book-menu.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{124,2},{120,168}}</string>
+                <string>{{612,2},{120,120}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
+                <string>{{0,0},{120,120}}</string>
                 <key>sourceSize</key>
-                <string>{120,168}</string>
+                <string>{120,120}</string>
             </dict>
-            <key>room-hen-den-small.png</key>
+            <key>build-menu-selected.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,172},{120,168}}</string>
+                <string>{{856,2},{120,120}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
+                <string>{{0,0},{120,120}}</string>
                 <key>sourceSize</key>
-                <string>{120,168}</string>
+                <string>{120,120}</string>
             </dict>
-            <key>room-library-small.png</key>
+            <key>build-menu.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{124,172},{120,168}}</string>
+                <string>{{734,2},{120,120}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
+                <string>{{0,0},{120,120}}</string>
                 <key>sourceSize</key>
-                <string>{120,168}</string>
+                <string>{120,120}</string>
             </dict>
-            <key>room-prison-small.png</key>
+            <key>card-desc-bg.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,342},{120,168}}</string>
+                <string>{{246,2},{120,78}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
+                <string>{{0,0},{120,78}}</string>
                 <key>sourceSize</key>
-                <string>{120,168}</string>
+                <string>{120,78}</string>
             </dict>
-            <key>room-spoiled-food-small.png</key>
+            <key>choice-normal.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{124,342},{120,168}}</string>
+                <string>{{2,226},{540,180}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
+                <string>{{0,0},{540,180}}</string>
                 <key>sourceSize</key>
-                <string>{120,168}</string>
+                <string>{540,180}</string>
             </dict>
-            <key>room-vault-small.png</key>
+            <key>choice-selected.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,512},{119,168}}</string>
+                <string>{{544,226},{540,180}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{119,168}}</string>
+                <string>{{0,0},{540,180}}</string>
                 <key>sourceSize</key>
-                <string>{119,168}</string>
+                <string>{540,180}</string>
             </dict>
-            <key>spell-cyclone-small.png</key>
+            <key>long-normal.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{123,512},{120,168}}</string>
+                <string>{{366,164},{420,60}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
+                <string>{{0,0},{420,60}}</string>
                 <key>sourceSize</key>
-                <string>{120,168}</string>
+                <string>{420,60}</string>
             </dict>
-            <key>spell-fireball-small.png</key>
+            <key>long-selected.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,682},{120,168}}</string>
+                <string>{{788,164},{420,60}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
+                <string>{{0,0},{420,60}}</string>
                 <key>sourceSize</key>
-                <string>{120,168}</string>
+                <string>{420,60}</string>
             </dict>
-            <key>spell-lightening-small.png</key>
+            <key>short-normal.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{124,682},{120,168}}</string>
+                <string>{{2,164},{180,60}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
+                <string>{{0,0},{180,60}}</string>
                 <key>sourceSize</key>
-                <string>{120,168}</string>
+                <string>{180,60}</string>
             </dict>
-            <key>spell-magic-missile-small.png</key>
+            <key>short-selected.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,852},{120,168}}</string>
+                <string>{{184,164},{180,60}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
+                <string>{{0,0},{180,60}}</string>
                 <key>sourceSize</key>
-                <string>{120,168}</string>
+                <string>{180,60}</string>
             </dict>
-            <key>spell-touchstone-small.png</key>
+            <key>throne-menu.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{124,852},{120,168}}</string>
+                <string>{{978,2},{160,160}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
+                <string>{{0,0},{160,160}}</string>
                 <key>sourceSize</key>
-                <string>{120,168}</string>
+                <string>{160,160}</string>
             </dict>
-            <key>spell-war-drum-small.png</key>
+            <key>upgrade-menu-selected.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,1022},{120,168}}</string>
+                <string>{{124,2},{120,120}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
+                <string>{{0,0},{120,120}}</string>
                 <key>sourceSize</key>
-                <string>{120,168}</string>
+                <string>{120,120}</string>
             </dict>
-            <key>trap-arrow-trap-small.png</key>
+            <key>upgrade-menu.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{124,1022},{120,168}}</string>
+                <string>{{2,2},{120,120}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
+                <string>{{0,0},{120,120}}</string>
                 <key>sourceSize</key>
-                <string>{120,168}</string>
+                <string>{120,120}</string>
             </dict>
-            <key>trap-pitfall-small.png</key>
+            <key>vault-menu.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,1192},{120,168}}</string>
+                <string>{{368,2},{120,120}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
+                <string>{{0,0},{120,120}}</string>
                 <key>sourceSize</key>
-                <string>{120,168}</string>
-            </dict>
-            <key>trap-poison-gas-small.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{124,1192},{120,168}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
-                <key>sourceSize</key>
-                <string>{120,168}</string>
-            </dict>
-            <key>trap-rolling-boulder-small.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{2,1362},{120,168}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
-                <key>sourceSize</key>
-                <string>{120,168}</string>
+                <string>{120,120}</string>
             </dict>
         </dict>
         <key>metadata</key>
@@ -231,13 +205,13 @@
             <key>format</key>
             <integer>2</integer>
             <key>realTextureFileName</key>
-            <string>card.png</string>
+            <string>ui.png</string>
             <key>size</key>
-            <string>{246,1532}</string>
+            <string>{1210,408}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:53b351b7e74f9c7e7f71a17551779595:3706e17381515048aed72a58f3080127:ac15c2787776c146127be3982bd2a622$</string>
+            <string>$TexturePacker:SmartUpdate:8156bf2d4b09434a0ee1a4c749279797:45b16a0362683d39b88e7ab50dec159e:e489eb72a1dac3e9a97caaf8aad1ac42$</string>
             <key>textureFileName</key>
-            <string>card.png</string>
+            <string>ui.png</string>
         </dict>
     </dict>
 </plist>
