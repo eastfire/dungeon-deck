@@ -18,11 +18,11 @@ var GameModel = Backbone.Model.extend({
             maxMoney: 10,
 
             levelUpHpEffect: 5,
-            baseHp: 10,
+            baseHp: 20,
             hp : 1,
             maxHp : 1,
 
-            upgradeChance: 2,
+            upgradeChance: 4,
 
             defense: 0,
 
@@ -36,38 +36,60 @@ var GameModel = Backbone.Model.extend({
             maxExp: 10,
             status: null,
             phase: "hero-generate", //hero-generate , team-enter-dungeon, team-enter-level, team-enter-room, team-leave-room, team-leave-level, team
-            heroList: [ "dragonslayer","berserker", "soldier" ],
-            //initDeck: [ "skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
+
+            heroList: [ "amazon","assassin", "berserker", "cleric", "dragonslayer", "knight", "ninja", "sage", "soldier", "thief", "warrior" ],
+            initDeck: [ "skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
             //initDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
-            initDeck: [ /*"titan","arrow-trap","ooze",*/"dragon","arrow-trap","lilith","arrow-trap" ],
+            //initDeck: [ /*"titan","arrow-trap","ooze",*/"dragon","arrow-trap","lilith","arrow-trap" ],
             deck: [],
             isInitDeckShuffle: true,
 
             //initDiscardDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman","magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
-            initDiscardDeck: [ "orc" ],
+            initDiscardDeck: [ ],
             discardDeck: [],
 
-            initHand: ["fireball","magic-missile","fireball"],
+            //initHand: ["fireball","magic-missile","fireball"],
+            initHand: [],
             hand: [], //魔法
-            maxHand: 3,
+            maxHand: 1,
 
             team: [],
 
-            costPerStage: 5,
+            costPerStage: 4,
+            costCut: 0,
             stage: [],
             stageNumber: 0,
 
             upgradeRangeLevel: UPGRADE_RANGE_LEVEL.FROM_DISCARD,
 
-            //initBonus: ["upgradeChance","maxHp","money","vault"],
-            initBonus: ["cullDiscard","upgradeFromDeck","spoiled-food"],
+            //initBonus: ["blacksmith","maxHp"],
+            initBonus: ["upgradeChance","maxHp","money","upgradeFromDeck","cullDiscard","cullDeck","buyableCard","blacksmith", "library","prison","spoiled-food"],
             bonusPool : [],
             bonusChoiceNumber:3,
             bonusEachLevelUp: "alwaysLevelUpBonus",
 
-            unlockedBuyableCards:[],
+            unlockedBuyableCards:["dragon","ghost","lich","lilith","minotaur","ooze","orc","orc-bandit","spider","titan", "treefolk",
+                                    "cyclone","fireball","lightening","touchstone","war-drum",
+                                    "arrow-trap","pitfall","poison-gas","rolling-boulder"],
             regularBuyableCards: [],
+            initRegularBuyableCount : 12,
             initRegularBuyableCards : [
+                {
+                    type:"ratman",
+                    count: 8
+                },
+                {
+                    type:"skeleton",
+                    count: 8
+                },
+                {
+                    type:"dark-elf",
+                    count: 8
+                },
+                {
+                    type:"magic-missile",
+                    count: 8
+                },
                 {
                     type:"vault",
                     count: 8
@@ -75,25 +97,6 @@ var GameModel = Backbone.Model.extend({
                 {
                     type:"hen-den",
                     count: 8
-                },
-                {
-                    type:"ratman",
-                    count: 8
-                }, {
-                    type:"skeleton",
-                    count: 8
-                }, {
-                    type:"magic-missile",
-                    count: 8
-                },{
-                    type:"lightening",
-                    count: 8
-                },{
-                    type:"prison",
-                    count: 8
-                },{
-                    type:"library",
-                    count: 1
                 }],
 
             poisonEffect: 1
@@ -101,6 +104,7 @@ var GameModel = Backbone.Model.extend({
     },
     initialize:function(){
         this.expUnused = 0;
+        this.set("maxHp",this.get("baseHp"));
         this.setLevel(1);
         this.on("change:cunning",function(){
             this.set("maxExp",this.calExpRequire());
@@ -134,7 +138,6 @@ var GameModel = Backbone.Model.extend({
     },
     setLevel:function(l){
         this.set("level",l);
-        this.set("maxHp",this.calMaxHp(l));
         this.set("hp", this.get("maxHp"));
         this.set("exp",0);
         this.set("maxExp",this.calExpRequire(l));
@@ -173,11 +176,7 @@ var GameModel = Backbone.Model.extend({
     },
     calExpRequire: function (lv) {
         lv = lv || this.get("level");
-        return Math.round((Math.log10(lv) * lv * 16.61 + 10) * (1 - (this.get("cunningEffect") / 100) * this.get("cunning")));
-    },
-    calMaxHp: function (lv) {
-        lv = lv || this.get("level");
-        return (lv-1) * this.get("levelUpHpEffect") + this.get("baseHp");
+        return Math.round((Math.log10(lv) * lv * 8.8 /*16.61*/ + 5) * (1 - (this.get("cunningEffect") / 100) * this.get("cunning")));
     },
     checkLevelUp:function(){
         var currentExp = this.get("exp");
@@ -195,6 +194,7 @@ var GameModel = Backbone.Model.extend({
     },
     levelUp:function(){
         var newLevel = this.get("level") + 1;
+        this.set("maxHp",this.get("maxHp")+this.get("levelUpHpEffect"));
         this.setLevel(newLevel);
     },
     isTeamAlive:function(){
@@ -244,7 +244,7 @@ var GameModel = Backbone.Model.extend({
         this.sortTeam();
     },
     getBuildCost:function(){
-        return this.get("stageNumber")* this.get("costPerStage");
+        return Math.max(1, this.get("stageNumber")* this.get("costPerStage") - this.get("costCut"));
     },
     isFullHand:function(){
         return this.get("hand").length >= this.get("maxHand");
@@ -284,17 +284,40 @@ var GameModel = Backbone.Model.extend({
             this.set("deck",_.shuffle(this.get("deck")));
     },
     initRegularBuyableCards:function(){
-        _.each( this.get("initRegularBuyableCards"), function(entry){
-            var deck = [];
-            for ( var i = 0; i < entry.count; i++ ) {
-                var Model = DUNGEON_CLASS_MAP[entry.type];
-                var model = new Model({
-                    side:"front"
-                });
-                deck.push( model );
-            }
-            this.get("regularBuyableCards").push(deck);
+        var initBuyable = this.get("initRegularBuyableCards");
+        _.each( initBuyable , function(entry){
+            this.newRegularBuyableDeck(entry);
         },this);
+        if ( initBuyable.length < this.get("initRegularBuyableCount") ) {
+            var diff = this.get("initRegularBuyableCount") - initBuyable.length;
+            for ( var i = 0 ; i < diff; i++ ){
+                this.randomUnlockedToBuyable();
+            }
+        }
+    },
+    newRegularBuyableDeck:function(entry){
+        var deck = [];
+        for ( var i = 0; i < entry.count; i++ ) {
+            var Model = DUNGEON_CLASS_MAP[entry.type];
+            var model = new Model({
+                side:"front"
+            });
+            deck.push( model );
+        }
+        this.get("regularBuyableCards").push(deck);
+    },
+    randomUnlockedToBuyable:function(){
+        var unlocked = this.get("unlockedBuyableCards");
+        if ( unlocked.length ) {
+            var index = Math.floor(Math.random()*unlocked.length);
+            var type = unlocked[index];
+            unlocked.splice(index,1);
+            var entry = {
+                type: type,
+                count: 8
+            };
+            this.newRegularBuyableDeck(entry);
+        }
     },
     initSpellBook:function(){
         _.each( this.get("initHand"), function(cardName){
@@ -373,8 +396,8 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
             name: "",
             backType:"dungeon",
 
-            baseCost: 0,
-            cost: 0,
+            baseCost: 1,
+            cost: 1,
 
             baseScore: 0,
             score: 0,
@@ -466,7 +489,7 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
     },
     onExile:function(){
     },
-    levelUp:function(){
+    levelUp:function(silent){
         var newLevel = this.get("level") + 1;
         this.set("level", newLevel);
     },

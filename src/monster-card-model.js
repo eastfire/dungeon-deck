@@ -177,11 +177,8 @@ var DarkElfModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"dark-elf",
             displayName:"暗精灵",
-            attack: 1,
-            baseAttack: 1,
             maxLevel: 5,
-            baseCost: 2,
-            baseUpgradeCost: 2,
+            baseCost: 1,
             attackRange: "last"
         })
     },
@@ -190,7 +187,7 @@ var DarkElfModel = MonsterModel.extend({
         this.set({
             baseAttack: level,
             baseScore: level,
-            baseUpgradeCost: level
+            baseUpgradeCost: level*3
         } );
         this.reEvaluate();
     }
@@ -201,21 +198,18 @@ var DragonModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"dragon",
             displayName:"龙",
-            attack: 1,
-            baseAttack: 1,
             maxLevel: 5,
-            baseCost: 1,
-            baseUpgradeCost: 2,
-            trample: true
+            baseCost: 12
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            baseAttack: level*2+5,
+            baseAttack: level*2+3,
             baseScore: level,
-            baseUpgradeCost: level*10,
-            payHp: level
+            baseUpgradeCost: level*12,
+            payHp: level,
+            trample: level > 3
         } );
         this.reEvaluate();
     }
@@ -228,7 +222,6 @@ var GhostModel = MonsterModel.extend({
             displayName:"鬼魂",
             subtype:"undead",
             maxLevel: 5,
-            baseUpgradeCost: 2,
             baseCost: 5,
             attackRange: "random",
             pierce: true
@@ -250,10 +243,8 @@ var LichModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"lich",
             displayName:"巫妖",
-            attack: 0,
-            baseAttack: 0,
-            maxLevel: 5,
-            baseUpgradeCost: 2
+            baseCost: 5,
+            maxLevel: 5
         })
     },
     getDescription:function(){
@@ -268,7 +259,7 @@ var LichModel = MonsterModel.extend({
         this.set({
             baseAttack: level,
             baseScore: level,
-            baseUpgradeCost: level*2
+            baseUpgradeCost: Math.ceil(level*2.5)
         } );
         this.reEvaluate();
     },
@@ -283,8 +274,8 @@ var LilithModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"lilith",
             displayName:"莉莉丝",
-            maxLevel: 5,
-            baseUpgradeCost: 2
+            baseCost: 5,
+            maxLevel: 5
         })
     },
     getDescription:function(){
@@ -299,7 +290,7 @@ var LilithModel = MonsterModel.extend({
         this.set({
             baseAttack: level,
             baseScore: level,
-            baseUpgradeCost: level*2
+            baseUpgradeCost: level*3
         } );
         this.reEvaluate();
     },
@@ -318,8 +309,8 @@ var MinotaurModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"minotaur",
             displayName:"牛头人",
-            maxLevel: 4,
-            baseUpgradeCost: 2
+            baseCost: 3,
+            maxLevel: 4
         })
     },
     getDescription:function(){
@@ -372,10 +363,8 @@ var OozeModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"ooze",
             displayName:"软泥怪",
-            attack: 0,
-            baseAttack: 0,
-            maxLevel: 6,
-            baseUpgradeCost: 2
+            baseCost: 4,
+            maxLevel: 6
         })
     },
     getDescription:function(){
@@ -426,7 +415,7 @@ var OrcModel = MonsterModel.extend({
             name:"orc",
             displayName:"兽人",
             maxLevel: 5,
-            baseUpgradeCost: 2
+            baseCost: 6
         })
     },
     getDescription:function(){
@@ -442,7 +431,7 @@ var OrcModel = MonsterModel.extend({
         this.set({
             baseAttack: "＊",
             baseScore: level,
-            baseUpgradeCost: level*2
+            baseUpgradeCost: Math.ceil(level*3.5)
         } );
         this.reEvaluate();
     },
@@ -465,8 +454,8 @@ var OrcBanditModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"orc-bandit",
             displayName:"兽人强盗",
-            maxLevel: 5,
-            baseUpgradeCost: 2
+            baseCost: 3,
+            maxLevel: 5
         })
     },
     getDescription:function(){
@@ -481,7 +470,7 @@ var OrcBanditModel = MonsterModel.extend({
         this.set({
             baseAttack: level,
             baseScore: level,
-            baseUpgradeCost: level*2
+            baseUpgradeCost: level*2+2
         } );
         this.reEvaluate();
     },
@@ -500,8 +489,6 @@ var RatmanModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"ratman",
             displayName:"鼠人",
-            attack: 0,
-            baseAttack: 0,
             baseCost: 1,
             maxLevel: 5
         })
@@ -509,6 +496,8 @@ var RatmanModel = MonsterModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
+            baseAttack: 0,
+            baseScore: level,
             baseUpgradeCost: level*level
         } );
         this.reEvaluate();
@@ -539,11 +528,8 @@ var SkeletonModel = MonsterModel.extend({
             name:"skeleton",
             displayName:"骷髅",
             subtype:"undead",
-            attack: 1,
-            baseAttack: 1,
             maxLevel: 5,
-            baseCost: 1,
-            baseUpgradeCost: 2
+            baseCost: 1
         })
     },
     initByLevel:function(){
@@ -551,7 +537,7 @@ var SkeletonModel = MonsterModel.extend({
         this.set({
             baseAttack: level,
             baseScore: level,
-            baseUpgradeCost: level*4
+            baseUpgradeCost: level*3
         } );
         this.reEvaluate();
     }
@@ -562,10 +548,8 @@ var SpiderModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"spider",
             displayName:"毒蜘蛛",
-            attack: 0,
-            baseAttack: 0,
-            maxLevel: 5,
-            baseUpgradeCost: 2
+            baseCost: 4,
+            maxLevel: 5
         })
     },
     getDescription:function(){
@@ -598,18 +582,16 @@ var TitanModel = MonsterModel.extend({
             name:"titan",
             displayName:"泰坦巨人",
             maxLevel: 5,
-            baseUpgradeCost: 2,
-            baseCost: 5,
-            attackRange: "first",
+            baseCost: 9,
             trample: true
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            baseAttack: level*3,
+            baseAttack: level*2+1,
             baseScore: level,
-            baseUpgradeCost: level*5
+            baseUpgradeCost: level*6+6
         } );
         this.reEvaluate();
     }
@@ -620,9 +602,7 @@ var TreefolkModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"treefolk",
             displayName:"树妖",
-            attack: 0,
-            baseAttack: 0,
-            baseCost: 1,
+            baseCost: 3,
             maxLevel: 5
         })
     },
@@ -630,6 +610,7 @@ var TreefolkModel = MonsterModel.extend({
         var level = this.get("level");
         this.set({
             baseAttack: Math.floor(level/2)+1,
+            baseScore: level,
             baseUpgradeCost: level*level
         } );
         this.reEvaluate();
@@ -660,11 +641,8 @@ var ZombieModel = MonsterModel.extend({
             name:"zombie",
             displayName:"僵尸",
             subtype:"undead",
-            attack: 1,
-            baseAttack: 1,
             maxLevel: 5,
-            baseCost: 1,
-            baseUpgradeCost: 2
+            baseCost: 1
         })
     },
     initByLevel:function(){

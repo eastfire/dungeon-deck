@@ -27,6 +27,7 @@ var DUNGEON_CLASS_MAP = {
 
     "treasure-chest" : TreasureChestModel,
 
+    blacksmith: BlacksmithModel,
     library: LibraryModel,
     "hen-den": HenDenModel,
     prison: PrisonModel,
@@ -65,6 +66,7 @@ var DUNGEON_SPRITE_CLASS_MAP = {
 
     "treasure-chest" : ItemCardSprite,
 
+    blacksmith: RoomCardSprite,
     library: RoomCardSprite,
     "hen-den": RoomCardSprite,
     prison: RoomCardSprite,

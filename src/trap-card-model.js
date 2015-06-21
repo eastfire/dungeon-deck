@@ -151,18 +151,17 @@ var ArrowTrapModel = TrapModel.extend({
             name: "arrow-trap",
             displayName:"飞箭陷阱",
             attackRange:"last",
-            baseAttack: 1,
-            attack: 1,
-            level: 1,
-            maxLevel: 5,
-            payMoney: 1
+            baseCost: 4,
+            maxLevel: 5
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
             baseAttack: level,
-            baseUpgradeCost: level
+            baseScore: level,
+            baseUpgradeCost: level*4+3,
+            payMoney: 1
         } );
         this.reEvaluate();
     }
@@ -174,16 +173,17 @@ var PitfallModel = TrapModel.extend({
             name: "pitfall",
             displayName:"陷坑",
             attackRange:"first",
-            baseAttack: "*",
-            level: 1,
-            maxLevel: 4,
-            payMoney: 1
+            baseCost: 3,
+            maxLevel: 4
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            baseUpgradeCost: level
+            baseAttack: "*",
+            baseScore: level,
+            baseUpgradeCost: level,
+            payMoney: level - 1
         } );
         if ( level == 1 ) {
             this.set("attackRange","first");
@@ -240,16 +240,16 @@ var PoisonGasModel = TrapModel.extend({
             name: "poison-gas",
             displayName:"毒气陷阱",
             attackRange:"first",
-            baseAttack: 0,
-            attack: 0,
-            level: 1,
+            baseCost: 5,
             maxLevel: 6
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            baseUpgradeCost: level,
+            baseAttack: 0,
+            baseScore: level,
+            baseUpgradeCost: level + 1,
             payMoney: level
         } );
         if ( level == 1 ) {
@@ -289,10 +289,8 @@ var RollingBoulderModel = TrapModel.extend({
             name: "rolling-boulder",
             displayName:"滚石陷阱",
             attackRange:"last",
-            baseAttack: "*",
-            level: 1,
             maxLevel: 5,
-            payMoney: 5
+            baseCost: 5
         })
     },
     onAttackHero:function(heroModel, att){
@@ -312,8 +310,9 @@ var RollingBoulderModel = TrapModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
+            baseAttack: "*",
             baseUpgradeCost: level*10+10,
-            payMoney: 5-level
+            payMoney: 6-level
         } );
         this.reEvaluate();
     }

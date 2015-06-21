@@ -411,6 +411,7 @@ var DeckSprite = cc.Sprite.extend({
         if ( cardSpriteOrModel instanceof cc.Sprite ) {
             this.__cards.push(cardSpriteOrModel.model);
             cardSpriteOrModel.removeFromParent(true);
+            cardSpriteOrModel = null;
         } else if ( cardSpriteOrModel instanceof Backbone.Model ) {
             this.__cards.push(cardSpriteOrModel);
         }

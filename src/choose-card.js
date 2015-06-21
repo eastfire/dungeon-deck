@@ -190,8 +190,11 @@ var ChooseCardLayer = cc.LayerColor.extend({
         }
     },
     renderOneCard:function(cardModel){
+        var cloneCardModel = new DUNGEON_CLASS_MAP[cardModel.get("name")]({
+            level: cardModel.get("level")
+        })
         var cardSprite = new DUNGEON_SPRITE_CLASS_MAP[cardModel.get("name")]({
-            model: cardModel,
+            model: cloneCardModel,
             forceToSide: "front"
         });
         cardSprite.attr({
@@ -201,7 +204,6 @@ var ChooseCardLayer = cc.LayerColor.extend({
             anchorY : 0.5
         });
         this.scrollView.addChild(cardSprite);
-
         if ( this.appendIcon ) {
             var icon = this.appendIcon.call(this, cardModel);
             if ( icon ) cardSprite.addChild(icon);

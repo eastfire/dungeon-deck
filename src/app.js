@@ -288,6 +288,7 @@ var MainGameLayer = cc.Layer.extend({
             var boughtCardSprite = new DUNGEON_SPRITE_CLASS_MAP[ window.newDiscardCardModel.get("name") ]({
                 model: window.newDiscardCardModel
             });
+            cc.log(boughtCardSprite);
             boughtCardSprite.attr({
                 x: window.newDiscardCardPosition.x,
                 y: window.newDiscardCardPosition.y
@@ -1034,7 +1035,7 @@ var MainGameLayer = cc.Layer.extend({
     },
     teamDie:function() {
         this.giveUpMenu.setVisible(false);
-        this.buildStageItem.setVisible(false);
+        this.buildStageMenu.setVisible(false);
         cc.log("team die");
         var totalLevel = _.reduce(this.model.get("team"), function (memo, heroModel) {
             return memo + (heroModel.get("bite") ? 0 : heroModel.get("level"));

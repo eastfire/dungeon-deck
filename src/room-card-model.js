@@ -196,3 +196,36 @@ var SpoiledFoodModel = RoomModel.extend({
         window.gameModel.set("spoiled", window.gameModel.get("spoiled") + this.getEffect() - this.getEffect(this.get("level")-1) );
     }
 });
+
+var BlacksmithModel = RoomModel.extend({
+    defaults:function(){
+        return _.extend(RoomModel.prototype.defaults.call(this), {
+            baseCost: 10,
+            name:"blacksmith",
+            displayName:"铁匠铺",
+
+            maxLevel: "NA",
+            upgradeable: false
+        })
+    },
+    getDescription:function(){
+        var desc = RoomModel.prototype.getDescription.call(this);
+        if ( desc !== "" ) {
+            desc += "\n";
+        }
+        return desc + "建造地城花费{[money]}减"+this.getEffect()+"(至少1)";
+    },
+    getEffect:function(level){
+        level = level || this.get("level");
+        return level;
+    },
+    onGain:function(){
+        window.gameModel.set("costCut", window.gameModel.get("costCut") + this.getEffect());
+    },
+    onExile:function(){
+        window.gameModel.set("costCut", window.gameModel.get("costCut") - this.getEffect());
+    },
+    onLevelUp:function(){
+        window.gameModel.set("costCut", window.gameModel.get("costCut") + this.getEffect() - this.getEffect(this.get("level")-1) );
+    }
+});

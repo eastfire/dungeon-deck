@@ -134,6 +134,19 @@ var CullBonus = LevelUpBonus.extend({
     }
 });
 
+var RandomBuyableCardBonus = LevelUpBonus.extend({
+    defaults:function(){
+        return {
+            level: 1,
+            maxLevel: 4,
+            description:"可购买新的牌"
+        }
+    },
+    onGain:function(options){
+        window.gameModel.randomUnlockedToBuyable();
+    }
+});
+
 var AlwaysLevelUpBonus = LevelUpBonus.extend({
     defaults:function(){
         return {
@@ -324,16 +337,11 @@ var LEVEL_UP_BONUS_CLASS_MAP = {
         }
     }),
     upgradeFromDeck : UpgradeFromDeckBonus,
-    vault: CardBonus.extend({
+    buyableCard : RandomBuyableCardBonus,
+    blacksmith: CardBonus.extend({
         defaults: {
-            maxLevel: 100,
-            cardName: "vault"
-        }
-    }),
-    "hen-den": CardBonus.extend({
-        defaults: {
-            maxLevel: 100,
-            cardName: "hen-den"
+            maxLevel: 3,
+            cardName: "blacksmith"
         }
     }),
     library: CardBonus.extend({
