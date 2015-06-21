@@ -2,6 +2,7 @@
  * Created by 赢潮 on 2015/3/8.
  */
 var DUNGEON_CLASS_MAP = {
+    basilisk: BasiliskModel,
     "dark-elf": DarkElfModel,
     dragon: DragonModel,
     ghost: GhostModel,
@@ -41,6 +42,7 @@ var DUNGEON_CLASS_MAP = {
 }
 
 var DUNGEON_SPRITE_CLASS_MAP = {
+    basilisk: MonsterCardSprite,
     "dark-elf": MonsterCardSprite,
     dragon: MonsterCardSprite,
     ghost: MonsterCardSprite,

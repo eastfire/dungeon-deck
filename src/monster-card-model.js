@@ -170,7 +170,29 @@ var MonsterModel = DungeonCardModel.extend({ //怪物牌
         }
         return descs.join("\n");
     }
-})
+});
+
+var BasiliskModel = MonsterModel.extend({
+    defaults:function(){
+        return _.extend(MonsterModel.prototype.defaults.call(this), {
+            name:"basilisk",
+            displayName:"巨蟒",
+            maxLevel: 5,
+            attackRange: "last",
+            baseCost: 10,
+            trample: true
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseAttack: level*2+1,
+            baseScore: level,
+            baseUpgradeCost: level*6+7
+        } );
+        this.reEvaluate();
+    }
+});
 
 var DarkElfModel = MonsterModel.extend({
     defaults:function(){

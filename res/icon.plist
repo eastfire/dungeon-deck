@@ -446,6 +446,19 @@
                 <key>sourceSize</key>
                 <string>{48,48}</string>
             </dict>
+            <key>trample-icon.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{1693,2},{48,48}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{48,48}}</string>
+                <key>sourceSize</key>
+                <string>{48,48}</string>
+            </dict>
         </dict>
         <key>metadata</key>
         <dict>
@@ -454,9 +467,9 @@
             <key>realTextureFileName</key>
             <string>icon.png</string>
             <key>size</key>
-            <string>{1693,63}</string>
+            <string>{1743,63}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:c4fecac003624b91187c52e2c6171672:b68d1ed2a47736312b9b57e18548ba12:240848ad97db3b21fd898f16a7d3102d$</string>
+            <string>$TexturePacker:SmartUpdate:0f7dea1f7d0934f349a239af4a15aaca:a82d06846ff5078245d86d75c0016618:240848ad97db3b21fd898f16a7d3102d$</string>
             <key>textureFileName</key>
             <string>icon.png</string>
         </dict>
