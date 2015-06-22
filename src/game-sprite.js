@@ -119,7 +119,7 @@ var BaseCardSprite = CardSprite.extend({
 
         this.icons = {};
 
-        this.registerIcon( "level", cc.spriteFrameCache.getSpriteFrame("level-icon.png"), {
+        this.registerIcon( "level", cc.spriteFrameCache.getSpriteFrame(this.model.isMaxLevel() ? "max-level-icon.png" : "level-icon.png"), {
             x: dimens.hero_icon_offset.x,
             y: dimens.card_height - dimens.hero_icon_offset.y
         } );

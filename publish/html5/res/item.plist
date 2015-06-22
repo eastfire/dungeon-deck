@@ -30,7 +30,7 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>item-helmet-small.png</key>
+            <key>item-elixir-small.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,342},{120,168}}</string>
@@ -43,7 +43,7 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>item-lockpicker-small.png</key>
+            <key>item-helmet-small.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,512},{120,168}}</string>
@@ -56,10 +56,23 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
+            <key>item-lockpicker-small.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,682},{120,168}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{120,168}}</string>
+                <key>sourceSize</key>
+                <string>{120,168}</string>
+            </dict>
             <key>item-potion-small.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,682},{121,169}}</string>
+                <string>{{2,852},{121,169}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -72,7 +85,7 @@
             <key>item-resurrection-small.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,853},{120,168}}</string>
+                <string>{{2,1023},{120,168}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -85,7 +98,7 @@
             <key>item-staff-small.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,1023},{120,168}}</string>
+                <string>{{2,1193},{120,168}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -103,9 +116,9 @@
             <key>realTextureFileName</key>
             <string>item.png</string>
             <key>size</key>
-            <string>{125,1193}</string>
+            <string>{125,1363}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:9e43326513aa196a74a98287994bc958:3adeb1b96f956ee0922d0c5487aecbcc:59939a4a587d378f0fcbb69f55d845d5$</string>
+            <string>$TexturePacker:SmartUpdate:4bef8e8f43579a2b426139cedb3fa5ce:0b201d267a0c9ba8f70f86df2a8a4cec:59939a4a587d378f0fcbb69f55d845d5$</string>
             <key>textureFileName</key>
             <string>item.png</string>
         </dict>
