@@ -27,7 +27,12 @@ var DUNGEON_CLASS_MAP = {
     touchstone: TouchStoneModel,
     "war-drum": WarDrumModel,
 
-    "treasure-chest" : TreasureChestModel,
+    armor: ArmorModel,
+    elixir: ElixirModel,
+    helmet: HelmetModel,
+    potion : PotionModel,
+    resurrection: ResurrectionPotionModel,
+    staff: StaffModel,
 
     blacksmith: BlacksmithModel,
     library: LibraryModel,
@@ -68,7 +73,12 @@ var DUNGEON_SPRITE_CLASS_MAP = {
     touchstone: SpellCardSprite,
     "war-drum": WarDrumCardSprite,
 
-    "treasure-chest" : ItemCardSprite,
+    armor: ItemCardSprite,
+    elixir: ItemCardSprite,
+    helmet: ItemCardSprite,
+    potion : ItemCardSprite,
+    resurrection: ItemCardSprite,
+    staff: ItemCardSprite,
 
     blacksmith: RoomCardSprite,
     library: RoomCardSprite,

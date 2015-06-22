@@ -601,6 +601,7 @@ var MainGameLayer = cc.Layer.extend({
         this.meeple.setVisible(true);
     },
     generateHero:function(){
+        gameModel.increaseTurn();;
         var team = this.model.get("team");
         if ( team.length >= MAX_HERO_COUNT ) {
             cc.eventManager.dispatchCustomEvent("generate-hero-end");
@@ -609,7 +610,12 @@ var MainGameLayer = cc.Layer.extend({
         this.model.set("phase","generate-hero");
 
         var heroType = _.sample( this.model.get("heroList") )
-        var heroModel = new HERO_CLASS_MAP[ heroType ]()
+        var maxLevel = _.sample(gameModel.get("heroMaxLevelPool"));
+        var level = Math.min(_.sample(gameModel.get("heroLevelPool")), maxLevel);
+        var heroModel = new HERO_CLASS_MAP[ heroType ]({
+            level: level,
+            maxLevel: maxLevel
+        })
         var card = new HeroCardSprite({ model: heroModel , side: "front"})
 
         card.attr({
@@ -1026,8 +1032,17 @@ var MainGameLayer = cc.Layer.extend({
             },this));
         this.meeple.runAction(sequence);
     },
-    generateItemCard:function(level){
-        return new TreasureChestModel({
+    generateItemCard:function(level, team){
+        var carry=[];
+        _.each(team,function(heroModel){
+            _.each(heroModel.get("carry"),function(c){
+                for ( var i = 0; i < heroModel.get("level"); i++ ) {
+                    carry.push(c);
+                }
+            });
+        },this);
+        var itemName = _.sample(carry);
+        return new DUNGEON_CLASS_MAP[itemName]({
             level: level,
             side: "front"
         });
@@ -1036,8 +1051,14 @@ var MainGameLayer = cc.Layer.extend({
         this.giveUpMenu.setVisible(false);
         this.buildStageMenu.setVisible(false);
         cc.log("team die");
+        var filterTeam = [];
         var totalLevel = _.reduce(this.model.get("team"), function (memo, heroModel) {
-            return memo + (heroModel.get("bite") ? 0 : heroModel.get("level"));
+            if ( !heroModel.get("bite") ) {
+                filterTeam.push(heroModel);
+                return memo + heroModel.get("level");
+            } else {
+                return memo;
+            }
         }, 0, this);
         //meeple disappear
         var meepleSequence = cc.sequence(cc.scaleTo(0.2, 1, 0.1),
@@ -1052,7 +1073,7 @@ var MainGameLayer = cc.Layer.extend({
         this.meeple.stopAllActions();
         this.meeple.runAction(meepleSequence);
         if ( totalLevel > 0 ) {
-            var itemCard = this.generateItemCard(totalLevel)
+            var itemCard = this.generateItemCard(totalLevel, filterTeam)
             this.newItemCardSprite = new ItemCardSprite({
                 model: itemCard
             });

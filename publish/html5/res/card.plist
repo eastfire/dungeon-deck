@@ -17,20 +17,7 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>room-blacksmith-small.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{124,2},{120,168}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
-                <key>sourceSize</key>
-                <string>{120,168}</string>
-            </dict>
-            <key>room-hen-den-small.png</key>
+            <key>spell-cyclone-small.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,172},{120,168}}</string>
@@ -43,20 +30,7 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>room-library-small.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{124,172},{120,168}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
-                <key>sourceSize</key>
-                <string>{120,168}</string>
-            </dict>
-            <key>room-prison-small.png</key>
+            <key>spell-fireball-small.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,342},{120,168}}</string>
@@ -69,62 +43,10 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>room-spoiled-food-small.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{124,342},{120,168}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
-                <key>sourceSize</key>
-                <string>{120,168}</string>
-            </dict>
-            <key>room-vault-small.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{2,512},{119,168}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{119,168}}</string>
-                <key>sourceSize</key>
-                <string>{119,168}</string>
-            </dict>
-            <key>spell-cyclone-small.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{123,512},{120,168}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
-                <key>sourceSize</key>
-                <string>{120,168}</string>
-            </dict>
-            <key>spell-fireball-small.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{2,682},{120,168}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
-                <key>sourceSize</key>
-                <string>{120,168}</string>
-            </dict>
             <key>spell-lightening-small.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{124,682},{120,168}}</string>
+                <string>{{2,512},{120,168}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -137,7 +59,7 @@
             <key>spell-magic-missile-small.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,852},{120,168}}</string>
+                <string>{{2,682},{120,168}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -150,7 +72,7 @@
             <key>spell-touchstone-small.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{124,852},{120,168}}</string>
+                <string>{{2,852},{120,168}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -176,7 +98,7 @@
             <key>trap-arrow-trap-small.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{124,1022},{120,168}}</string>
+                <string>{{2,1192},{120,168}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -189,7 +111,7 @@
             <key>trap-pitfall-small.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,1192},{120,168}}</string>
+                <string>{{2,1362},{120,168}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -202,7 +124,7 @@
             <key>trap-poison-gas-small.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{124,1192},{120,168}}</string>
+                <string>{{2,1532},{120,168}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -215,7 +137,7 @@
             <key>trap-rolling-boulder-small.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,1362},{120,168}}</string>
+                <string>{{2,1702},{120,168}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -233,9 +155,9 @@
             <key>realTextureFileName</key>
             <string>card.png</string>
             <key>size</key>
-            <string>{246,1532}</string>
+            <string>{124,1872}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:53b351b7e74f9c7e7f71a17551779595:3706e17381515048aed72a58f3080127:ac15c2787776c146127be3982bd2a622$</string>
+            <string>$TexturePacker:SmartUpdate:c9ceacfbd511b3dbaa9ac83dc0ee7fe5:420d2307cd41a13bfd63e2abd10a95a2:ac15c2787776c146127be3982bd2a622$</string>
             <key>textureFileName</key>
             <string>card.png</string>
         </dict>

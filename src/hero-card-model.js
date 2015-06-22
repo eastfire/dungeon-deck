@@ -42,7 +42,9 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
 
             dodge:{
 
-            }
+            },
+
+            carry: [ "potion" ]
         }
     },
     initialize:function(){
@@ -135,6 +137,9 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
         if ( this.get("dodge").att5 ) {
             desc.push( (this.get("dodge").att5 )+"%躲避{[attack]}5及以上的怪物攻击");
         }
+        if ( this.get("dodge").spell ) {
+            desc.push( (this.get("dodge").spell )+"%躲避法术的伤害");
+        }
         return desc.join("\n");
     },
     isMaxLevel:function(){
@@ -194,12 +199,12 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
         var poison = this.get("poison");
         if ( poison ) {
             this.onBeDamaged(window.gameModel.get("poisonEffect"),"poison");
-            this.set("poison", poison - this.get("poisonReduce") );
+            this.set("poison", Math.max(0,poison - this.get("poisonReduce")) );
         }
 
         var slow = this.get("slow");
         if ( slow ) {
-            this.set("slow", slow - this.get("slowReduce") );
+            this.set("slow", Math.max(0,slow - this.get("slowReduce")) );
         }
     },
     coolDown:function(){
@@ -243,15 +248,22 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
     onBeDamaged:function(damage, cardModel){
         var currentHp = this.get("hp");
         var realDefense = 0;
-        var damageAfterBlock;
+        var damageAfterBlock = 0;
         if ( cardModel instanceof Backbone.Model ) {
-            realDefense = ( cardModel.get("type") === "spell" || cardModel.get("type") === "trap" || cardModel.get("pierce") ) ? 0 : this.get("defense");
-            damageAfterBlock = Math.max(damage - realDefense, 0);
+            var dodge = this.get("dodge");
+            var dodgeRate = 0;
+            if ( cardModel instanceof SpellModel ) {
+                if ( dodge.spell ) dodgeRate += dodge.spell;
+            }
+            if ( Math.random() > dodgeRate/100 ) {
+                realDefense = ( cardModel.get("type") === "spell" || cardModel.get("type") === "trap" || cardModel.get("pierce") ) ? 0 : this.get("defense");
+                damageAfterBlock = Math.max(damage - realDefense, 0);
 
-            if (damageAfterBlock > currentHp) {
-                if (cardModel.onOverKillHero) {
-                    cardModel.onOverKillHero(this, damageAfterBlock - currentHp);
-                }
+//                if (damageAfterBlock > currentHp) {
+//                    if (cardModel.onOverKillHero) {
+//                        cardModel.onOverKillHero(this, damageAfterBlock - currentHp);
+//                    }
+//                }
             }
         } else {
             var type = cardModel;
@@ -265,11 +277,14 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
         var d = Math.min( currentHp , damageAfterBlock );
         this.set("hp", currentHp - d);
 
-        return d;
+        return [d, damage - d - realDefense];
     },
     getHeal:function(heal){
         var currentHp = this.get("hp");
         this.set("hp", Math.min(this.get("maxHp"),currentHp + heal));
+    },
+    getDefense:function(amount){
+        this.set("defenseBuff", this.get("defenseBuff") + 1);
     },
     loseDefense:function(amount){
         this.set("defense", Math.max(0, this.get("defense") - amount ));
@@ -369,7 +384,8 @@ var ClericModel = HeroModel.extend({
             name:"cleric",
             displayName:"牧师",
             maxLevel: 5,
-            baseDefense: 0
+            baseDefense: 0,
+            array: ["potion","elixir"]
         })
     },
     initByLevel:function(){
@@ -436,7 +452,8 @@ var KnightModel = HeroModel.extend({
             name:"knight",
             displayName:"骑士",
             maxLevel: 5,
-            baseDefense: 0
+            baseDefense: 0,
+            carry: ["helmet","armor"]
         })
     },
     initByLevel:function(){
@@ -509,7 +526,8 @@ var SageModel = HeroModel.extend({
             name:"sage",
             displayName:"贤者",
             maxLevel: 5,
-            baseDefense: 0
+            baseDefense: 0,
+            carry: ["elixir","sage","resurrection"]
         })
     },
     initByLevel:function(){
@@ -554,7 +572,8 @@ var SoldierModel = HeroModel.extend({
             name:"soldier",
             displayName:"士兵",
             maxLevel: 5,
-            baseDefense: 0
+            baseDefense: 0,
+            carry: ["helmet"]
         })
     },
     initByLevel:function(){
@@ -597,6 +616,28 @@ var SoldierModel = HeroModel.extend({
     },
     getEffect:function(){
         return this.get("level")
+    }
+});
+
+var SorcererModel = HeroModel.extend({
+    defaults:function(){
+        return _.extend(HeroModel.prototype.defaults.call(this), {
+            name:"sorcerer",
+            displayName:"法师",
+            maxLevel: 4,
+            baseDefense: 0,
+            carry: ["staff"],
+            dodge: {
+                spell: 100
+            }
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseScore: level*(level+1)/2,
+            baseMaxHp: 2 + level
+        });
     }
 });
 
@@ -670,6 +711,7 @@ var HERO_CLASS_MAP = {
     ninja: NinjaModel,
     sage: SageModel,
     soldier: SoldierModel,
+    sorcerer: SorcererModel,
     thief: ThiefModel,
     warrior : WarriorModel
 }

@@ -14,15 +14,15 @@ var RoomModel = DungeonCardModel.extend({ //房间
 });
 
 
-var VaultModel = RoomModel.extend({
+var BlacksmithModel = RoomModel.extend({
     defaults:function(){
         return _.extend(RoomModel.prototype.defaults.call(this), {
             baseCost: 10,
-            name:"vault",
-            displayName:"金库",
+            name:"blacksmith",
+            displayName:"铁匠铺",
 
-            maxLevel: 3,
-            upgradeable: true
+            maxLevel: "NA",
+            upgradeable: false
         })
     },
     getDescription:function(){
@@ -30,31 +30,22 @@ var VaultModel = RoomModel.extend({
         if ( desc !== "" ) {
             desc += "\n";
         }
-        return desc + "金币上限+"+this.getEffect()
+        return desc + "建造地城花费{[money]}减"+this.getEffect()+"(至少1)";
     },
     getEffect:function(level){
         level = level || this.get("level");
-        return level * 5;
+        return level;
     },
     onGain:function(){
-        window.gameModel.set("maxMoney", window.gameModel.get("maxMoney") + this.getEffect());
+        window.gameModel.set("costCut", window.gameModel.get("costCut") + this.getEffect());
     },
     onExile:function(){
-        window.gameModel.set("maxMoney", window.gameModel.get("maxMoney") - this.getEffect());
-        window.gameModel.set("money", Math.min(window.gameModel.get("money"), window.gameModel.get("maxMoney")));
+        window.gameModel.set("costCut", window.gameModel.get("costCut") - this.getEffect());
     },
     onLevelUp:function(){
-        window.gameModel.set("maxMoney", window.gameModel.get("maxMoney") + this.getEffect() - this.getEffect(this.get("level")-1) );
-    },
-    initByLevel:function(){
-        var level = this.get("level");
-        this.set({
-            baseUpgradeCost: level*10
-        } );
-        this.reEvaluate();
+        window.gameModel.set("costCut", window.gameModel.get("costCut") + this.getEffect() - this.getEffect(this.get("level")-1) );
     }
-
-})
+});
 
 var HenDenModel = RoomModel.extend({
     defaults:function(){
@@ -197,15 +188,17 @@ var SpoiledFoodModel = RoomModel.extend({
     }
 });
 
-var BlacksmithModel = RoomModel.extend({
+
+
+var VaultModel = RoomModel.extend({
     defaults:function(){
         return _.extend(RoomModel.prototype.defaults.call(this), {
             baseCost: 10,
-            name:"blacksmith",
-            displayName:"铁匠铺",
+            name:"vault",
+            displayName:"金库",
 
-            maxLevel: "NA",
-            upgradeable: false
+            maxLevel: 3,
+            upgradeable: true
         })
     },
     getDescription:function(){
@@ -213,19 +206,28 @@ var BlacksmithModel = RoomModel.extend({
         if ( desc !== "" ) {
             desc += "\n";
         }
-        return desc + "建造地城花费{[money]}减"+this.getEffect()+"(至少1)";
+        return desc + "{[money]}上限+"+this.getEffect()
     },
     getEffect:function(level){
         level = level || this.get("level");
-        return level;
+        return level * 5;
     },
     onGain:function(){
-        window.gameModel.set("costCut", window.gameModel.get("costCut") + this.getEffect());
+        window.gameModel.set("maxMoney", window.gameModel.get("maxMoney") + this.getEffect());
     },
     onExile:function(){
-        window.gameModel.set("costCut", window.gameModel.get("costCut") - this.getEffect());
+        window.gameModel.set("maxMoney", window.gameModel.get("maxMoney") - this.getEffect());
+        window.gameModel.set("money", Math.min(window.gameModel.get("money"), window.gameModel.get("maxMoney")));
     },
     onLevelUp:function(){
-        window.gameModel.set("costCut", window.gameModel.get("costCut") + this.getEffect() - this.getEffect(this.get("level")-1) );
+        window.gameModel.set("maxMoney", window.gameModel.get("maxMoney") + this.getEffect() - this.getEffect(this.get("level")-1) );
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseUpgradeCost: level*10+5
+        } );
+        this.reEvaluate();
     }
-});
+
+})

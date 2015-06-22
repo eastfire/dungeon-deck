@@ -11,6 +11,7 @@ var UPGRADE_RANGE_LEVEL = {
 var GameModel = Backbone.Model.extend({
     defaults:function(){
         return {
+            turn: 0,
             score: 0,
 
             initMoney:15,
@@ -37,8 +38,15 @@ var GameModel = Backbone.Model.extend({
             status: null,
             phase: "hero-generate", //hero-generate , team-enter-dungeon, team-enter-level, team-enter-room, team-leave-room, team-leave-level, team
 
-            heroList: [ "amazon","assassin", "berserker", "cleric", "dragonslayer", "knight", "ninja", "sage", "soldier", "thief", "warrior" ],
-            initDeck: [ "skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
+            heroList: ["soldier","sorcerer"],
+            //heroList: [ "amazon","assassin", "berserker", "cleric", "dragonslayer", "knight", "ninja", "sage", "soldier","sorcerer", "thief", "warrior" ],
+            heroLevelPool: [1],
+            heroMaxLevelPool: [ 3, 3, 3 ],
+            maxHeroMaxLevelAppearCount: 3,
+            maxHeroMaxLevel: 3,
+            increaseDifficultyPerTurn: 17,
+            //heroList: [ "sorcerer"],
+            initDeck: [ "titan", "titan","titan","titan","ratman","ratman","ratman","ratman" ],
             //initDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
             //initDeck: [ /*"titan","arrow-trap","ooze",*/"dragon","arrow-trap","lilith","arrow-trap" ],
             deck: [],
@@ -109,6 +117,24 @@ var GameModel = Backbone.Model.extend({
         this.on("change:cunning",function(){
             this.set("maxExp",this.calExpRequire());
         },this)
+    },
+    increaseTurn:function(){
+        var turn = this.get("turn");
+        this.set("turn", ++turn);
+        if ( turn % this.get("increaseDifficultyPerTurn") === 0 ) {
+            if ( this.get("maxHeroMaxLevelAppearCount") >= this.get("maxHeroMaxLevel")) {
+                this.set({
+                    maxHeroMaxLevel: this.get("maxHeroMaxLevel") + 1,
+                    maxHeroMaxLevelAppearCount : 0
+                });
+            }
+            this.set("maxHeroMaxLevelAppearCount", this.get("maxHeroMaxLevelAppearCount") + 1);
+            this.get("heroMaxLevelPool").push( this.get("maxHeroMaxLevel") );
+            var heroLevelPool = this.get("heroLevelPool");
+            for ( var i = 1; i < this.get("maxHeroMaxLevel") ; i++) {
+                heroLevelPool.push(i);
+            }
+        }
     },
     changeTeamPosition:function(team){
         var oldTeam = this.get("team");
@@ -492,6 +518,9 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
     levelUp:function(silent){
         var newLevel = this.get("level") + 1;
         this.set("level", newLevel);
+        this.onLevelUp();
+    },
+    onLevelUp:function(){
     },
     isMaxLevel:function(){
         return this.get("maxLevel") != "NA" && this.get("level") >= this.get("maxLevel");

@@ -173,19 +173,6 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>item-treasure-chest-small.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{1588,2},{120,168}}</string>
-                <key>offset</key>
-                <string>{0,0}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{0,0},{120,168}}</string>
-                <key>sourceSize</key>
-                <string>{120,168}</string>
-            </dict>
         </dict>
         <key>metadata</key>
         <dict>
@@ -194,9 +181,9 @@
             <key>realTextureFileName</key>
             <string>hero.png</string>
             <key>size</key>
-            <string>{1710,172}</string>
+            <string>{1588,172}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:3aa66d074787884b2f35cd541a57c4af:f238eb3f3003183397f36246fa11cc1a:e44e28a7f983377b8bb0c97d886e5bb7$</string>
+            <string>$TexturePacker:SmartUpdate:688072fbcd577212e08f998cf2799e86:5fc2a7be76384f9809be6a99c3a6e9c8:e44e28a7f983377b8bb0c97d886e5bb7$</string>
             <key>textureFileName</key>
             <string>hero.png</string>
         </dict>

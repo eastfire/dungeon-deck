@@ -94,16 +94,18 @@ var MonsterModel = DungeonCardModel.extend({ //怪物牌
         if ( att > 0) {
             var hit = hero.onBeAttacked(att, this);
             if (hit) {
-                var damageTaken = hero.onBeDamaged(att, this);
+                var result = hero.onBeDamaged(att, this);
+                var damageTaken = result[0];
+
                 if (damageTaken > 0) {
                     this.onDamageHero(hero, damageTaken);
                     if (hero.get("hp") == 0) {
                         this.trigger("kill-hero");
                         this.onKillHero(hero);
-                    }
-                    var attackLeft = att - damageTaken;
-                    if (attackLeft > 0) {
-                        this.onOverKillHero(hero, attackLeft);
+                        var attackLeft = result[1];
+                        if (attackLeft > 0) {
+                            this.onOverKillHero(hero, attackLeft);
+                        }
                     }
                 } else {
                     //totally blocked
@@ -230,7 +232,7 @@ var DragonModel = MonsterModel.extend({
             baseAttack: level*2+3,
             baseScore: level,
             baseUpgradeCost: level*12,
-            payHp: level,
+            payHp: level+1,
             trample: level > 3
         } );
         this.reEvaluate();
@@ -437,7 +439,7 @@ var OrcModel = MonsterModel.extend({
             name:"orc",
             displayName:"兽人",
             maxLevel: 5,
-            baseCost: 6
+            baseCost: 7
         })
     },
     getDescription:function(){
@@ -453,7 +455,7 @@ var OrcModel = MonsterModel.extend({
         this.set({
             baseAttack: "＊",
             baseScore: level,
-            baseUpgradeCost: Math.ceil(level*3.5)
+            baseUpgradeCost: Math.ceil(level*3.5)+4
         } );
         this.reEvaluate();
     },
