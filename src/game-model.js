@@ -38,15 +38,15 @@ var GameModel = Backbone.Model.extend({
             status: null,
             phase: "hero-generate", //hero-generate , team-enter-dungeon, team-enter-level, team-enter-room, team-leave-room, team-leave-level, team
 
-            heroList: ["soldier","sorcerer"],
-            //heroList: [ "amazon","assassin", "berserker", "cleric", "dragonslayer", "knight", "ninja", "sage", "soldier","sorcerer", "thief", "warrior" ],
+            // heroList: ["soldier","sorcerer"],
+            heroList: [ "amazon","assassin", "berserker", "cleric", "dragonslayer", "knight", "ninja", "sage", "soldier","sorcerer", "thief", "warrior" ],
             heroLevelPool: [1],
             heroMaxLevelPool: [ 3, 3, 3 ],
             maxHeroMaxLevelAppearCount: 3,
             maxHeroMaxLevel: 3,
             increaseDifficultyPerTurn: 17,
             //heroList: [ "sorcerer"],
-            initDeck: [ "titan", "titan","titan","titan","ratman","ratman","ratman","ratman" ],
+            initDeck: [ "skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
             //initDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
             //initDeck: [ /*"titan","arrow-trap","ooze",*/"dragon","arrow-trap","lilith","arrow-trap" ],
             deck: [],
