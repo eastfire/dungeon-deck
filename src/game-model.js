@@ -14,9 +14,8 @@ var GameModel = Backbone.Model.extend({
             turn: 0,
             score: 0,
 
-            initMoney:15,
-            money : 10,
-            maxMoney: 10,
+            money : 8,
+            maxMoney: 8,
 
             levelUpHpEffect: 5,
             baseHp: 20,
@@ -76,11 +75,12 @@ var GameModel = Backbone.Model.extend({
             bonusChoiceNumber:3,
             bonusEachLevelUp: "alwaysLevelUpBonus",
 
-            unlockedBuyableCards:["basilisk","dragon","ghost","lich","lilith","minotaur","ooze","orc","orc-bandit","orc-warlord","spider","titan", "treefolk",
+            unlockedBuyableCards:["basilisk","dark-elf","dragon","ghost","lich","lilith","minotaur","ooze","orc","orc-bandit","orc-warlord","spider","titan", "treefolk",
                                     "cyclone","fireball","lightening","touchstone","war-drum",
+                                    "hen-den",
                                     "arrow-trap","pitfall","poison-gas","rolling-boulder"],
             regularBuyableCards: [],
-            initRegularBuyableCount : 12,
+            initRegularBuyableCount : 10,
             initRegularBuyableCards : [
                 {
                     type:"ratman",
@@ -91,19 +91,11 @@ var GameModel = Backbone.Model.extend({
                     count: 8
                 },
                 {
-                    type:"dark-elf",
-                    count: 8
-                },
-                {
                     type:"magic-missile",
                     count: 8
                 },
                 {
                     type:"vault",
-                    count: 8
-                },
-                {
-                    type:"hen-den",
                     count: 8
                 }],
 

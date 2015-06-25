@@ -181,16 +181,16 @@ var BasiliskModel = MonsterModel.extend({
             displayName:"巨蟒",
             maxLevel: 5,
             attackRange: "last",
-            baseCost: 10,
-            trample: true
+            baseCost: 7
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            baseAttack: level*2+1,
+            baseAttack: level+1,
             baseScore: level,
-            baseUpgradeCost: level*6+7
+            baseUpgradeCost: 4*level+4,
+            trample: level >= 2
         } );
         this.reEvaluate();
     }
@@ -211,7 +211,7 @@ var DarkElfModel = MonsterModel.extend({
         this.set({
             baseAttack: level,
             baseScore: level,
-            baseUpgradeCost: level*3
+            baseUpgradeCost: 4*(level-1)+2
         } );
         this.reEvaluate();
     }
@@ -246,7 +246,7 @@ var GhostModel = MonsterModel.extend({
             displayName:"鬼魂",
             subtype:"undead",
             maxLevel: 5,
-            baseCost: 5,
+            baseCost: 2,
             attackRange: "random",
             pierce: true
         })
@@ -256,7 +256,7 @@ var GhostModel = MonsterModel.extend({
         this.set({
             baseAttack: level,
             baseScore: level,
-            baseUpgradeCost: level*2
+            baseUpgradeCost: level*4-1
         } );
         this.reEvaluate();
     }
@@ -552,7 +552,7 @@ var RatmanModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"ratman",
             displayName:"鼠人",
-            baseCost: 1,
+            baseCost: 0,
             maxLevel: 5
         })
     },
@@ -592,7 +592,7 @@ var SkeletonModel = MonsterModel.extend({
             displayName:"骷髅",
             subtype:"undead",
             maxLevel: 5,
-            baseCost: 1
+            baseCost: 0
         })
     },
     initByLevel:function(){
@@ -600,7 +600,7 @@ var SkeletonModel = MonsterModel.extend({
         this.set({
             baseAttack: level,
             baseScore: level,
-            baseUpgradeCost: level*3
+            baseUpgradeCost: 4*(level-1)+1
         } );
         this.reEvaluate();
     }

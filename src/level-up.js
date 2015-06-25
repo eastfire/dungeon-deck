@@ -138,7 +138,7 @@ var RandomBuyableCardBonus = LevelUpBonus.extend({
     defaults:function(){
         return {
             level: 1,
-            maxLevel: 4,
+            maxLevel: 6,
             description:"可购买新的牌"
         }
     },

@@ -193,7 +193,7 @@ var SpoiledFoodModel = RoomModel.extend({
 var VaultModel = RoomModel.extend({
     defaults:function(){
         return _.extend(RoomModel.prototype.defaults.call(this), {
-            baseCost: 10,
+            baseCost: 5,
             name:"vault",
             displayName:"金库",
 
@@ -210,7 +210,7 @@ var VaultModel = RoomModel.extend({
     },
     getEffect:function(level){
         level = level || this.get("level");
-        return level * 5;
+        return level * 4;
     },
     onGain:function(){
         window.gameModel.set("maxMoney", window.gameModel.get("maxMoney") + this.getEffect());
