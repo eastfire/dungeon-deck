@@ -37,9 +37,11 @@ var BlacksmithModel = RoomModel.extend({
         return level;
     },
     onGain:function(){
+        RoomModel.prototype.onGain.call(this);
         window.gameModel.set("costCut", window.gameModel.get("costCut") + this.getEffect());
     },
     onExile:function(){
+        RoomModel.prototype.onExile.call(this);
         window.gameModel.set("costCut", window.gameModel.get("costCut") - this.getEffect());
     },
     onLevelUp:function(){
@@ -70,9 +72,11 @@ var HenDenModel = RoomModel.extend({
         return level * 5;
     },
     onGain:function(){
+        RoomModel.prototype.onGain.call(this);
         window.gameModel.set("maxHp", window.gameModel.get("maxHp") + this.getEffect());
     },
     onExile:function(){
+        RoomModel.prototype.onExile.call(this);
         window.gameModel.set("maxHp", window.gameModel.get("maxHp") - this.getEffect());
         window.gameModel.set("hp", Math.min(window.gameModel.get("hp"), window.gameModel.get("maxHp")));
     },
@@ -112,9 +116,11 @@ var LibraryModel = RoomModel.extend({
         return level;
     },
     onGain:function(){
+        RoomModel.prototype.onGain.call(this);
         window.gameModel.set("maxHand", window.gameModel.get("maxHand") + this.getEffect());
     },
     onExile:function(){
+        RoomModel.prototype.onExile.call(this);
         window.gameModel.set("maxHand", window.gameModel.get("maxHand") - this.getEffect());
     },
     onLevelUp:function(){
@@ -145,9 +151,11 @@ var PrisonModel = RoomModel.extend({
         return level;
     },
     onGain:function(){
+        RoomModel.prototype.onGain.call(this);
         window.gameModel.set("cunning", window.gameModel.get("cunning") + this.getEffect());
     },
     onExile:function(){
+        RoomModel.prototype.onExile.call(this);
         window.gameModel.set("cunning", window.gameModel.get("cunning") - this.getEffect());
     },
     onLevelUp:function(){
@@ -178,9 +186,11 @@ var SpoiledFoodModel = RoomModel.extend({
         return level;
     },
     onGain:function(){
+        RoomModel.prototype.onGain.call(this);
         window.gameModel.set("spoiled", window.gameModel.get("spoiled") + this.getEffect());
     },
     onExile:function(){
+        RoomModel.prototype.onExile.call(this);
         window.gameModel.set("spoiled", window.gameModel.get("spoiled") - this.getEffect());
     },
     onLevelUp:function(){
@@ -213,9 +223,11 @@ var VaultModel = RoomModel.extend({
         return level * 4;
     },
     onGain:function(){
+        RoomModel.prototype.onGain.call(this);
         window.gameModel.set("maxMoney", window.gameModel.get("maxMoney") + this.getEffect());
     },
     onExile:function(){
+        RoomModel.prototype.onExile.call(this);
         window.gameModel.set("maxMoney", window.gameModel.get("maxMoney") - this.getEffect());
         window.gameModel.set("money", Math.min(window.gameModel.get("money"), window.gameModel.get("maxMoney")));
     },

@@ -33,10 +33,8 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
             poisonResistance: 0,
             slowReduce: 1,
             slowResistance: 1,
-
-            coolDown: 0,
-            maxCoolDown: 0,
-            baseMaxCoolDown: 2,
+            silentReduce: 1,
+            silentResistance: 0,
 
             bite: false,
 
@@ -44,7 +42,9 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
 
             },
 
-            carry: [ "potion" ]
+            carry: [ "potion" ],
+
+            skills : {}
         }
     },
     initialize:function(){
@@ -53,7 +53,6 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
         this.evaluateMaxHp();
         this.evaluateScore();
         this.evaluateDefense();
-        this.evaluateMaxCoolDown();
 
         this.set("maxHp",this.get("baseMaxHp"), {silent:true});
         this.set("hp",this.get("maxHp"), {silent:true});
@@ -65,8 +64,7 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
         this.on("change:baseScore", this.evaluateScore, this);
         this.on("change:baseMaxHp", this.evaluateMaxHp, this);
         this.on("change:baseDefense change:defenseBuff change:defenseDebuff", this.evaluateDefense, this);
-        this.on("change:baseMaxCoolDown", this.evaluateMaxCoolDown, this);
-    },
+     },
     onChangeHp:function(){
         if ( this.get("hp") <= 0 ) {
             window.gameModel.getScore( this.get("score"));
@@ -95,9 +93,6 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
     evaluateDefense:function(){
         this.set("defense", Math.max(0, this.get("baseDefense") + this.get("defenseBuff") - this.get("defenseDebuff")));
     },
-    evaluateMaxCoolDown:function(){
-        this.set("maxCoolDown", this.get("baseMaxCoolDown"));
-    },
     getDescription:function(){
         var desc = [];
         desc.push( "英雄" );
@@ -113,32 +108,43 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
         if ( this.get("poison") ) {
             desc.push( "{[poison]}中毒("+this.get("poison")+"轮)每经过1间房间-1{[hp]}");
         }
-        if ( this.get("dodge").trap ) {
-            desc.push( (this.get("dodge").trap * DODGE_TRAP_RATE )+"%不受陷阱影响");
+        var dodges = this.get("dodge");
+        if ( dodges.trap ) {
+            desc.push( (dodges.trap * DODGE_TRAP_RATE )+"%不受陷阱影响");
         }
-        if ( this.get("dodge").att1 ) {
-            desc.push( (this.get("dodge").att1 )+"%躲避{[attack]}1及以下的怪物攻击");
+        if ( dodges.att1 ) {
+            desc.push( (dodges.att1 )+"%躲避{[attack]}1及以下的怪物攻击");
         }
-        if ( this.get("dodge").att2 ) {
-            desc.push( (this.get("dodge").att2 )+"%躲避{[attack]}2及以下的怪物攻击");
+        if ( dodges.att2 ) {
+            desc.push( (dodges.att2 )+"%躲避{[attack]}2及以下的怪物攻击");
         }
-        if ( this.get("dodge").att3 ) {
-            desc.push( (this.get("dodge").att3 )+"%躲避{[attack]}3及以下的怪物攻击");
+        if ( dodges.att3 ) {
+            desc.push( (dodges.att3 )+"%躲避{[attack]}3及以下的怪物攻击");
         }
-        if ( this.get("dodge").att8 ) {
-            desc.push( (this.get("dodge").att8 )+"%躲避{[attack]}8及以上的怪物攻击");
+        if ( dodges.att8 ) {
+            desc.push( (dodges.att8 )+"%躲避{[attack]}8及以上的怪物攻击");
         }
-        if ( this.get("dodge").att7 ) {
-            desc.push( (this.get("dodge").att7 )+"%躲避{[attack]}7及以上的怪物攻击");
+        if ( dodges.att7 ) {
+            desc.push( (dodges.att7 )+"%躲避{[attack]}7及以上的怪物攻击");
         }
-        if ( this.get("dodge").att6 ) {
-            desc.push( (this.get("dodge").att6 )+"%躲避{[attack]}6及以上的怪物攻击");
+        if ( dodges.att6 ) {
+            desc.push( (dodges.att6 )+"%躲避{[attack]}6及以上的怪物攻击");
         }
-        if ( this.get("dodge").att5 ) {
-            desc.push( (this.get("dodge").att5 )+"%躲避{[attack]}5及以上的怪物攻击");
+        if ( dodges.att5 ) {
+            desc.push( (dodges.att5 )+"%躲避{[attack]}5及以上的怪物攻击");
         }
-        if ( this.get("dodge").spell ) {
-            desc.push( (this.get("dodge").spell )+"%躲避法术的伤害");
+        if ( dodges.spell ) {
+            desc.push( (dodges.spell )+"%躲避法术的伤害");
+        }
+        var skills = this.get("skills");
+        if ( skills.steal ) {
+            desc.push( "每经过"+skills.steal.maxCoolDown+"间房间，偷走"+skills.steal.effect+"{[money]}" );
+        }
+        if ( skills.heal ) {
+            desc.push( "每经过"+skills.heal.maxCoolDown+"间房间，回复最前的受伤英雄"+skills.heal.effect+"{[hp]}" );
+        }
+        if ( skills.resurrection ) {
+            desc.push( "每经过"+skills.resurrection.maxCoolDown+"间房间复活1个死去的英雄并恢复其"+skills.resurrection.effect+"{[hp]}" );
         }
         return desc.join("\n");
     },
@@ -181,12 +187,16 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
     },
     resetToOrigin:function(){
         this.set({
-            coolDown: 0,
-            maxCoolDown: this.get("baseMaxCoolDown"),
             slow:0,
             poison: 0,
             defenseBuff:0,
             defenseDebuff:0
+        });
+        var skills = this.get("skills");
+        _.each(_.keys(skills), function(key) {
+            var val = skills[key];
+            val.coolDown = 0;
+            val.maxCoolDown = val.baseMaxCoolDown;
         });
     },
     onEnterStage:function(){
@@ -206,16 +216,21 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
         if ( slow ) {
             this.set("slow", Math.max(0,slow - this.get("slowReduce")) );
         }
-    },
-    coolDown:function(){
-        var coolDown = this.get("coolDown") + 1;
-        if ( coolDown >= this.get("maxCoolDown") ){
-            this.set("coolDown", 0 );
-            return true;
-        } else {
-            this.set("coolDown", coolDown);
-            return false;
-        }
+
+        if ( !this.isAlive() )
+            return;
+
+        var skills = this.get("skills");
+        _.each(_.keys(skills),function(key){
+            var val = skills[key];
+            var coolDown = val.coolDown + 1;
+            if ( coolDown >= val.maxCoolDown ){
+                val.coolDown = 0;
+                SKILL_FUNC_MAP[key].call(this, val.effect);
+            } else {
+                val.coolDown = coolDown
+            }
+        },this);
     },
     getPoison:function(amount){
         this.set("poison",this.get("poison")+amount);
@@ -385,7 +400,14 @@ var ClericModel = HeroModel.extend({
             displayName:"牧师",
             maxLevel: 5,
             baseDefense: 0,
-            array: ["potion","elixir"]
+            array: ["potion","elixir"],
+            skills:{
+                heal: {
+                    coolDown: 0,
+                    maxCoolDown: 2,
+                    baseMaxCoolDown: 2
+                }
+            }
         })
     },
     initByLevel:function(){
@@ -395,31 +417,9 @@ var ClericModel = HeroModel.extend({
             baseMaxHp: 1 + level
         });
         if ( level >= 3 ) {
-            this.set("baseMaxCoolDown",1);
+            this.get("skills").heal.baseMaxCoolDown = this.get("skills").heal.maxCoolDown = 1;
         }
-    },
-    getDescription:function(){
-        var desc = HeroModel.prototype.getDescription.call(this);
-        return desc + "\n" + "每经过"+this.get("maxCoolDown")+"间房间，排在队伍最前的受伤英雄恢复"+this.getEffect()+"{[hp]}"
-    },
-    onPassRoom:function(){
-        HeroModel.prototype.onPassRoom.call(this);
-        if ( !this.isAlive() )
-            return;
-
-        if ( this.coolDown() ) {
-            var team = gameModel.get("team");
-            var hero = _.first(_.filter(team, function (heroModel) {
-                var hp = heroModel.get("hp");
-                return hp > 0 && hp < heroModel.get("maxHp");
-            }, this));
-            if (hero) {
-                hero.getHeal(this.getEffect());
-            }
-        }
-    },
-    getEffect:function(){
-        return Math.ceil(this.get("level")/2);
+        this.get("skills").heal.effect = Math.ceil(this.get("level")/2);
     }
 });
 
@@ -527,42 +527,26 @@ var SageModel = HeroModel.extend({
             displayName:"贤者",
             maxLevel: 5,
             baseDefense: 0,
-            carry: ["elixir","sage","resurrection"]
+            carry: ["elixir","sage","resurrection"],
+            skills: {
+                resurrection:{
+                    coolDown: 0,
+                    maxCoolDown: 4,
+                    baseMaxCoolDown: 4
+                }
+            }
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
             baseScore: level*(level+1)/2,
-            baseMaxHp: 2 + Math.floor(level/2),
-            baseMaxCoolDown: 4
+            baseMaxHp: 2 + Math.floor(level/2)
         });
         if ( level >= 4 ) {
-            this.set("baseMaxCoolDown",2);
+            this.get("skills").resurrection.baseMaxCoolDown = this.get("skills").resurrection.maxCoolDown = 2;
         }
-    },
-    getDescription:function(){
-        var desc = HeroModel.prototype.getDescription.call(this);
-        return desc + "\n" + "每经过"+this.get("maxCoolDown")+"间房间复活1个死去的英雄并恢复其"+this.getEffect()+"{[hp]}"
-    },
-    onPassRoom:function(){
-        HeroModel.prototype.onPassRoom.call(this);
-        if ( !this.isAlive() )
-            return;
-
-        if ( this.coolDown() ) {
-            var team = gameModel.get("team");
-            var dead = _.filter(team, function(heroModel){
-                return !heroModel.isAlive();
-            },this);
-            var first = _.first(dead);
-            if ( first ) {
-                first.set("hp", Math.min(this.getEffect(), first.get("maxHp")));
-            }
-        }
-    },
-    getEffect:function(){
-        return this.get("level")
+        this.get("skills").resurrection.effect = this.get("level");
     }
 });
 
@@ -647,7 +631,14 @@ var ThiefModel = HeroModel.extend({
             name:"thief",
             displayName:"盗贼",
             maxLevel: 5,
-            baseDefense: 0
+            baseDefense: 0,
+            skills:{
+                steal: {
+                    coolDown: 0,
+                    maxCoolDown: 2,
+                    baseMaxCoolDown: 2
+                }
+            }
         })
     },
     initByLevel:function(){
@@ -657,27 +648,9 @@ var ThiefModel = HeroModel.extend({
             baseMaxHp: 3 + Math.floor(level/2)
         });
         if ( level >= 4 ) {
-            this.set("baseMaxCoolDown",1);
+            this.get("skills").steal.maxCoolDown = this.get("skills").steal.baseMaxCoolDown = 1;
         }
-    },
-    getDescription:function(){
-        var desc = HeroModel.prototype.getDescription.call(this);
-        return desc + "\n" + "每经过"+this.get("maxCoolDown")+"间房间，偷走"+this.getEffect()+"{[money]}"
-    },
-    onPassRoom:function(){
-        HeroModel.prototype.onPassRoom.call(this);
-        if ( !this.isAlive() )
-            return;
-
-        if ( this.coolDown() ) {
-            gameModel.useMoney(this.getEffect());
-            this.trigger("take",{
-                icon: "money"
-            });
-        }
-    },
-    getEffect:function(){
-        return Math.ceil(this.get("level")/2);
+        this.get("skills").steal.effect = Math.ceil(this.get("level")/2)
     }
 });
 
@@ -700,6 +673,35 @@ var WarriorModel = HeroModel.extend({
         });
     }
 });
+
+var SKILL_FUNC_MAP = {
+    steal: function(effect){
+        gameModel.useMoney(effect);
+        this.trigger("take",{
+            icon: "money"
+        });
+    },
+    heal: function(effect){
+        var team = gameModel.get("team");
+        var hero = _.first(_.filter(team, function (heroModel) {
+            var hp = heroModel.get("hp");
+            return hp > 0 && hp < heroModel.get("maxHp");
+        }, this));
+        if (hero) {
+            hero.getHeal(effect);
+        }
+    },
+    resurrection:function(effect){
+        var team = gameModel.get("team");
+        var dead = _.filter(team, function(heroModel){
+            return !heroModel.isAlive();
+        },this);
+        var first = _.first(dead);
+        if ( first ) {
+            first.set("hp", Math.min(effect, first.get("maxHp")));
+        }
+    }
+}
 
 var HERO_CLASS_MAP = {
     amazon: AmazonModel,

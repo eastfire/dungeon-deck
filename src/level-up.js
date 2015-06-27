@@ -21,11 +21,11 @@ var UpgradeChanceBonus = LevelUpBonus.extend({
         return {
             level: 1,
             maxLevel: 10000,
-            description:"获得2次卡牌升级机会"
+            description:"获得3次卡牌升级机会"
         }
     },
     onGain:function(){
-        window.gameModel.gainUpgradeChance(2);
+        window.gameModel.gainUpgradeChance(3);
     }
 });
 

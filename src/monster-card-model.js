@@ -181,7 +181,7 @@ var BasiliskModel = MonsterModel.extend({
             displayName:"巨蟒",
             maxLevel: 5,
             attackRange: "last",
-            baseCost: 7
+            baseCost: 6
         })
     },
     initByLevel:function(){
@@ -189,10 +189,13 @@ var BasiliskModel = MonsterModel.extend({
         this.set({
             baseAttack: level+1,
             baseScore: level,
-            baseUpgradeCost: 4*level+4,
+            baseUpgradeCost: level === 1 ? 9 : 4*level+2,
             trample: level >= 2
         } );
         this.reEvaluate();
+    },
+    maxLevelBonus:function(){
+        this.set("baseScore",this.get("baseScore")+2);
     }
 });
 
@@ -202,7 +205,7 @@ var DarkElfModel = MonsterModel.extend({
             name:"dark-elf",
             displayName:"暗精灵",
             maxLevel: 5,
-            baseCost: 1,
+            baseCost: 2,
             attackRange: "last"
         })
     },
@@ -214,6 +217,9 @@ var DarkElfModel = MonsterModel.extend({
             baseUpgradeCost: 4*(level-1)+2
         } );
         this.reEvaluate();
+    },
+    maxLevelBonus:function(){
+        this.set("baseScore",this.get("baseScore")+2);
     }
 })
 
@@ -246,7 +252,7 @@ var GhostModel = MonsterModel.extend({
             displayName:"鬼魂",
             subtype:"undead",
             maxLevel: 5,
-            baseCost: 2,
+            baseCost: 3,
             attackRange: "random",
             pierce: true
         })
@@ -259,6 +265,9 @@ var GhostModel = MonsterModel.extend({
             baseUpgradeCost: level*4-1
         } );
         this.reEvaluate();
+    },
+    maxLevelBonus:function(){
+        this.set("baseScore",this.get("baseScore")+2);
     }
 });
 
@@ -592,7 +601,7 @@ var SkeletonModel = MonsterModel.extend({
             displayName:"骷髅",
             subtype:"undead",
             maxLevel: 5,
-            baseCost: 0
+            baseCost: 1
         })
     },
     initByLevel:function(){
@@ -600,9 +609,12 @@ var SkeletonModel = MonsterModel.extend({
         this.set({
             baseAttack: level,
             baseScore: level,
-            baseUpgradeCost: 4*(level-1)+1
+            baseUpgradeCost: 4*(level-1)+2
         } );
         this.reEvaluate();
+    },
+    maxLevelBonus:function(){
+        this.set("baseScore",this.get("baseScore")+2);
     }
 });
 
@@ -645,8 +657,7 @@ var TitanModel = MonsterModel.extend({
             name:"titan",
             displayName:"泰坦巨人",
             maxLevel: 5,
-            baseCost: 9,
-            trample: true
+            baseCost: 12
         })
     },
     initByLevel:function(){
@@ -654,7 +665,8 @@ var TitanModel = MonsterModel.extend({
         this.set({
             baseAttack: level*2+1,
             baseScore: level,
-            baseUpgradeCost: level*6+6
+            baseUpgradeCost: level === 1 ? 12 : level*4+5,
+            trample: level > 1
         } );
         this.reEvaluate();
     }

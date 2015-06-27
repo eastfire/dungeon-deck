@@ -37,8 +37,8 @@ var GameModel = Backbone.Model.extend({
             status: null,
             phase: "hero-generate", //hero-generate , team-enter-dungeon, team-enter-level, team-enter-room, team-leave-room, team-leave-level, team
 
-            // heroList: ["soldier","sorcerer"],
-            heroList: [ "amazon","assassin", "berserker", "cleric", "dragonslayer", "knight", "ninja", "sage", "soldier","sorcerer", "thief", "warrior" ],
+             heroList: ["thief","cleric", "sage"],
+            //heroList: [ "amazon","assassin", "berserker", "cleric", "dragonslayer", "knight", "ninja", "sage", "soldier","sorcerer", "thief", "warrior" ],
             heroLevelPool: [1],
             heroMaxLevelPool: [ 3, 3, 3 ],
             maxHeroMaxLevelAppearCount: 3,
@@ -171,6 +171,9 @@ var GameModel = Backbone.Model.extend({
     getScore:function(score){
         this.set("score",this.get("score")+score);
     },
+    loseScore:function(score){
+        this.set("score",this.get("score")-score);
+    },
     getTavernRecoveryEffect:function(diff){
         return Math.max( diff - this.get("spoiled"), 0 );
     },
@@ -284,6 +287,7 @@ var GameModel = Backbone.Model.extend({
             var Model = DUNGEON_CLASS_MAP[cardName];
             var model = new Model();
             this.get("deck").push( model );
+            this.getScore(model.get("score"));
         },this);
 
         if ( this.get("isInitDeckShuffle") )
@@ -296,6 +300,7 @@ var GameModel = Backbone.Model.extend({
                 side: "front"
             });
             this.get("discardDeck").push( model );
+            this.getScore(model.get("score"));
         },this);
 
         if ( this.get("isInitDeckShuffle") )
@@ -442,13 +447,21 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
     initialize:function(){
         this.initEvent();
         this.initByLevel();
+        if ( this.get("level") >= this.get("maxLevel") ) {
+            this.maxLevelBonus();
+        }
         this.reEvaluate();
     },
     initEvent:function(){
         this.on("change:baseScore", this.evaluateScore, this);
         this.on("change:baseCost", this.evaluateCost, this);
         this.on("change:baseUpgradeCost", this.evaluateUpgradeCost, this);
-        this.on("change:level", this.initByLevel, this);
+        this.on("change:level", function(){
+            this.initByLevel();
+            if ( this.get("level") >= this.get("maxLevel") ) {
+                this.maxLevelBonus();
+            }
+        },this);
     },
     reEvaluate:function(){
         this.evaluateScore();
@@ -456,7 +469,8 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
         this.evaluateUpgradeCost();
     },
     initByLevel:function(){
-
+    },
+    maxLevelBonus:function(){
     },
     evaluateScore:function(){
         this.set("score", this.get("baseScore"));
@@ -475,11 +489,14 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
                 return memo + "—" + CARD_SUBTYPE_MAP[subtype];
             },desc, this);
         }
+        if ( this.get("score") ) {
+            desc += "    "+this.get("score")+"{[score]}";
+        }
         descs[0] = desc;
 
         var upgradeAndCullable = null;
         if ( !this.get("upgradeable") ) {
-            upgradeAndCullable = "不可升级 "
+            upgradeAndCullable += "不可升级 "
         }
         if ( !this.get("cullable") ) {
             upgradeAndCullable += "不可被精简"
@@ -504,8 +521,10 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
     onStageReveal: function(dungeonCards){
     },
     onGain:function(){
+        window.gameModel.getScore(this.get("score"));
     },
     onExile:function(){
+        window.gameModel.loseScore(this.get("score"));
     },
     levelUp:function(silent){
         var newLevel = this.get("level") + 1;
@@ -513,6 +532,9 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
         this.onLevelUp();
     },
     onLevelUp:function(){
+        cc.log( ps = this.previous("score") );
+        cc.log( cs = this.get("score") );
+        window.gameModel.getScore(cs-ps);
     },
     isMaxLevel:function(){
         return this.get("maxLevel") != "NA" && this.get("level") >= this.get("maxLevel");
