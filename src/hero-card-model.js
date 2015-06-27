@@ -632,6 +632,7 @@ var ThiefModel = HeroModel.extend({
             displayName:"盗贼",
             maxLevel: 5,
             baseDefense: 0,
+            carry: ["lockpicker"],
             skills:{
                 steal: {
                     coolDown: 0,

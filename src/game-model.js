@@ -37,8 +37,8 @@ var GameModel = Backbone.Model.extend({
             status: null,
             phase: "hero-generate", //hero-generate , team-enter-dungeon, team-enter-level, team-enter-room, team-leave-room, team-leave-level, team
 
-             heroList: ["thief","cleric", "sage"],
-            //heroList: [ "amazon","assassin", "berserker", "cleric", "dragonslayer", "knight", "ninja", "sage", "soldier","sorcerer", "thief", "warrior" ],
+            //heroList: ["thief","cleric", "sage"],
+            heroList: [ "amazon","assassin", "berserker", "cleric", "dragonslayer", "knight", "ninja", "sage", "soldier","sorcerer", "thief", "warrior" ],
             heroLevelPool: [1],
             heroMaxLevelPool: [ 3, 3, 3 ],
             maxHeroMaxLevelAppearCount: 3,
@@ -489,19 +489,19 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
                 return memo + "—" + CARD_SUBTYPE_MAP[subtype];
             },desc, this);
         }
-        if ( this.get("score") ) {
+        if ( this.get("type") !== "item" && this.get("score") ) {
             desc += "    "+this.get("score")+"{[score]}";
         }
         descs[0] = desc;
 
-        var upgradeAndCullable = null;
+        var upgradeAndCullable = "";
         if ( !this.get("upgradeable") ) {
             upgradeAndCullable += "不可升级 "
         }
         if ( !this.get("cullable") ) {
             upgradeAndCullable += "不可被精简"
         }
-        if ( upgradeAndCullable ) descs.push(upgradeAndCullable);
+        if ( upgradeAndCullable !== "" ) descs.push(upgradeAndCullable);
         if ( this.get("payHp") ) {
             descs.push("{[pay-hp]}翻开本牌时支付"+this.get("payHp")+"{[hp]}")
         }
@@ -521,10 +521,14 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
     onStageReveal: function(dungeonCards){
     },
     onGain:function(){
-        window.gameModel.getScore(this.get("score"));
+        if ( this.get("type") !== "item" ) {
+            window.gameModel.getScore(this.get("score"));
+        }
     },
     onExile:function(){
-        window.gameModel.loseScore(this.get("score"));
+        if ( this.get("type") !== "item" ) {
+            window.gameModel.loseScore(this.get("score"));
+        }
     },
     levelUp:function(silent){
         var newLevel = this.get("level") + 1;

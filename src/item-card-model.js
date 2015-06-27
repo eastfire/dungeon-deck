@@ -61,6 +61,49 @@ var ArmorModel = ItemModel.extend({ //物品
     }
 });
 
+var ElixirModel = ItemModel.extend({ //物品
+    defaults:function(){
+        return _.extend( ItemModel.prototype.defaults.call(this),{
+            name: "elixir",
+            displayName: "万灵药"
+        })
+    },
+    initialize:function(){
+        this.set("score",this.get("level"));
+    },
+    getDescription:function(){
+        var desc = ItemModel.prototype.getDescription.call(this);
+        var descs = [desc];
+        var level = this.get("level");
+        if ( level <= 4 )
+            descs.push("第一个状态异常的英雄消除异常状态");
+        else
+            descs.push("所有英雄消除异常状态");
+        return descs.join("\n");
+    },
+    onHeroGet:function(team){
+        var allHurt = _.filter( team ,function(model){
+            return model.isAlive() && (model.get("poison") || model.get("slow"));
+        }, this )
+        var level = this.get("level");
+        if ( level <= 4 ) {
+            var hero = _.first(allHurt);
+            if (hero)
+                hero.set({
+                    slow: 0,
+                    poison: 0
+                });
+        } else {
+            _.each(allHurt,function(hero){
+                hero.set({
+                    slow: 0,
+                    poison: 0
+                });
+            })
+        }
+    }
+});
+
 var HelmetModel = ItemModel.extend({ //物品
     defaults:function(){
         return _.extend( ItemModel.prototype.defaults.call(this),{
@@ -87,6 +130,45 @@ var HelmetModel = ItemModel.extend({ //物品
     },
     getEffect:function(){
         return Math.ceil(this.get("level")/4);
+    }
+});
+
+var LockPickerModel = ItemModel.extend({ //物品
+    defaults:function(){
+        return _.extend( ItemModel.prototype.defaults.call(this),{
+            name: "lockpicker",
+            displayName: "撬锁器"
+        })
+    },
+    initialize:function(){
+        this.set("score",this.get("level"));
+    },
+    getDescription:function(){
+        var desc = ItemModel.prototype.getDescription.call(this);
+        var descs = [desc];
+        var level = this.get("level");
+        descs.push("英雄永久获得偷窃技能或偷窃技能加强");
+        return descs.join("\n");
+    },
+    onHeroGet:function(team){
+        var alives = _.filter( team ,function(model){
+            return model.isAlive();
+        }, this )
+        var hero = _.first( alives );
+        if ( hero ) {
+            var steal = hero.get("skills").steal;
+            if ( steal ) {
+                steal.effect += Math.ceil(this.get("level")/6);
+                steal.maxCoolDown = Math.max(1, steal.maxCoolDown - Math.ceil(this.get("level")/5));
+            } else {
+                hero.get("skills").steal = {
+                    coolDown: 0,
+                    maxCoolDown: 4,
+                    baseMaxCoolDown: 4,
+                    effect: Math.ceil(this.get("level")/6)
+                }
+            }
+        }
     }
 });
 
@@ -198,45 +280,3 @@ var StaffModel = ItemModel.extend({ //物品
     }
 });
 
-var ElixirModel = ItemModel.extend({ //物品
-    defaults:function(){
-        return _.extend( ItemModel.prototype.defaults.call(this),{
-            name: "elixir",
-            displayName: "万灵药"
-        })
-    },
-    initialize:function(){
-        this.set("score",this.get("level"));
-    },
-    getDescription:function(){
-        var desc = ItemModel.prototype.getDescription.call(this);
-        var descs = [desc];
-        var level = this.get("level");
-        if ( level <= 4 )
-            descs.push("第一个状态异常的英雄消除异常状态");
-        else
-            descs.push("所有英雄消除异常状态");
-        return descs.join("\n");
-    },
-    onHeroGet:function(team){
-        var allHurt = _.filter( team ,function(model){
-            return model.isAlive() && (model.get("poison") || model.get("slow"));
-        }, this )
-        var level = this.get("level");
-        if ( level <= 4 ) {
-            var hero = _.first(allHurt);
-            if (hero)
-                hero.set({
-                    slow: 0,
-                    poison: 0
-                });
-        } else {
-            _.each(allHurt,function(hero){
-                hero.set({
-                    slow: 0,
-                    poison: 0
-                });
-            })
-        }
-    }
-});
