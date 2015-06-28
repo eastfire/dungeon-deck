@@ -55,7 +55,7 @@ var GameOverLayer = cc.LayerColor.extend({
         this.textField = textField;
 
         var name;
-        var store = localStorage.getItem("name");
+        var store = cc.sys.localStorage.getItem("name");
         if ( store != null ){
             name = store;
             textField.setString(name)
@@ -68,7 +68,7 @@ var GameOverLayer = cc.LayerColor.extend({
             function () {
                 name = this.textField.getString();
                 if ( name && name.trim() !== "" ) {
-                    localStorage.setItem("name",name);
+                    cc.sys.localStorage.setItem("name",name);
                     gameModel.set("playerName",name);
                 }
                 this.getParent().addChild(new ScoreBoardLayer());

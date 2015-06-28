@@ -26,7 +26,7 @@ window.isValidInt = function (value) {
     }
 
     var intValue = parseInt(value, 10);
-    if (Number.isNaN(intValue)) {
+    if (intValue.toString() === "NaN") {
         return false;
     }
 
