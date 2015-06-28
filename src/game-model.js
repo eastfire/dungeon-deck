@@ -349,6 +349,7 @@ var GameModel = Backbone.Model.extend({
                 side: "front"
             });
             this.get("hand").push( model );
+            this.getScore(model.get("score"));
         },this);
         this.trigger("change:hand");
     },
