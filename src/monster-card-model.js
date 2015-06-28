@@ -229,16 +229,16 @@ var DragonModel = MonsterModel.extend({
             name:"dragon",
             displayName:"龙",
             maxLevel: 5,
-            baseCost: 12
+            baseCost: 16
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            baseAttack: level*2+3,
-            baseScore: level,
-            baseUpgradeCost: level*12,
-            payHp: level+1,
+            baseAttack: level+4,
+            baseScore: 0,
+            baseUpgradeCost: 18+level,
+            payHp: level > 3 ? 2 : 3,
             trample: level > 3
         } );
         this.reEvaluate();
@@ -261,7 +261,7 @@ var GhostModel = MonsterModel.extend({
         var level = this.get("level");
         this.set({
             baseAttack: level,
-            baseScore: level,
+            baseScore: level*2-1,
             baseUpgradeCost: level*4-1
         } );
         this.reEvaluate();
@@ -664,7 +664,7 @@ var TitanModel = MonsterModel.extend({
         var level = this.get("level");
         this.set({
             baseAttack: level*2+1,
-            baseScore: level,
+            baseScore: 0,
             baseUpgradeCost: level === 1 ? 12 : level*4+5,
             trample: level > 1
         } );
@@ -677,16 +677,17 @@ var TreefolkModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"treefolk",
             displayName:"树妖",
-            baseCost: 3,
+            baseCost: 8,
             maxLevel: 5
         })
     },
     initByLevel:function(){
         var level = this.get("level");
+        var scores = [0,1,2,4,6];
         this.set({
             baseAttack: Math.floor(level/2)+1,
-            baseScore: level,
-            baseUpgradeCost: level*level
+            baseScore: scores[level-1],
+            baseUpgradeCost: level != 1 ? 7 : 2
         } );
         this.reEvaluate();
     },

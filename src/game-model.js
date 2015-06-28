@@ -537,8 +537,6 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
         this.onLevelUp();
     },
     onLevelUp:function(){
-        cc.log( ps = this.previous("score") );
-        cc.log( cs = this.get("score") );
         window.gameModel.getScore(cs-ps);
     },
     isMaxLevel:function(){
