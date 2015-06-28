@@ -8,13 +8,14 @@
     "renderMode" : 0,
     "engineDir":"frameworks/cocos2d-html5",
 
-    "modules" : ["cocos2d", "extensions"],
+    "modules" : ["cocos2d","ccui"],
 
     "jsList" : [
         "src/libs/underscore-min.js",
         "src/libs/backbone-min.js",
         "src/libs/firebase.js",
-        "src/libs/moment-with-locales.min.js",
+        "src/libs/moment.min.js",
+        "src/libs/zh-cn.js",
         "src/libs/utils.js",
         "src/resource.js",
         "src/basic.js",

@@ -12,7 +12,7 @@ var GameOverLayer = cc.LayerColor.extend({
         gameOver.attr({
             color: colors.game_over,
             x: cc.winSize.width/2,
-            y: 900
+            y: 950
         })
         this.addChild(gameOver);
 
@@ -22,7 +22,7 @@ var GameOverLayer = cc.LayerColor.extend({
         });
         score.attr({
             x: cc.winSize.width/2,
-            y: 700
+            y: 800
         })
         this.addChild(score);
 
@@ -30,14 +30,14 @@ var GameOverLayer = cc.LayerColor.extend({
         pleaseInputName.attr({
             color: colors.game_over,
             x: cc.winSize.width/2,
-            y: 480
+            y: 680
         })
         this.addChild(pleaseInputName);
 
         var textFieldBg = new cc.Sprite(cc.spriteFrameCache.getSpriteFrame("long-normal.png"));
         textFieldBg.attr({
             x: cc.winSize.width/2,
-            y: 405
+            y: 555
         });
         this.addChild(textFieldBg);
 
@@ -49,7 +49,7 @@ var GameOverLayer = cc.LayerColor.extend({
         textField.setTextColor(cc.color.BLACK);
         textField.setMaxLength(9);
         textField.x = cc.winSize.width / 2.0;
-        textField.y = 400;
+        textField.y = 550;
         textField.addEventListener(this.textFieldEvent, this);
         this.addChild(textField,5);
         this.textField = textField;
