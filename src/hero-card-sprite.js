@@ -29,6 +29,12 @@ var HeroCardSprite = BaseCardSprite.extend({
             x: dimens.card_width - dimens.hero_icon_offset.x,
             y: dimens.card_height - dimens.hero_icon_offset.y - dimens.hero_icon_size.height * 3
         });
+        this.registerIcon("silent", cc.spriteFrameCache.getSpriteFrame("silent-icon.png") ,{
+            x: dimens.card_width/2,
+            y: dimens.hero_icon_offset.y
+        },{
+            normalColor: cc.color.RED
+        });
 
         this.icons.level.concernIncrease = true;
         this.icons.level.concernDecrease = true;
@@ -50,6 +56,9 @@ var HeroCardSprite = BaseCardSprite.extend({
         },this);
         this.model.on("change:slow",function(){
             this.onIconChanged("slow", true, false);
+        },this);
+        this.model.on("change:silent",function(){
+            this.onIconChanged("silent", false, false);
         },this);
         this.model.on("change:positionInTeam", this.renderPositionInTeam,this);
         this.model.on("leaveTeam",this.leaveTeam,this);

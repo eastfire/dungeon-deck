@@ -28,6 +28,7 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
 
             poison: 0,
             slow: 0,
+            silent: 0,
 
             poisonReduce: 1,
             poisonResistance: 0,
@@ -107,6 +108,9 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
         }
         if ( this.get("poison") ) {
             desc.push( "{[poison]}中毒("+this.get("poison")+"轮)每经过1间房间-1{[hp]}");
+        }
+        if ( this.get("silent") ) {
+            desc.push( "{[silent]}封印("+this.get("silent")+"轮)不能使用主动技能");
         }
         var dodges = this.get("dodge");
         if ( dodges.trap ) {
@@ -217,26 +221,36 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
             this.set("slow", Math.max(0,slow - this.get("slowReduce")) );
         }
 
+        var silent = this.get("silent");
+        if ( silent ) {
+            this.set("silent", Math.max(0,silent - this.get("silentReduce")) );
+        }
+
         if ( !this.isAlive() )
             return;
 
-        var skills = this.get("skills");
-        _.each(_.keys(skills),function(key){
-            var val = skills[key];
-            var coolDown = val.coolDown + 1;
-            if ( coolDown >= val.maxCoolDown ){
-                val.coolDown = 0;
-                SKILL_FUNC_MAP[key].call(this, val.effect);
-            } else {
-                val.coolDown = coolDown
-            }
-        },this);
+        if ( !silent ) {
+            var skills = this.get("skills");
+            _.each(_.keys(skills), function (key) {
+                var val = skills[key];
+                var coolDown = val.coolDown + 1;
+                if (coolDown >= val.maxCoolDown) {
+                    val.coolDown = 0;
+                    SKILL_FUNC_MAP[key].call(this, val.effect);
+                } else {
+                    val.coolDown = coolDown
+                }
+            }, this);
+        }
     },
     getPoison:function(amount){
         this.set("poison",this.get("poison")+amount);
     },
     getSlow:function(amount){
         this.set("slow",this.get("slow")+amount);
+    },
+    getSilent:function(amount){
+        this.set("silent",this.get("silent")+amount);
     },
     onPassStage:function(){
     },

@@ -243,6 +243,8 @@ var BaseCardSprite = CardSprite.extend({
             } else {
                 entry.icon.setFontColor(entry.normalColor);
             }
+        } else {
+            entry.icon.setFontColor(entry.normalColor);
         }
     },
     renderIcon:function(attr){

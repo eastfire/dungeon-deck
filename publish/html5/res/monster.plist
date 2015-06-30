@@ -43,7 +43,7 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>monster-ghost-small.png</key>
+            <key>monster-gargoyle-small.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,512},{120,168}}</string>
@@ -56,7 +56,7 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>monster-lich-small.png</key>
+            <key>monster-ghost-small.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,682},{120,168}}</string>
@@ -69,7 +69,7 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>monster-lilith-small.png</key>
+            <key>monster-lich-small.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,852},{120,168}}</string>
@@ -82,7 +82,7 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>monster-minotaur-small.png</key>
+            <key>monster-lilith-small.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1022},{120,168}}</string>
@@ -95,7 +95,7 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>monster-titan-small.png</key>
+            <key>monster-minotaur-small.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1192},{120,168}}</string>
@@ -118,7 +118,7 @@
             <key>size</key>
             <string>{124,1362}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:f698c6a25664fce2c90902f19367deb5:1e45c57e209746eeb0cde48f1c727b91:a6ae2b9304b7a9e734cf6a25f3604866$</string>
+            <string>$TexturePacker:SmartUpdate:1b02a032ac910d27898aead754a72449:9f2dd10ea5abeb8103e1237ce841fcab:a6ae2b9304b7a9e734cf6a25f3604866$</string>
             <key>textureFileName</key>
             <string>monster.png</string>
         </dict>

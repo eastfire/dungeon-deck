@@ -271,6 +271,42 @@ var GhostModel = MonsterModel.extend({
     }
 });
 
+var GargoyleModel = MonsterModel.extend({
+    defaults:function(){
+        return _.extend(MonsterModel.prototype.defaults.call(this), {
+            name:"gargoyle",
+            displayName:"石像鬼",
+            baseCost: 5,
+            maxLevel: 5
+        })
+    },
+    getDescription:function(){
+        var desc = MonsterModel.prototype.getDescription.call(this);
+        if ( desc != "" ) {
+            desc += "\n";
+        }
+        return desc + "封印英雄的主动技能"+this.getEffect()+"轮";
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseAttack: Math.floor(level/3)+1,
+            baseScore: level,
+            baseUpgradeCost: Math.ceil(level*4.5)
+        } );
+        this.reEvaluate();
+    },
+    getEffect:function(){
+        return Math.floor(this.get("level")/2)+1;
+    },
+    onDamageHero:function(heroModel, damageTaken ){
+        heroModel.getSilent(this.getEffect());
+    },
+    onBeBlocked:function(heroModel){
+        heroModel.getSilent(this.getEffect());
+    }
+});
+
 var LichModel = MonsterModel.extend({
     defaults:function(){
         return _.extend(MonsterModel.prototype.defaults.call(this), {
@@ -322,8 +358,8 @@ var LilithModel = MonsterModel.extend({
         var level = this.get("level");
         this.set({
             baseAttack: level,
-            baseScore: level,
-            baseUpgradeCost: level*3
+            baseScore: level>4?2:0,
+            baseUpgradeCost: level*5+5
         } );
         this.reEvaluate();
     },
@@ -342,7 +378,7 @@ var MinotaurModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"minotaur",
             displayName:"牛头人",
-            baseCost: 3,
+            baseCost: 4,
             maxLevel: 4
         })
     },
@@ -360,6 +396,8 @@ var MinotaurModel = MonsterModel.extend({
         } else if ( level === 3 ) {
             return desc + "牛头人的攻击力等于地城深度的2倍";
         } else if ( level >= 4 ) {
+            return desc + "牛头人的攻击力等于地城深度的2倍+1";
+        } else if ( level >= 5 ) {
             return desc + "牛头人的攻击力等于地城深度的3倍";
         }
     },
@@ -368,7 +406,7 @@ var MinotaurModel = MonsterModel.extend({
         this.set({
             baseAttack: "＊",
             baseScore: level,
-            baseUpgradeCost: level*2
+            baseUpgradeCost: level*6
         } );
         this.reEvaluate();
     },
@@ -383,6 +421,8 @@ var MinotaurModel = MonsterModel.extend({
         } else if ( level === 3 ) {
             att = stageNumber*2;
         } else if ( level >= 4 ) {
+            att = stageNumber*2+1;
+        } else if ( level >= 5 ) {
             att = stageNumber*3;
         }
         this.set({
@@ -496,20 +536,20 @@ var OrcBanditModel = MonsterModel.extend({
         if ( desc !== "" ) {
             desc += "\n";
         }
-        return desc+"英雄经过时，你得到与兽人强盗{[attack]}相同的{[money]}";
+        return desc+"获得与英雄受到的伤害等量的{[money]}";
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
             baseAttack: level,
             baseScore: level,
-            baseUpgradeCost: level*2+2
+            baseUpgradeCost: 6*level+6
         } );
         this.reEvaluate();
     },
-    onTeamEnter:function(team){
-        if ( this.get("attack") ) {
-            gameModel.getMoney(this.get("attack"));
+    onDamageHero:function(heroModel, damageTaken){
+        if ( damageTaken ) {
+            gameModel.getMoney(damageTaken);
             this.trigger("give", {
                 icon: "money"
             });
@@ -726,7 +766,7 @@ var ZombieModel = MonsterModel.extend({
         this.set({
             baseAttack: level,
             baseScore: level,
-            baseUpgradeCost: level*2
+            baseUpgradeCost: 4*(level-1)+2
         } );
         this.reEvaluate();
     }

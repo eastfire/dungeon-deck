@@ -108,7 +108,7 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>monster-treefolk-small.png</key>
+            <key>monster-titan-small.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1362},{120,168}}</string>
@@ -121,10 +121,23 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>monster-zombie-small.png</key>
+            <key>monster-treefolk-small.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1532},{120,168}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{120,168}}</string>
+                <key>sourceSize</key>
+                <string>{120,168}</string>
+            </dict>
+            <key>monster-zombie-small.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,1702},{120,168}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -142,9 +155,9 @@
             <key>realTextureFileName</key>
             <string>monster2.png</string>
             <key>size</key>
-            <string>{124,1702}</string>
+            <string>{124,1872}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:2cedda24097f532c825c935d9b9e69ae:8907835acc76119562d9779639e6c090:b5bf4b867d7f70bddd564306cad33291$</string>
+            <string>$TexturePacker:SmartUpdate:fa736fa03f5260fb6abaf2242662de7f:835d624523558521f965a52d5ecab780:b5bf4b867d7f70bddd564306cad33291$</string>
             <key>textureFileName</key>
             <string>monster2.png</string>
         </dict>
