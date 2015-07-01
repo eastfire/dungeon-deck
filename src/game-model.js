@@ -37,7 +37,14 @@ var GameModel = Backbone.Model.extend({
             status: null,
             phase: "hero-generate", //hero-generate , team-enter-dungeon, team-enter-level, team-enter-room, team-leave-room, team-leave-level, team
 
-            //heroList: ["thief","cleric", "sage"],
+            //generateHeroType : "deck", //deck, pool
+            generateHeroType : "pool",
+
+            initHeroDeck: [{type:"cleric",level:1,maxLevel:1},{type:"cleric",level:1,maxLevel:3},{type:"cleric",level:1,maxLevel:3},{type:"thief",level:1,maxLevel:3}],
+            heroDeck: [],
+            isHeroDeckShuffle: false,
+
+            //heroList: ["knight","thief"],
             heroList: [ "amazon","assassin", "berserker", "cleric", "dragonslayer", "knight", "ninja", "sage", "soldier","sorcerer", "thief", "warrior" ],
             heroLevelPool: [1],
             heroMaxLevelPool: [ 3, 3, 3 ],
@@ -56,7 +63,7 @@ var GameModel = Backbone.Model.extend({
             discardDeck: [],
 
             //initHand: ["fireball","magic-missile","fireball"],
-            initHand: ["magic-missile"],
+            initHand: ["fireball","magic-missile"],
             hand: [], //魔法
             maxHand: 1,
 
@@ -255,6 +262,7 @@ var GameModel = Backbone.Model.extend({
             var model = team[i];
 
             if ( model.get("leaving") ) {
+                model.onBeforePositionInTeamChange(model.get("positionInTeam"));
                 team.splice(i,1);
                 model.trigger("leaveTeam");
                 model = null;
@@ -342,6 +350,13 @@ var GameModel = Backbone.Model.extend({
             this.newRegularBuyableDeck(entry);
         }
     },
+    initHeroDeck:function(){
+        if ( this.get("isShuffleHeroDeck") ) {
+            this.set("heroDeck", _.shuffle(this.get("initHeroDeck")));
+        } else {
+            this.set("heroDeck", _.clone(this.get("initHeroDeck")));
+        }
+    },
     initSpellBook:function(){
         _.each( this.get("initHand"), function(cardName){
             var Model = DUNGEON_CLASS_MAP[cardName];
@@ -374,6 +389,7 @@ var GameModel = Backbone.Model.extend({
         return hpLose;
     },
     initAll:function(){
+        this.initHeroDeck();
         this.initDeck();
         this.initDiscardDeck();
         this.initRegularBuyableCards();
@@ -410,6 +426,26 @@ var GameModel = Backbone.Model.extend({
             if ( !this.cullFromDeck(cardModel) ) {
 
             }
+        }
+    },
+    generateHeroModel:function(){
+        var generateType = this.get("generateHeroType");
+        if ( generateType === "pool") {
+            var heroType = _.sample(this.get("heroList"))
+            var maxLevel = _.sample(this.get("heroMaxLevelPool"));
+            var level = Math.min(_.sample(this.get("heroLevelPool")), maxLevel);
+            return new HERO_CLASS_MAP[ heroType ]({
+                level: level,
+                maxLevel: maxLevel
+            });
+        } else if ( generateType === "deck" ) {
+            var entry = this.get("heroDeck").shift();
+            if ( entry ) {
+                return new HERO_CLASS_MAP[ entry.type ]({
+                    level: entry.level,
+                    maxLevel: entry.maxLevel
+                });
+            } else return null;
         }
     }
 })

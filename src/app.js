@@ -601,7 +601,7 @@ var MainGameLayer = cc.Layer.extend({
         this.meeple.setVisible(true);
     },
     generateHero:function(){
-        gameModel.increaseTurn();;
+        gameModel.increaseTurn();
         var team = this.model.get("team");
         if ( team.length >= MAX_HERO_COUNT ) {
             cc.eventManager.dispatchCustomEvent("generate-hero-end");
@@ -609,15 +609,12 @@ var MainGameLayer = cc.Layer.extend({
         }
         this.model.set("phase","generate-hero");
 
-        var heroType = _.sample( this.model.get("heroList") )
-        var maxLevel = _.sample(gameModel.get("heroMaxLevelPool"));
-        var level = Math.min(_.sample(gameModel.get("heroLevelPool")), maxLevel);
-        var heroModel = new HERO_CLASS_MAP[ heroType ]({
-            level: level,
-            maxLevel: maxLevel
-        })
+        var heroModel = gameModel.generateHeroModel();
+        if ( !heroModel ) {
+            cc.director.runScene( new GameOverScene() );
+            return;
+        }
         var card = new HeroCardSprite({ model: heroModel , side: "front"})
-
         card.attr({
             x: cc.winSize.width + dimens.card_width,
             y: dimens.team_position.y,
@@ -757,9 +754,9 @@ var MainGameLayer = cc.Layer.extend({
         },this),
         cc.delayTime(1),
         cc.callFunc(this.removeDeadHero,this),
-        cc.delayTime(0.1),
+        cc.delayTime(times.hero_join_team),
         cc.callFunc(this.overMaxLevelHeroLeave,this),
-        cc.delayTime(0.1),
+        cc.delayTime(times.hero_join_team),
         cc.callFunc(function(){
             this.generateHero();
             this.__resetMeeple();
@@ -1215,6 +1212,9 @@ var MainGameLayer = cc.Layer.extend({
             this.continueMenu.setVisible(true);
             //enable sort
             this.dungeonList.setEnabled(true);
+
+            var dungeonCards = this.getCurrentDungeonModels();
+            this.model.set("stage", dungeonCards );
             return;
         }
 

@@ -99,7 +99,7 @@ var ChooseCardLayer = cc.LayerColor.extend({
 
         this.choiceMenuItems = [];
 
-        _.each( ["discard","deck"], function(r) {
+        _.each( ["discard","deck","dungeon","hand"], function(r) {
             if (_.contains(this.range, r)) {
                 var cards;
                 switch (r) {
@@ -108,6 +108,12 @@ var ChooseCardLayer = cc.LayerColor.extend({
                         break;
                     case "deck":
                         cards = this.model.get("deck");
+                        break;
+                    case "dungeon":
+                        cards = this.model.get("stage");
+                        break;
+                    case "hand":
+                        cards = this.model.get("hand");
                         break;
                 }
                 if (this.visibleFilter) {
@@ -124,7 +130,7 @@ var ChooseCardLayer = cc.LayerColor.extend({
         this.scrollView.setInnerContainerSize( cc.size( cc.winSize.width, this.layerCardY ) );
         this.scrollView.setContentSize(cc.size(cc.winSize.width, height));
 
-        _.each( ["discard","deck"], function(r) {
+        _.each( ["discard","deck","dungeon","hand"], function(r) {
             if (_.contains(this.range, r)) {
                 var cards;
                 switch (r) {
@@ -133,6 +139,12 @@ var ChooseCardLayer = cc.LayerColor.extend({
                         break;
                     case "deck":
                         cards = this.model.get("deck");
+                        break;
+                    case "dungeon":
+                        cards = this.model.get("stage");
+                        break;
+                    case "hand":
+                        cards = this.model.get("hand");
                         break;
                 }
                 if (this.visibleFilter) {
@@ -156,17 +168,8 @@ var ChooseCardLayer = cc.LayerColor.extend({
         this.scrollView.y = bottomMargin;//cc.winSize.height - topMargin;
         this.scrollView.jumpToTop();
     },
-    getUpgradeableDeckCards:function(){
-
-    },
-    getUpgradeableHandCards:function(){
-
-    },
-    getUpgradeableDungeonCards:function(){
-
-    },
     renderCards:function(cards, type){
-        var label = new cc.LabelTTF(texts.card_from[type], "宋体", dimens.buy_font_size);
+        var label = new cc.LabelTTF(texts.card_from[type]+(cards.length?("("+cards.length+"张)"):texts.none), "宋体", dimens.buy_font_size);
         this.layerCardY -= dimens.upgrade_type_label_height/2 + 10;
         label.attr({
             color: colors.upgrade_type_label,

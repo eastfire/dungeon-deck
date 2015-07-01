@@ -574,14 +574,14 @@ var OrcWarlordModel = MonsterModel.extend({
         return desc+"本层其他怪物+"+this.getEffect()+"{[attack]}";
     },
     getEffect:function(){
-        return Math.ceil(this.get("level")/2);
+        return Math.ceil(this.get("level")/5);
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            baseAttack: Math.floor(this.get("level")/3)+1,
-            baseScore: level,
-            baseUpgradeCost: level*5+7
+            baseAttack: Math.ceil(this.get("level")/2),
+            baseScore: level*2,
+            baseUpgradeCost: level*6+7
         } );
         this.reEvaluate();
     },
@@ -601,7 +601,7 @@ var RatmanModel = MonsterModel.extend({
         return _.extend(MonsterModel.prototype.defaults.call(this), {
             name:"ratman",
             displayName:"鼠人",
-            baseCost: 0,
+            baseCost: 1,
             maxLevel: 5
         })
     },

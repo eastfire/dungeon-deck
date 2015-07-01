@@ -219,6 +219,7 @@ var texts = {
         hand: "手牌中的牌",
         dungeon: "当前地城中的牌"
     },
+    none: "(无)",
     level_up: "升级",
     max_level: "满级",
 

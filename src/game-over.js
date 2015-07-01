@@ -87,7 +87,28 @@ var GameOverLayer = cc.LayerColor.extend({
             y: 25
         });
         continueItem.addChild( continueText );
-        var continueMenu = new cc.Menu(continueItem);
+
+        var allCardItem = new cc.MenuItemImage(
+            cc.spriteFrameCache.getSpriteFrame("short-normal.png"),
+            cc.spriteFrameCache.getSpriteFrame("short-selected.png"),
+            function () {
+                this.showAllCards();
+            }, this );
+        allCardItem.attr({
+            x: cc.winSize.width / 2.0,
+            y: 250,
+            anchorX: 0.5,
+            anchorY: 0.5
+        });
+        var allCardText = new cc.LabelTTF("查看牌库", "宋体", dimens.game_over_score_font_size);
+        allCardText.attr({
+            color: cc.color.BLACK,
+            x: 85,
+            y: 25
+        });
+        allCardItem.addChild( allCardText );
+
+        var continueMenu = new cc.Menu(continueItem,allCardItem);
         continueMenu.x = 0;
         continueMenu.y = 0;
         this.addChild(continueMenu, 20);
@@ -107,6 +128,17 @@ var GameOverLayer = cc.LayerColor.extend({
             default:
                 break;
         }
+    },
+
+    showAllCards:function(){
+        cc.director.pushScene(new ChooseCardScene({
+            model: gameModel,
+            range: ["discard", "deck", "dungeon", "hand"],
+            hint: "你的牌库",
+            validFilter:function(){
+                return false
+            }
+        }));
     }
 });
 
