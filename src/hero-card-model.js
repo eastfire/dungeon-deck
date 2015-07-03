@@ -1,8 +1,6 @@
 /**
  * Created by 赢潮 on 2015/2/25.
  */
-var DODGE_TRAP_RATE = 25;
-
 var HeroModel = Backbone.Model.extend({ //英雄牌
     defaults:function(){
         return {
@@ -25,6 +23,7 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
             level: 1,
             maxLevel: 3,
             positionInTeam: null,
+            attackHeartPower: 1,
 
             poison: 0,
             slow: 0,
@@ -114,7 +113,7 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
         }
         var dodges = this.get("dodge");
         if ( dodges.trap ) {
-            desc.push( (dodges.trap * DODGE_TRAP_RATE )+"%不受陷阱影响");
+            desc.push( (dodges.trap)+"%不受陷阱影响");
         }
         if ( dodges.att1 ) {
             desc.push( (dodges.att1 )+"%躲避{[attack]}1及以下的怪物攻击");
@@ -259,7 +258,7 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
         var dodgeRate = 0;
         if ( cardModel instanceof TrapModel ) {
             if ( dodge.trap )
-                dodgeRate += dodge.trap * DODGE_TRAP_RATE;
+                dodgeRate += dodge.trap;
         } else if ( cardModel instanceof MonsterModel ) {
             var att = cardModel.get("attack");
             if ( att <= 1 && dodge.att1 ) dodgeRate += dodge.att1;
@@ -318,9 +317,6 @@ var HeroModel = Backbone.Model.extend({ //英雄牌
     loseDefense:function(amount){
         this.set("defense", Math.max(0, this.get("defense") - amount ));
     },
-    getAttackHeartPower:function(){
-        return this.get("level")
-    },
     onAttackHeart:function(damange){
     },
     onDie:function(){
@@ -338,12 +334,14 @@ var AmazonModel = HeroModel.extend({
             name:"amazon",
             displayName:"亚马逊战士",
             maxLevel: 5,
-            baseDefense: 0
+            baseDefense: 0,
+            carry: ["cape","potion"]
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
+            attackHeartPower: level,
             baseScore: level*(level+1)/2,
             baseMaxHp: 3 + Math.floor(level/2),
             dodge: {
@@ -359,12 +357,14 @@ var AssassinModel = HeroModel.extend({
         return _.extend(HeroModel.prototype.defaults.call(this), {
             name:"assassin",
             displayName:"刺客",
-            maxLevel: 5
+            maxLevel: 5,
+            carry: ["cape","potion"]
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
+            attackHeartPower: level*2,
             baseScore: level*(level+1)/2,
             baseMaxHp: 2 + Math.ceil(level/2),
             baseDefense: 0,
@@ -372,9 +372,6 @@ var AssassinModel = HeroModel.extend({
                 att1: Math.min(100, 15*level)
             }
         });
-    },
-    getAttackHeartPower:function(){
-        return this.get("level")*2;
     },
     getDescription:function(){
         var desc = HeroModel.prototype.getDescription.call(this);
@@ -390,16 +387,21 @@ var BerserkerModel = HeroModel.extend({
             maxLevel: 5
         })
     },
+    __initEvent:function(){
+        HeroModel.prototype.__initEvent.call(this);
+        this.on("change:hp change:baseMaxHp",this.evaluateAttackHeartPower,this);
+    },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
+            attackHeartPower: level,
             baseScore: level*(level+1)/2,
             baseMaxHp: 3 + Math.ceil(level/2),
             baseDefense: 0
         });
     },
-    getAttackHeartPower:function(){
-        return this.get("level") + this.get("maxHp") - this.get("hp");
+    evaluateAttackHeartPower:function(){
+        this.set("attackHeartPower", this.get("level") + this.get("maxHp") - this.get("hp"));
     },
     getDescription:function(){
         var desc = HeroModel.prototype.getDescription.call(this);
@@ -427,6 +429,7 @@ var ClericModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
+            attackHeartPower: level,
             baseScore: level*(level+1)/2,
             baseMaxHp: 1 + level
         });
@@ -443,12 +446,14 @@ var DragonSlayerModel = HeroModel.extend({
             name:"dragonslayer",
             displayName:"屠龙者",
             maxLevel: 5,
-            baseDefense: 0
+            baseDefense: 0,
+            carry:["big-sword"]
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
+            attackHeartPower: level,
             baseScore: level*(level+1)/2,
             baseMaxHp: 3 + level,
             dodge: {
@@ -473,6 +478,7 @@ var KnightModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
+            attackHeartPower: level,
             baseScore: level*(level+1),
             baseMaxHp: 3 + level,
             baseDefense: Math.floor(level/2)
@@ -518,17 +524,19 @@ var NinjaModel = HeroModel.extend({
         return _.extend(HeroModel.prototype.defaults.call(this), {
             name:"ninja",
             displayName:"忍者",
-            maxLevel: 4,
-            baseDefense: 0
+            maxLevel: 5,
+            baseDefense: 0,
+            carry: [ "boot" ]
         })
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
+            attackHeartPower: level,
             baseScore: level*(level+1)/2,
             baseMaxHp: 2 + level,
             dodge: {
-                trap: Math.min( Math.ceil(100/DODGE_TRAP_RATE), level+1)
+                trap: Math.min( 100, level*25 )
             }
         });
     }
@@ -554,6 +562,7 @@ var SageModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
+            attackHeartPower: level,
             baseScore: level*(level+1)/2,
             baseMaxHp: 2 + Math.floor(level/2)
         });
@@ -577,6 +586,7 @@ var SoldierModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
+            attackHeartPower: level,
             baseScore: level*(level+1),
             baseMaxHp: 3 + level,
             baseDefense: Math.floor(level/2)
@@ -633,6 +643,7 @@ var SorcererModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
+            attackHeartPower: level,
             baseScore: level*(level+1)/2,
             baseMaxHp: 2 + level
         });
@@ -659,6 +670,7 @@ var ThiefModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
+            attackHeartPower: level,
             baseScore: level*(level+1)/2,
             baseMaxHp: 3 + Math.floor(level/2)
         });
@@ -682,6 +694,7 @@ var WarriorModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
+            attackHeartPower: level,
             baseScore: level*(level+1)/2,
             baseMaxHp: 2 + level*2,
             baseDefense: 0

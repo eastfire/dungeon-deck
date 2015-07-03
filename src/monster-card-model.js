@@ -352,7 +352,7 @@ var LilithModel = MonsterModel.extend({
         if ( desc !== "" ) {
             desc += "\n";
         }
-        return desc+"获得与英雄受到的伤害等量的{[hp]}";
+        return desc+"获得与英雄受到的伤害等量的{[black-hp]}";
     },
     initByLevel:function(){
         var level = this.get("level");
@@ -367,7 +367,7 @@ var LilithModel = MonsterModel.extend({
         if ( damageTaken ) {
             gameModel.getHp(damageTaken);
             this.trigger("give", {
-                icon: "hp"
+                icon: "black-hp"
             });
         }
     }
@@ -736,7 +736,7 @@ var TreefolkModel = MonsterModel.extend({
         if ( desc != "" ) {
             desc += "\n";
         }
-        return desc+"翻开时，+"+this.getEffect()+"{[hp]}";
+        return desc+"翻开时，+"+this.getEffect()+"{[black-hp]}";
     },
     getEffect:function(){
         return Math.ceil(this.get("level")/2);
@@ -746,7 +746,7 @@ var TreefolkModel = MonsterModel.extend({
         var hp = this.getEffect();
         gameModel.getHp(hp);
         this.trigger("give",{
-            icon: "hp"
+            icon: "black-hp"
         });
     }
 });

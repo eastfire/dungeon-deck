@@ -44,7 +44,7 @@ var GameModel = Backbone.Model.extend({
             heroDeck: [],
             isHeroDeckShuffle: false,
 
-            //heroList: ["knight","thief"],
+            //heroList: ["dragonslayer","berserker"],
             heroList: [ "amazon","assassin", "berserker", "cleric", "dragonslayer", "knight", "ninja", "sage", "soldier","sorcerer", "thief", "warrior" ],
             heroLevelPool: [1],
             heroMaxLevelPool: [ 3, 3, 3 ],
@@ -63,7 +63,7 @@ var GameModel = Backbone.Model.extend({
             discardDeck: [],
 
             //initHand: ["fireball","magic-missile","fireball"],
-            initHand: ["fireball","magic-missile"],
+            initHand: ["magic-missile"],
             hand: [], //魔法
             maxHand: 1,
 
@@ -236,7 +236,7 @@ var GameModel = Backbone.Model.extend({
     getTeamAttackDungeonHeartPower:function(){
         return _.reduce(this.get("team"),function(memo, heroModel){
             if ( heroModel.isAlive() ) {
-                return memo + heroModel.getAttackHeartPower()
+                return memo + heroModel.get("attackHeartPower");
             } else return memo;
         }, 0 ,this)
     },
@@ -540,7 +540,7 @@ var DungeonCardModel = Backbone.Model.extend({ //地城牌
         }
         if ( upgradeAndCullable !== "" ) descs.push(upgradeAndCullable);
         if ( this.get("payHp") ) {
-            descs.push("{[pay-hp]}翻开本牌时支付"+this.get("payHp")+"{[hp]}")
+            descs.push("{[pay-hp]}翻开本牌时支付"+this.get("payHp")+"{[black-hp]}")
         }
         if ( this.get("payMoney") ) {
             descs.push("{[pay-money]}翻开本牌时支付"+this.get("payMoney")+"{[money]}")

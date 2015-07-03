@@ -4,7 +4,8 @@
 var GameOverLayer = cc.LayerColor.extend({
     ctor: function (options) {
         options = options || {};
-        this.model = options.model;
+
+        gameModel.off();
 
         this._super(colors.card_detail_mask);
 
@@ -328,7 +329,7 @@ var GameOverScene = cc.Scene.extend({
     },
     onEnter:function (options) {
         this._super();
-        var layer = new GameOverLayer({model:this.options.model});
+        var layer = new GameOverLayer();
         this.addChild(layer);
     }
 });

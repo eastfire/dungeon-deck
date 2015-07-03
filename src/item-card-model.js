@@ -61,6 +61,131 @@ var ArmorModel = ItemModel.extend({ //物品
     }
 });
 
+var BootModel = ItemModel.extend({ //物品
+    defaults:function(){
+        return _.extend( ItemModel.prototype.defaults.call(this),{
+            name: "boot",
+            displayName: "靴子"
+        })
+    },
+    initialize:function(){
+        this.set("score",this.get("level"));
+    },
+    getDescription:function(){
+        var desc = ItemModel.prototype.getDescription.call(this);
+        var descs = [desc];
+        descs.push("队首的英雄+"+this.getEffect()+"%不受陷阱影响");
+        return descs.join("\n");
+    },
+    onHeroGet:function(team){
+        var alive = _.filter( team ,function(model){
+            return model.isAlive();
+        }, this )
+        var hero = _.first( alive );
+        if ( hero ) {
+            var effect = this.getEffect();
+            if ( hero.get("dodge").trap ) {
+                hero.get("dodge").trap += effect;
+            } else {
+                hero.get("dodge").trap = effect;
+            }
+        }
+    },
+    getEffect:function(){
+        return Math.min(this.get("level")*10,100);
+    }
+});
+
+var BitSwordModel = ItemModel.extend({ //物品
+    defaults:function(){
+        return _.extend( ItemModel.prototype.defaults.call(this),{
+            name: "big-sword",
+            displayName: "大剑"
+        })
+    },
+    initialize:function(){
+        this.set("score",this.get("level"));
+    },
+    getDescription:function(){
+        var desc = ItemModel.prototype.getDescription.call(this);
+        var descs = [desc];
+        descs.push("队首的英雄+"+this.getEffect()+"%躲避{[attack]}7及以上的怪物攻击");
+        if ( this.get("level") > 10 ) {
+            descs.push("队首的英雄+"+(Math.ceil(this.getEffect()/2))+"%躲避{[attack]}6及以上的怪物攻击");
+        }
+        return descs.join("\n");
+    },
+    onHeroGet:function(team){
+        var alive = _.filter( team ,function(model){
+            return model.isAlive();
+        }, this )
+        var hero = _.first( alive );
+        if ( hero ) {
+            var effect = this.getEffect();
+            if ( hero.get("dodge").att7 ) {
+                hero.get("dodge").att7 += effect;
+            } else {
+                hero.get("dodge").att7 = effect;
+            }
+            if ( this.get("level") > 10 ) {
+                if ( hero.get("dodge").att6 ) {
+                    hero.get("dodge").att6 += Math.ceil(effect/2);
+                } else {
+                    hero.get("dodge").att6 = Math.ceil(effect/2);
+                }
+            }
+        }
+    },
+    getEffect:function(){
+        return Math.min(this.get("level")*10,100);
+    }
+});
+
+var CapeModel = ItemModel.extend({ //物品
+    defaults:function(){
+        return _.extend( ItemModel.prototype.defaults.call(this),{
+            name: "cape",
+            displayName: "斗篷"
+        })
+    },
+    initialize:function(){
+        this.set("score",this.get("level"));
+    },
+    getDescription:function(){
+        var desc = ItemModel.prototype.getDescription.call(this);
+        var descs = [desc];
+        descs.push("队首的英雄+"+this.getEffect()+"%躲避{[attack]}1及以下的怪物攻击");
+        if ( this.get("level") > 10 ) {
+            descs.push("队首的英雄+"+(Math.ceil(this.getEffect()/2))+"%躲避{[attack]}2及以下的怪物攻击");
+        }
+        return descs.join("\n");
+    },
+    onHeroGet:function(team){
+        var alive = _.filter( team ,function(model){
+            return model.isAlive();
+        }, this )
+        var hero = _.first( alive );
+        if ( hero ) {
+            var effect = this.getEffect();
+            if ( hero.get("dodge").att1 ) {
+                hero.get("dodge").att1 += effect;
+            } else {
+                hero.get("dodge").att1 = effect;
+            }
+            if ( this.get("level") > 10 ) {
+                if ( hero.get("dodge").att2 ) {
+                    hero.get("dodge").att2 += Math.ceil(effect/2);
+                } else {
+                    hero.get("dodge").att2 = Math.ceil(effect/2);
+                }
+            }
+        }
+    },
+    getEffect:function(){
+        return Math.min(100,this.get("level")*10);
+    }
+});
+
 var ElixirModel = ItemModel.extend({ //物品
     defaults:function(){
         return _.extend( ItemModel.prototype.defaults.call(this),{

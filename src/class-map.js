@@ -29,6 +29,9 @@ var DUNGEON_CLASS_MAP = {
     "war-drum": WarDrumModel,
 
     armor: ArmorModel,
+    "big-sword": BitSwordModel,
+    boot: BootModel,
+    cape: CapeModel,
     elixir: ElixirModel,
     helmet: HelmetModel,
     lockpicker: LockPickerModel,
@@ -77,6 +80,9 @@ var DUNGEON_SPRITE_CLASS_MAP = {
     "war-drum": WarDrumCardSprite,
 
     armor: ItemCardSprite,
+    "big-sword": ItemCardSprite,
+    boot: ItemCardSprite,
+    cape: ItemCardSprite,
     elixir: ItemCardSprite,
     helmet: ItemCardSprite,
     lockpicker: ItemCardSprite,

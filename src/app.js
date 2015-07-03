@@ -278,7 +278,7 @@ var MainGameLayer = cc.Layer.extend({
 
         window.iconSource = {
             money : this.moneyLabel,
-            hp : this.throne,
+            "black-hp" : this.throne,
             score : this.throne
         }
         return true;
@@ -563,7 +563,7 @@ var MainGameLayer = cc.Layer.extend({
             if ( diff > 0 )
                 diff = "+"+diff;
             effectIconMananger.enqueue(this.throne, {
-                icon: "hp-icon",
+                icon: "black-hp-icon",
                 text: diff,
                 offset: {x:0, y:80}
             });
@@ -630,19 +630,17 @@ var MainGameLayer = cc.Layer.extend({
 //                cc.eventManager.dispatchCustomEvent("generate-hero-end");
 //            }
 //        },this);
-        heroModel.on("die",function(){
+        heroModel.on("die transform",function(){
             if ( !this.model.isTeamAlive()) {
                 this.teamDie();
+            } else {
+                this.renderGiveUp();
             }
         },this);
-        heroModel.on("transform",function(){
-            if ( !this.model.isTeamAlive()) {
-                this.teamDie();
-            }
+        heroModel.on("change:attackHeartPower alive",function(){
+            this.renderGiveUp();
         },this);
-//        _.each(team,function(model){
-//            model.startJoinTeam();
-//        },this);
+
         this.model.sortTeam();
 
         this.runAction(cc.sequence(cc.delayTime(times.hero_join_team+0.1), cc.callFunc(function(){
@@ -729,6 +727,12 @@ var MainGameLayer = cc.Layer.extend({
     },
     teamLeaveDungeon:function(){
         this.__resetStage();
+        var hasDeadHero = _.any(this.model.get("team"),function(heroModel){
+            return !heroModel.isAlive();
+        },this);
+        var hasMaxLevelHero = _.any(this.model.get("team"),function(heroModel){
+            return heroModel.get("leaving");
+        },this);
         var sequence = cc.sequence( cc.scaleTo(times.team_teleport_leave, 0.1, 4 ),
             cc.callFunc(function(){
                 this.__resetBackground();
@@ -754,9 +758,9 @@ var MainGameLayer = cc.Layer.extend({
         },this),
         cc.delayTime(1),
         cc.callFunc(this.removeDeadHero,this),
-        cc.delayTime(times.hero_join_team),
+        cc.delayTime(hasDeadHero?times.hero_join_team:0),
         cc.callFunc(this.overMaxLevelHeroLeave,this),
-        cc.delayTime(times.hero_join_team),
+        cc.delayTime(hasMaxLevelHero?times.hero_join_team:0),
         cc.callFunc(function(){
             this.generateHero();
             this.__resetMeeple();
@@ -822,6 +826,24 @@ var MainGameLayer = cc.Layer.extend({
             this.meeple.runAction(sequence);
         }
     },
+    renderGiveUp:function(){
+        if ( this.giveUpText )
+            this.giveUpText.removeFromParent(true);
+        this.giveUpText = buildRichText({
+            str : texts.give_up+ "（-"+this.model.getTeamAttackDungeonHeartPower()+"{[black-hp]}）",
+            fontSize : dimens.build_new_stage_font_size+2,
+            fontColor: cc.color.BLACK,
+            width: 390,
+            height: 60
+        });
+        this.giveUpText.attr({
+            x: 240,
+            y: 25,
+            anchorX : 0.5,
+            anchorY : 0.5
+        });
+        this.giveUpItem.addChild( this.giveUpText );
+    },
     renderBuildStageMenu:function(){
         var cost = this.model.getBuildCost();
 
@@ -841,22 +863,8 @@ var MainGameLayer = cc.Layer.extend({
         this.buildStageMenu.setVisible(true);
         this.buildStageItem.addChild(this.buildStageText);
 
-        this.giveUpText = buildRichText({
-            str : texts.give_up,
-            fontSize : dimens.build_new_stage_font_size,
-            fontColor: cc.color.BLACK,
-            width: 390,
-            height: 60
-        });
-        this.giveUpText.attr({
-            x: 330,
-            y: 20,
-            anchorX : 0.5,
-            anchorY : 0.5
-        });
+        this.renderGiveUp();
         this.giveUpMenu.setVisible(true);
-        this.giveUpItem.addChild( this.giveUpText );
-
     },
     onTeamLeaveStage:function(){
         //user choose build new stage or pass
@@ -1022,7 +1030,7 @@ var MainGameLayer = cc.Layer.extend({
                 var totalPower = 0;
                 _.each( this.model.get("team"), function(heroModel){
                     if ( heroModel.isAlive() ) {
-                        var power = heroModel.getAttackHeartPower();
+                        var power = heroModel.get("attackHeartPower");
                         heroModel.onAttackHeart(power);
                         totalPower += power;
                     }

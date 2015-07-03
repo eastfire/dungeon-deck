@@ -138,7 +138,7 @@ var FireballModel = SpellModel.extend({
             name:"fireball",
             displayName:"火球术",
             target: "single-hero",
-            baseCost: 7,
+            baseCost: 12,
             maxLevel: 3
         })
     },
@@ -150,8 +150,8 @@ var FireballModel = SpellModel.extend({
         var level = this.get("level");
         this.set({
             baseAttack: level+1,
-            baseScore: level,
-            baseUpgradeCost: level*8
+            baseScore: 0,
+            baseUpgradeCost: level*16 - 8
         } );
         this.reEvaluate();
     },
@@ -186,7 +186,7 @@ var LighteningModel = SpellModel.extend({
             name:"lightening",
             displayName:"闪电链",
             target: "all-hero",
-            baseCost: 6,
+            baseCost: 12,
             maxLevel: 3
         })
     },
@@ -198,8 +198,8 @@ var LighteningModel = SpellModel.extend({
         var level = this.get("level");
         this.set({
             baseAttack: level,
-            baseScore: level,
-            baseUpgradeCost: level*7
+            baseScore: 0,
+            baseUpgradeCost: level*16-8
         } );
         this.reEvaluate();
     },
@@ -227,7 +227,7 @@ var MagicMissileModel = SpellModel.extend({
             name:"magic-missile",
             displayName:"魔导弹",
             target: "single-hero",
-            baseCost: 3,
+            baseCost: 4,
             maxLevel:3
         })
     },
@@ -239,8 +239,8 @@ var MagicMissileModel = SpellModel.extend({
         var level = this.get("level");
         this.set({
             baseAttack: level,
-            baseScore: level,
-            baseUpgradeCost: level*5
+            baseScore: (level-1)*3,
+            baseUpgradeCost: level*6
         } );
         this.reEvaluate();
     },
