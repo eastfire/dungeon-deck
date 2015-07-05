@@ -52,13 +52,13 @@ var GameModel = Backbone.Model.extend({
             maxHeroMaxLevel: 3,
             increaseDifficultyPerTurn: 17,
             //heroList: [ "sorcerer"],
-            initDeck: [ "skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
-            //initDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
+            initDeck: [ "skeleton", "skeleton","skeleton","skeleton","imp","imp","imp","imp" ],
+            //initDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","imp","imp","imp","imp" ],
             //initDeck: [ /*"titan","arrow-trap","ooze",*/"dragon","arrow-trap","lilith","arrow-trap" ],
             deck: [],
             isInitDeckShuffle: true,
 
-            //initDiscardDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman","magic-missile","skeleton", "skeleton","skeleton","skeleton","ratman","ratman","ratman","ratman" ],
+            //initDiscardDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","imp","imp","imp","imp","magic-missile","skeleton", "skeleton","skeleton","skeleton","imp","imp","imp","imp" ],
             initDiscardDeck: [ ],
             discardDeck: [],
 
@@ -90,7 +90,7 @@ var GameModel = Backbone.Model.extend({
             initRegularBuyableCount : 10,
             initRegularBuyableCards : [
                 {
-                    type:"ratman",
+                    type:"imp",
                     count: 8
                 },
                 {

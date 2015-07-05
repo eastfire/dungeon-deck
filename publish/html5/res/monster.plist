@@ -69,7 +69,7 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>monster-lich-small.png</key>
+            <key>monster-imp-small.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,852},{120,168}}</string>
@@ -82,7 +82,7 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>monster-lilith-small.png</key>
+            <key>monster-lich-small.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1022},{120,168}}</string>
@@ -95,10 +95,23 @@
                 <key>sourceSize</key>
                 <string>{120,168}</string>
             </dict>
-            <key>monster-minotaur-small.png</key>
+            <key>monster-lilith-small.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1192},{120,168}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{120,168}}</string>
+                <key>sourceSize</key>
+                <string>{120,168}</string>
+            </dict>
+            <key>monster-minotaur-small.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,1362},{120,168}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -116,9 +129,9 @@
             <key>realTextureFileName</key>
             <string>monster.png</string>
             <key>size</key>
-            <string>{124,1362}</string>
+            <string>{124,1532}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:1b02a032ac910d27898aead754a72449:9f2dd10ea5abeb8103e1237ce841fcab:a6ae2b9304b7a9e734cf6a25f3604866$</string>
+            <string>$TexturePacker:SmartUpdate:5d9d0ea346e807eb366299ba14c35cc9:a0b330c31261ac09144f93fcd1b36901:a6ae2b9304b7a9e734cf6a25f3604866$</string>
             <key>textureFileName</key>
             <string>monster.png</string>
         </dict>

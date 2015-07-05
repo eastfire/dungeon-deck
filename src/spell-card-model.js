@@ -151,7 +151,8 @@ var FireballModel = SpellModel.extend({
         this.set({
             baseAttack: level+1,
             baseScore: 0,
-            baseUpgradeCost: level*16 - 8
+            baseUpgradeCost: level*16-1,
+            payScore: level
         } );
         this.reEvaluate();
     },
@@ -186,8 +187,9 @@ var LighteningModel = SpellModel.extend({
             name:"lightening",
             displayName:"闪电链",
             target: "all-hero",
-            baseCost: 12,
-            maxLevel: 3
+            baseCost: 6,
+            maxLevel: 3,
+            payScore: 1
         })
     },
     initialize:function(){
@@ -199,7 +201,7 @@ var LighteningModel = SpellModel.extend({
         this.set({
             baseAttack: level,
             baseScore: 0,
-            baseUpgradeCost: level*16-8
+            baseUpgradeCost: level*16-1
         } );
         this.reEvaluate();
     },
@@ -268,7 +270,7 @@ var TouchStoneModel = SpellModel.extend({
             target: null,
             attack: 0,
             baseAttack: 0,
-            baseCost: 6,
+            baseCost: 4,
             maxLevel: 3
         })
     },
@@ -276,7 +278,7 @@ var TouchStoneModel = SpellModel.extend({
         var level = this.get("level");
         this.set({
             baseScore: level,
-            baseUpgradeCost: 9*level
+            baseUpgradeCost: level+3
         } );
         this.reEvaluate();
     },

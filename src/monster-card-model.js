@@ -307,6 +307,44 @@ var GargoyleModel = MonsterModel.extend({
     }
 });
 
+var ImpModel = MonsterModel.extend({
+    defaults:function(){
+        return _.extend(MonsterModel.prototype.defaults.call(this), {
+            name:"imp",
+            displayName:"小鬼",
+            baseCost: 1,
+            maxLevel: 5
+        })
+    },
+    initByLevel:function(){
+        var level = this.get("level");
+        this.set({
+            baseAttack: 0,
+            baseScore: level,
+            baseUpgradeCost: level*level
+        } );
+        this.reEvaluate();
+    },
+    getDescription:function(){
+        var desc = MonsterModel.prototype.getDescription.call(this);
+        if ( desc != "" ) {
+            desc += "\n";
+        }
+        return desc+"翻开时，+"+this.getEffect()+"{[money]}";
+    },
+    getEffect:function(){
+        return this.get("level");
+    },
+    onReveal:function(){
+        MonsterModel.prototype.onReveal.call(this);
+        var money = this.getEffect();
+        gameModel.getMoney(money);
+        this.trigger("give",{
+            icon: "money"
+        });
+    }
+});
+
 var LichModel = MonsterModel.extend({
     defaults:function(){
         return _.extend(MonsterModel.prototype.defaults.call(this), {
@@ -593,44 +631,6 @@ var OrcWarlordModel = MonsterModel.extend({
                 }
             }
         },this);
-    }
-});
-
-var RatmanModel = MonsterModel.extend({
-    defaults:function(){
-        return _.extend(MonsterModel.prototype.defaults.call(this), {
-            name:"ratman",
-            displayName:"鼠人",
-            baseCost: 1,
-            maxLevel: 5
-        })
-    },
-    initByLevel:function(){
-        var level = this.get("level");
-        this.set({
-            baseAttack: 0,
-            baseScore: level,
-            baseUpgradeCost: level*level
-        } );
-        this.reEvaluate();
-    },
-    getDescription:function(){
-        var desc = MonsterModel.prototype.getDescription.call(this);
-        if ( desc != "" ) {
-            desc += "\n";
-        }
-        return desc+"翻开时，+"+this.getEffect()+"{[money]}";
-    },
-    getEffect:function(){
-        return this.get("level");
-    },
-    onReveal:function(){
-        MonsterModel.prototype.onReveal.call(this);
-        var money = this.getEffect();
-        gameModel.getMoney(money);
-        this.trigger("give",{
-            icon: "money"
-        });
     }
 });
 
