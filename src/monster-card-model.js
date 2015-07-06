@@ -703,7 +703,7 @@ var TitanModel = MonsterModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            baseAttack: level*2+1,
+            baseAttack: level+2,
             baseScore: 0,
             baseUpgradeCost: level === 1 ? 12 : level*4+5,
             trample: level > 1

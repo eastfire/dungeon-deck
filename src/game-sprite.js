@@ -305,7 +305,7 @@ var IconSprite = cc.Sprite.extend({
         var image = options.image;
         var offset = options.offset || {
             x : dimens.hero_icon_size.width/2,
-            y : dimens.hero_icon_size.height/2
+            y : dimens.hero_icon_size.height/2-1
         }
         this._super(image);
 

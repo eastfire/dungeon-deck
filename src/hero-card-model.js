@@ -341,7 +341,7 @@ var AmazonModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            attackHeartPower: level,
+            attackHeartPower: level*(level-1)/2+1,
             baseScore: level*(level+1)/2,
             baseMaxHp: 3 + Math.floor(level/2),
             dodge: {
@@ -364,7 +364,7 @@ var AssassinModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            attackHeartPower: level*2,
+            attackHeartPower: level*(level-1)+2,
             baseScore: level*(level+1)/2,
             baseMaxHp: 2 + Math.ceil(level/2),
             baseDefense: 0,
@@ -394,14 +394,15 @@ var BerserkerModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            attackHeartPower: level,
+            attackHeartPower: level*(level-1)/2+1,
             baseScore: level*(level+1)/2,
             baseMaxHp: 3 + Math.ceil(level/2),
             baseDefense: 0
         });
     },
     evaluateAttackHeartPower:function(){
-        this.set("attackHeartPower", this.get("level") + this.get("maxHp") - this.get("hp"));
+        var level = this.get("level");
+        this.set("attackHeartPower", level*(level-1)/2+1 + this.get("maxHp") - this.get("hp"));
     },
     getDescription:function(){
         var desc = HeroModel.prototype.getDescription.call(this);
@@ -429,7 +430,7 @@ var ClericModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            attackHeartPower: level,
+            attackHeartPower: level*(level-1)/2+1,
             baseScore: level*(level+1)/2,
             baseMaxHp: 1 + level
         });
@@ -453,7 +454,7 @@ var DragonSlayerModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            attackHeartPower: level,
+            attackHeartPower: level*(level-1)/2+1,
             baseScore: level*(level+1)/2,
             baseMaxHp: 3 + level,
             dodge: {
@@ -478,7 +479,7 @@ var KnightModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            attackHeartPower: level,
+            attackHeartPower: level*(level-1)/2+1,
             baseScore: level*(level+1),
             baseMaxHp: 3 + level,
             baseDefense: Math.floor(level/2)
@@ -532,7 +533,7 @@ var NinjaModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            attackHeartPower: level,
+            attackHeartPower: level*(level-1)/2+1,
             baseScore: level*(level+1)/2,
             baseMaxHp: 2 + level,
             dodge: {
@@ -562,7 +563,7 @@ var SageModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            attackHeartPower: level,
+            attackHeartPower: level*(level-1)/2+1,
             baseScore: level*(level+1)/2,
             baseMaxHp: 2 + Math.floor(level/2)
         });
@@ -586,7 +587,7 @@ var SoldierModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            attackHeartPower: level,
+            attackHeartPower: level*(level-1)/2+1,
             baseScore: level*(level+1),
             baseMaxHp: 3 + level,
             baseDefense: Math.floor(level/2)
@@ -643,7 +644,7 @@ var SorcererModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            attackHeartPower: level,
+            attackHeartPower: level*(level-1)/2+1,
             baseScore: level*(level+1)/2,
             baseMaxHp: 2 + level
         });
@@ -670,7 +671,7 @@ var ThiefModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            attackHeartPower: level,
+            attackHeartPower: level*(level-1)/2+1,
             baseScore: level*(level+1)/2,
             baseMaxHp: 3 + Math.floor(level/2)
         });
@@ -694,7 +695,7 @@ var WarriorModel = HeroModel.extend({
     initByLevel:function(){
         var level = this.get("level");
         this.set({
-            attackHeartPower: level,
+            attackHeartPower: level*(level-1)/2+1,
             baseScore: level*(level+1)/2,
             baseMaxHp: 2 + level*2,
             baseDefense: 0
