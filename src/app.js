@@ -543,6 +543,7 @@ var MainGameLayer = cc.Layer.extend({
         });
     },
     openBookMenu:function(){
+        if ( this.model.get("hand").length === 0 ) return;
         mainGame.pauseAction();
         var spellBookLayer = new SpellBookLayer({
             model: this.model
@@ -847,6 +848,9 @@ var MainGameLayer = cc.Layer.extend({
     renderBuildStageMenu:function(){
         var cost = this.model.getBuildCost();
 
+        if ( this.buildStageText ) {
+            this.buildStageText.removeFromParent(true);
+        }
         this.buildStageText = buildRichText({
             str : texts.pay + cost + "{[money]}" + texts.build_new_stage,
             fontSize : dimens.build_new_stage_font_size,
@@ -876,10 +880,6 @@ var MainGameLayer = cc.Layer.extend({
         var cardLeft = this.model.get("deck").length + this.model.get("discardDeck").length;
         var buildNewText;
         if ( cardLeft == 0 ) {
-            if ( this.buildStageText ) {
-                this.buildStageText.removeFromParent(true);
-                this.buildStageText = null;
-            }
             this.giveUpText = buildRichText({
                 str : texts.not_enough_card,
                 fontSize : dimens.build_new_stage_font_size,
@@ -984,10 +984,6 @@ var MainGameLayer = cc.Layer.extend({
         this.hintLable.setVisible(false);
         this.buildStageMenu.setVisible(false);
         this.giveUpMenu.setVisible(false);
-        if ( this.buildStageText ) {
-            this.buildStageText.removeFromParent(true);
-            this.buildStageText = null;
-        }
         this.giveUpText.removeFromParent(true);
         this.discardAllDungeonCards();
 
@@ -997,10 +993,6 @@ var MainGameLayer = cc.Layer.extend({
         this.hintLable.setVisible(false);
         this.buildStageMenu.setVisible(false);
         this.giveUpMenu.setVisible(false);
-        if ( this.buildStageText ) {
-            this.buildStageText.removeFromParent(true);
-            this.buildStageText = null;
-        }
         this.giveUpText.removeFromParent(true);
         this.model.useMoney(this.model.getBuildCost());
         this.discardAllDungeonCards();
