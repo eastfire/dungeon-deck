@@ -50,7 +50,7 @@ var GameModel = Backbone.Model.extend({
             heroMaxLevelPool: [ 3, 3, 3 ],
             maxHeroMaxLevelAppearCount: 3,
             maxHeroMaxLevel: 3,
-            increaseDifficultyPerTurn: 17,
+            increaseDifficultyPerTurn: 13,
             //heroList: [ "sorcerer"],
             initDeck: [ "skeleton", "skeleton","skeleton","skeleton","imp","imp","imp","imp" ],
             //initDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","imp","imp","imp","imp" ],

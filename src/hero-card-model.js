@@ -397,7 +397,7 @@ var BerserkerModel = HeroModel.extend({
             attackHeartPower: level*(level-1)/2+1,
             baseScore: level*(level+1)/2,
             baseMaxHp: 3 + Math.ceil(level/2),
-            baseDefense: 0
+            baseDefense: Math.floor(level/5)
         });
     },
     evaluateAttackHeartPower:function(){
@@ -457,6 +457,7 @@ var DragonSlayerModel = HeroModel.extend({
             attackHeartPower: level*(level-1)/2+1,
             baseScore: level*(level+1)/2,
             baseMaxHp: 3 + level,
+            baseDefense: Math.floor(level/4),
             dodge: {
                 att7: level <= 1 ? 100 : 0,
                 att6: level >= 2? 100 : 0,
@@ -698,7 +699,7 @@ var WarriorModel = HeroModel.extend({
             attackHeartPower: level*(level-1)/2+1,
             baseScore: level*(level+1)/2,
             baseMaxHp: 2 + level*2,
-            baseDefense: 0
+            baseDefense: Math.floor(level/3)
         });
     }
 });

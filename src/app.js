@@ -1045,6 +1045,8 @@ var MainGameLayer = cc.Layer.extend({
                 }
             });
         },this);
+        if ( !carry.length )
+            carry.push("potion");
         var itemName = _.sample(carry);
         return new DUNGEON_CLASS_MAP[itemName]({
             level: level,

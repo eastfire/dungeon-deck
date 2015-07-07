@@ -526,7 +526,7 @@ var OrcModel = MonsterModel.extend({
             name:"orc",
             displayName:"兽人",
             maxLevel: 5,
-            baseCost: 7
+            baseCost: 5
         })
     },
     getDescription:function(){
@@ -535,14 +535,19 @@ var OrcModel = MonsterModel.extend({
             desc += "\n";
         }
         var level = this.get("level");
-        return desc+"兽人的攻击力等于本层地城中怪物的数量"+ (level>1?("+"+(level-1)):"");
+        desc += "兽人的攻击力等于本层地城中怪物的数量";
+        if ( level === 1 )
+            desc += "-1";
+        else if ( level > 2 )
+            desc += "+"+(level-2);
+        return desc;
     },
     initByLevel:function(){
         var level = this.get("level");
         this.set({
             baseAttack: "＊",
             baseScore: level,
-            baseUpgradeCost: Math.ceil(level*3.5)+4
+            baseUpgradeCost: Math.max(6,(level-1)*6)
         } );
         this.reEvaluate();
     },
@@ -555,7 +560,7 @@ var OrcModel = MonsterModel.extend({
             }
         },0,this);
         this.set({
-            baseAttack: att + this.get("level") - 1
+            baseAttack: att + this.get("level") - 2
         })
     }
 });
