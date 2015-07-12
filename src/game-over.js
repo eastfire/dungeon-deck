@@ -71,11 +71,11 @@ var GameOverLayer = cc.LayerColor.extend({
             function () {
                 name = this.textField.getString();
                 if ( name && name.trim() !== "" ) {
-                    cc.sys.localStorage.setItem("name",name);
-                    gameModel.set("playerName",name);
+                    cc.sys.localStorage.setItem("name",name.trim());
+                    gameModel.set("playerName",name.trim());
+                    this.getParent().addChild(new ScoreBoardLayer());
+                    this.removeFromParent(true);
                 }
-                this.getParent().addChild(new ScoreBoardLayer());
-                this.removeFromParent(true);
             }, this );
         continueItem.attr({
             x: cc.winSize.width / 2.0,
