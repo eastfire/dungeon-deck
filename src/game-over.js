@@ -59,8 +59,10 @@ var GameOverLayer = cc.LayerColor.extend({
         var store = cc.sys.localStorage.getItem("name");
         if ( store != null ){
             name = store;
+            cc.log("stored name"+name);
             textField.setString(name)
         } else {
+            textField.setString("")
         }
 
         var continueItem = new cc.MenuItemImage(
