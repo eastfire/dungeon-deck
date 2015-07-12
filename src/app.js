@@ -979,6 +979,7 @@ var MainGameLayer = cc.Layer.extend({
                 this.discardCard(sprite);
             }
         }
+        this.model.set("stage", [] );
     },
     onGiveUp:function(){
         this.hintLable.setVisible(false);
