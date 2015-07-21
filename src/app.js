@@ -610,37 +610,34 @@ var MainGameLayer = cc.Layer.extend({
         }
         this.model.set("phase","generate-hero");
 
-        var heroModel = gameModel.generateHeroModel();
-        if ( !heroModel ) {
-            cc.director.runScene( new GameOverScene() );
-            return;
-        }
-        var card = new HeroCardSprite({ model: heroModel , side: "front"})
-        card.attr({
-            x: cc.winSize.width + dimens.card_width,
-            y: dimens.team_position.y,
-            name: heroModel.cid
-        })
-        this.addChild(card, 1, heroModel.cid);
-
-        team.push( heroModel );
-//        heroModel.on("joinTeamEnd", function(){
-//            if (_.all( team , function(model){
-//                return model.isJoinTeamEnd();
-//            }, this) ) {
-//                cc.eventManager.dispatchCustomEvent("generate-hero-end");
-//            }
-//        },this);
-        heroModel.on("die transform",function(){
-            if ( !this.model.isTeamAlive()) {
-                this.teamDie();
-            } else {
-                this.renderGiveUp();
+        var count = gameModel.get("generateHeroNumber");
+        for ( var i = 0; i < count && team.length < MAX_HERO_COUNT; i++ ) {
+            var heroModel = gameModel.generateHeroModel();
+            if (!heroModel) {
+                cc.director.runScene(new GameOverScene());
+                return;
             }
-        },this);
-        heroModel.on("change:attackHeartPower alive",function(){
-            this.renderGiveUp();
-        },this);
+            var card = new HeroCardSprite({ model: heroModel, side: "front"})
+            card.attr({
+                x: cc.winSize.width + dimens.card_width,
+                y: dimens.team_position.y,
+                name: heroModel.cid
+            })
+            this.addChild(card, 1, heroModel.cid);
+
+            team.push(heroModel);
+
+            heroModel.on("die transform", function () {
+                if (!this.model.isTeamAlive()) {
+                    this.teamDie();
+                } else {
+                    this.renderGiveUp();
+                }
+            }, this);
+            heroModel.on("change:attackHeartPower alive", function () {
+                this.renderGiveUp();
+            }, this);
+        }
 
         this.model.sortTeam();
 

@@ -295,7 +295,6 @@ var BaseCardSprite = CardSprite.extend({
     }
 })
 
-
 var IconSprite = cc.Sprite.extend({
     ctor: function(options){
         options = options || {}
@@ -309,9 +308,11 @@ var IconSprite = cc.Sprite.extend({
         }
         this._super(image);
 
-        this.label = new cc.LabelTTF(text, "宋体", fontSize);
+        this.label = new ccui.Text(text, "Arial", fontSize );
+        this.label.enableOutline(cc.color.WHITE, 2);
+        this.label.setTextColor(fontColor);
+
         this.label.attr({
-            color: fontColor,
             x: offset.x,
             y: offset.y
         })
@@ -327,7 +328,8 @@ var IconSprite = cc.Sprite.extend({
         this.label.setString(str)
     },
     setFontColor:function(color){
-        this.label.setColor(color);
+        //this.label.setColor(color);
+        this.label.setTextColor(color);
     }
 })
 

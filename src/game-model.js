@@ -8,6 +8,8 @@ var UPGRADE_RANGE_LEVEL = {
     FROM_DUNGEON : 4
     };
 
+var CARD_PER_LINE = 4;
+
 var GameModel = Backbone.Model.extend({
     defaults:function(){
         return {
@@ -51,6 +53,7 @@ var GameModel = Backbone.Model.extend({
             maxHeroMaxLevelAppearCount: 3,
             maxHeroMaxLevel: 3,
             increaseDifficultyPerTurn: 13,
+            generateHeroNumber: 1,
             //heroList: [ "sorcerer"],
             initDeck: [ "skeleton", "skeleton","skeleton","skeleton","imp","imp","imp","imp" ],
             //initDeck: [ "magic-missile","skeleton", "skeleton","skeleton","skeleton","imp","imp","imp","imp" ],
@@ -106,6 +109,10 @@ var GameModel = Backbone.Model.extend({
                     count: 8
                 }],
 
+            initFlowBuyableCards: [["arrow-trap"],["pitfall"]],
+            flowBuyableLineNumber: 2,
+            flowBuyableCardLines: [],
+
             poisonEffect: 1
         }
     },
@@ -132,6 +139,10 @@ var GameModel = Backbone.Model.extend({
             var heroLevelPool = this.get("heroLevelPool");
             for ( var i = 1; i < this.get("maxHeroMaxLevel") ; i++) {
                 heroLevelPool.push(i);
+            }
+            if ( turn % (this.get("increaseDifficultyPerTurn")*4) === 0 ) {
+                var genHeroNumber = this.get("generateHeroNumber");
+                if ( genHeroNumber < 4 ) this.set("generateHeroNumber",genHeroNumber+1);
             }
         }
     },
@@ -326,6 +337,35 @@ var GameModel = Backbone.Model.extend({
             }
         }
     },
+    initFlowBuyableCards:function(){
+        var lineNumber = 0;
+        var cardLines= this.get("flowBuyableCardLines");
+        _.each( this.get("initFlowBuyableCards"), function(line){
+            cardLines[lineNumber] = [];
+            _.each(line,function(cardName){
+                cardLines[lineNumber].push( new DUNGEON_CLASS_MAP[cardName]({side:"front"}));
+            });
+            lineNumber++;
+        });
+        this.refillFlowBuyableCards();
+    },
+    removeNullFlowBuyableCards:function(){
+        var cardLines= this.get("flowBuyableCardLines");
+        _.each( cardLines, function(line){
+            line = _.filter(line,function(model){
+                return model != null;
+            });
+        });
+    },
+    refillFlowBuyableCards:function(){
+        var cardLines= this.get("flowBuyableCardLines");
+        _.each( cardLines, function(line){
+            for ( var i = line.length; i<CARD_PER_LINE; i++){
+                var type = _.sample(this.get("unlockedBuyableCards"))
+                line.push( new DUNGEON_CLASS_MAP[type]({side:"front"}));
+            }
+        },this);
+    },
     newRegularBuyableDeck:function(entry){
         var deck = [];
         for ( var i = 0; i < entry.count; i++ ) {
@@ -393,6 +433,7 @@ var GameModel = Backbone.Model.extend({
         this.initDeck();
         this.initDiscardDeck();
         this.initRegularBuyableCards();
+        this.initFlowBuyableCards();
         this.initSpellBook();
         this.initBonus();
     },

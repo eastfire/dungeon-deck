@@ -19,9 +19,8 @@ var res = {
     icon_png : "res/icon.png",
     ui_plist: "res/ui.plist",
     ui_png : "res/ui.png"
-/*    ,
-    large_plist: "res/large.plist",
-    large_png : "res/large.png"*/
+
+    //futura48_fnt : "res/futura-48.fnt"
 };
 
 var g_resources = [];
@@ -134,11 +133,11 @@ var dimens = {
     game_over_font_size: 70,
     game_over_score_font_size: 36,
 
-    score_line_height: 40,
+    score_line_height: 50,
     score_line_font_size: 25,
 
     score_board_width:630,
-    score_board_height: 1000,
+    score_board_height: 980,
 
     loading_score_board_font: 50
 }

@@ -146,7 +146,7 @@ var GameOverLayer = cc.LayerColor.extend({
 });
 
 var FIREBASE_URL = "https://dungeon-deck.firebaseio.com"
-var TOP_SCORE_COUNT = 20
+var TOP_SCORE_COUNT = 25
 
 var ScoreBoardLayer = cc.LayerColor.extend({
     ctor:function (options) {
@@ -156,7 +156,7 @@ var ScoreBoardLayer = cc.LayerColor.extend({
         this.scoreRef = this.scoreQuery.ref();
         var self = this;
         this.score = null;
-        this.__initList();
+        this.__initList2();
 
         if ( gameModel ) {
             var score = {
@@ -223,11 +223,55 @@ var ScoreBoardLayer = cc.LayerColor.extend({
         var self = this;
         this.scoreQuery.once("value",function(snapshot){
             self.scores = snapshot.val();
-            self.loading.removeFromParent(true);
-            self.__renderList.call(self);
+            var filteredScore = [];
+            _.each(self.scores,function(score){
+               if ( score.name ) {
+                   filteredScore.unshift(score);
+               }
+            });
+            self.scores = filteredScore;
+                self.loading.removeFromParent(true);
+
+            self.__renderList2.call(self);
         })
     },
 
+    __initList2:function(){
+        var listView = new ccui.ListView();
+        // set list view ex direction
+        listView.setDirection(ccui.ScrollView.DIR_VERTICAL);
+        listView.setTouchEnabled(true);
+        listView.setBounceEnabled(true);
+        //listView.setBackGroundImage("res/cocosui/green_edit.png");
+        //listView.setBackGroundImageScale9Enabled(true);
+        var innerWidth = dimens.score_board_width;
+        var innerHeight = dimens.score_board_height;
+        listView.setContentSize(cc.size(innerWidth, innerHeight));
+        listView.attr({
+            x: (cc.winSize.width-innerWidth)/2,
+            y: (cc.winSize.height-innerHeight)/2
+        })
+        this.addChild(listView,2);
+
+        // create model
+        var default_label = new ccui.Text("","Arial", dimens.score_line_font_size);
+        default_label.setName("ScoreLabel");
+        default_label.setTouchEnabled(false);
+
+        var default_item = new ccui.Layout();
+        default_item.setTouchEnabled(false);
+        default_item.setContentSize(default_label.getContentSize());
+        default_item.width = listView.width;
+        default_label.x = default_item.width / 2;
+        default_label.y = default_item.height / 2;
+        default_item.addChild(default_label);
+        default_item.attr({
+            height: dimens.score_line_height
+        })
+        // set model
+        listView.setItemModel(default_item);
+        this.listView = listView;
+    },
     __initList: function(){
         var size = cc.winSize
 
@@ -254,6 +298,66 @@ var ScoreBoardLayer = cc.LayerColor.extend({
 
     },
 
+    __renderList2:function(){
+        var listView = this.listView;
+        var count = this.scores.length;
+        _.each(this.scores,function(score) {
+            listView.pushBackDefaultItem();
+        },this);
+
+        // set item data
+        var foundMyself = false;
+        var i = 0;
+        _.each(this.scores,function(score){
+            var color;
+            if (score.r == this.score.r) {
+                foundMyself = true
+            }
+            var item = listView.getItem(i);
+            var label = item.getChildByName("ScoreLabel");
+            this.generateOneScoreLabel(score, label);
+
+            i++;
+        },this);
+        if ( !foundMyself ) {
+            listView.pushBackDefaultItem();
+            listView.pushBackDefaultItem();
+
+            var item = listView.getItem(i);
+            var label = item.getChildByName("ScoreLabel");
+            label.setTextColor(cc.color.BLACK);
+            label.setString("……");
+            i++;
+
+            var item = listView.getItem(i);
+            var label = item.getChildByName("ScoreLabel");
+            this.generateOneScoreLabel(this.score, label);
+        }
+    },
+    generateOneScoreLabel:function(score, label){
+        var color;
+        if (score.r == this.score.r) {
+            color = cc.color(255, 0, 0, 255);
+        } else
+            color = cc.color.BLACK;
+
+        var str = score.name;
+        for ( var j = dbcsByteLength(str); j < 20; j++ ){
+            str += " ";
+        }
+        str += "lv"+(score.level||1);
+        for ( var j = dbcsByteLength(str); j < 26; j++ ){
+            str += " ";
+        }
+        str += score.score + "分"
+        for ( var j = dbcsByteLength(str); j < 36; j++ ){
+            str += " ";
+        }
+        str += moment(score.timestamp).locale("zh-cn").fromNow();
+
+        label.setTextColor(color);
+        label.setString(str);
+    },
     __renderList:function(){
         var i = 0;
         var length = _.size(this.scores)

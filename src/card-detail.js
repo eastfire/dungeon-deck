@@ -33,9 +33,11 @@ var CardDetailLayer = cc.LayerColor.extend({
         } else if ( nameLength >= 10 ) {
             fontSize = dimens.card_detail_name_font_size * 4 / 5;
         }
-        var nameLabel = new cc.LabelTTF(name, "宋体",fontSize );
+
+        var nameLabel = new ccui.Text(name, "Arial", fontSize );
+        nameLabel.enableOutline(cc.color.WHITE, 4);
+        nameLabel.setTextColor(colors.card_detail_name);
         nameLabel.attr({
-            color: colors.card_detail_name,
             x: cc.winSize.width/2,
             y: cc.winSize.height/2 + dimens.card_height/2*scaleRate - dimens.card_detail_name_font_size,
             anchorX: 0.5,
