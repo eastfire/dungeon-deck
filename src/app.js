@@ -602,6 +602,9 @@ var MainGameLayer = cc.Layer.extend({
         this.meeple.setVisible(true);
     },
     generateHero:function(){
+        if ( gameModel.get("turn") != 0 ) {
+            gameModel.maintainFlowBuyableCards();
+        }
         gameModel.increaseTurn();
         var team = this.model.get("team");
         if ( team.length >= MAX_HERO_COUNT ) {

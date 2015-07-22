@@ -251,10 +251,36 @@
                 <key>sourceSize</key>
                 <string>{48,48}</string>
             </dict>
+            <key>flow-left-end.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{936,2},{40,40}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{40,40}}</string>
+                <key>sourceSize</key>
+                <string>{40,40}</string>
+            </dict>
+            <key>flow-left.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{978,2},{40,40}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{40,40}}</string>
+                <key>sourceSize</key>
+                <string>{40,40}</string>
+            </dict>
             <key>give-up-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{936,2},{48,48}}</string>
+                <string>{{1020,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -267,7 +293,7 @@
             <key>hp-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{986,2},{48,48}}</string>
+                <string>{{1070,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -280,7 +306,7 @@
             <key>level-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1036,2},{48,48}}</string>
+                <string>{{1120,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -293,7 +319,7 @@
             <key>max-level-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1086,2},{48,48}}</string>
+                <string>{{1170,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -306,7 +332,7 @@
             <key>meeple.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1136,2},{53,53}}</string>
+                <string>{{1220,2},{53,53}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -319,7 +345,7 @@
             <key>miss-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1191,2},{48,48}}</string>
+                <string>{{1275,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -332,7 +358,7 @@
             <key>money-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1241,2},{48,48}}</string>
+                <string>{{1325,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -345,7 +371,7 @@
             <key>pay-hp-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1291,2},{48,48}}</string>
+                <string>{{1375,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -358,7 +384,7 @@
             <key>pay-money-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1341,2},{48,48}}</string>
+                <string>{{1425,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -371,7 +397,7 @@
             <key>pay-score-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1391,2},{48,48}}</string>
+                <string>{{1475,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -384,7 +410,7 @@
             <key>pierce-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1441,2},{48,48}}</string>
+                <string>{{1525,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -397,7 +423,7 @@
             <key>play-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1491,2},{48,48}}</string>
+                <string>{{1575,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -410,7 +436,7 @@
             <key>poison-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1541,2},{48,48}}</string>
+                <string>{{1625,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -423,7 +449,7 @@
             <key>rip-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1591,2},{59,59}}</string>
+                <string>{{1675,2},{59,59}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -436,7 +462,7 @@
             <key>score-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1652,2},{48,48}}</string>
+                <string>{{1736,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -449,7 +475,7 @@
             <key>silent-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1702,2},{48,48}}</string>
+                <string>{{1786,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -462,7 +488,7 @@
             <key>slow-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1752,2},{48,48}}</string>
+                <string>{{1836,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -475,7 +501,7 @@
             <key>trample-icon.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1802,2},{48,48}}</string>
+                <string>{{1886,2},{48,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -493,9 +519,9 @@
             <key>realTextureFileName</key>
             <string>icon.png</string>
             <key>size</key>
-            <string>{1852,63}</string>
+            <string>{1936,63}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:fd36698952c5c60cc9ca64750996de4d:3cd3652afb6c8ce3d4fcaa453b9c98ee:240848ad97db3b21fd898f16a7d3102d$</string>
+            <string>$TexturePacker:SmartUpdate:e9e6569d1169632462505bc47e14fd29:13ab83f0d5e9b3873e4aa07900da5758:240848ad97db3b21fd898f16a7d3102d$</string>
             <key>textureFileName</key>
             <string>icon.png</string>
         </dict>

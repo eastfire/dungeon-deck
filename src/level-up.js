@@ -147,6 +147,20 @@ var RandomBuyableCardBonus = LevelUpBonus.extend({
     }
 });
 
+var FlowBuyableCardBonus = LevelUpBonus.extend({
+    defaults:function(){
+        return {
+            level: 1,
+            maxLevel: 1,
+            description:"多一行牌可供购买"
+        }
+    },
+    onGain:function(options){
+        window.gameModel.set("flowBuyableLineNumber", window.gameModel.get("flowBuyableLineNumber")+1);
+        window.gameModel.refillFlowBuyableCards();
+    }
+});
+
 var AlwaysLevelUpBonus = LevelUpBonus.extend({
     defaults:function(){
         return {
@@ -338,6 +352,7 @@ var LEVEL_UP_BONUS_CLASS_MAP = {
     }),
     upgradeFromDeck : UpgradeFromDeckBonus,
     buyableCard : RandomBuyableCardBonus,
+    flowBuyableCard: FlowBuyableCardBonus,
     blacksmith: CardBonus.extend({
         defaults: {
             maxLevel: 3,

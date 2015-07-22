@@ -80,7 +80,7 @@ var GameModel = Backbone.Model.extend({
             upgradeRangeLevel: UPGRADE_RANGE_LEVEL.FROM_DISCARD,
 
             //initBonus: ["blacksmith","maxHp"],
-            initBonus: ["upgradeChance","maxHp","money","upgradeFromDeck","cullDiscard","cullDeck","buyableCard","blacksmith", "library","prison","spoiled-food"],
+            initBonus: ["upgradeChance","maxHp","money","upgradeFromDeck","cullDiscard","cullDeck","flowBuyableCard","blacksmith", "library","prison","spoiled-food"],
             bonusPool : [],
             bonusChoiceNumber:3,
             bonusEachLevelUp: "alwaysLevelUpBonus",
@@ -90,7 +90,7 @@ var GameModel = Backbone.Model.extend({
                                     "hen-den",
                                     "arrow-trap","pitfall","poison-gas","rolling-boulder"],
             regularBuyableCards: [],
-            initRegularBuyableCount : 10,
+            initRegularBuyableCount : 4,
             initRegularBuyableCards : [
                 {
                     type:"imp",
@@ -349,13 +349,23 @@ var GameModel = Backbone.Model.extend({
         });
         this.refillFlowBuyableCards();
     },
-    removeNullFlowBuyableCards:function(){
+    maintainFlowBuyableCards:function(){
         var cardLines= this.get("flowBuyableCardLines");
         _.each( cardLines, function(line){
+            line.shift();
+        });
+        this.removeNullFlowBuyableCards();
+        this.refillFlowBuyableCards();
+    },
+    removeNullFlowBuyableCards:function(){
+        var cardLines= this.get("flowBuyableCardLines");
+        for ( var i = 0; i < cardLines.length; i++ ){
+            var line = cardLines[i];
             line = _.filter(line,function(model){
                 return model != null;
             });
-        });
+            cardLines[i] = line;
+        }
     },
     refillFlowBuyableCards:function(){
         var cardLines= this.get("flowBuyableCardLines");
